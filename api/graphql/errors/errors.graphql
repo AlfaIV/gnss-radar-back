@@ -1,0 +1,5 @@
+""" Бизнес ошибки """
+enum Error {
+    """ Нет прав """
+    PERMISSION_DENIED
+}

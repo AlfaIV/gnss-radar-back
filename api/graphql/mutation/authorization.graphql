@@ -6,7 +6,7 @@ extend type Mutation {
 """ Мутации связанные с авторизацией """
 type AuthorizationMutations {
     """ Регистрация """
-    signup(input: SignupInput!): SignupOutput! @field(force: true)
+    signup(input: SignupInput!): SignupOutput! @goField(forceResolver: true)
 }
 
 """ Входные параметры для регистрации"""
@@ -18,4 +18,5 @@ input SignupInput {
 """ Выходные параметры для регистрации """
 type SignupOutput {
     result: Int!
+
 }

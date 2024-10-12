@@ -33,12 +33,12 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	AuthorizationMutations() AuthorizationMutationsResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 }
 
 type DirectiveRoot struct {
-	Field func(ctx context.Context, obj interface{}, next graphql.Resolver, force *bool, name *string) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -253,6 +253,10 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "../../../../api/graphql/directives/goField.graphql", Input: `"""
+GraphQL converter
+"""
+directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION`, BuiltIn: false},
 	{Name: "../../../../api/graphql/enums/enums.graphql", Input: ``, BuiltIn: false},
 	{Name: "../../../../api/graphql/errors/errors.graphql", Input: ``, BuiltIn: false},
 	{Name: "../../../../api/graphql/mutation/authorization.graphql", Input: `extend type Mutation {
@@ -263,7 +267,7 @@ var sources = []*ast.Source{
 """ Мутации связанные с авторизацией """
 type AuthorizationMutations {
     """ Регистрация """
-    signup(input: SignupInput!): SignupOutput! @field(force: true)
+    signup(input: SignupInput!): SignupOutput! @goField(forceResolver: true)
 }
 
 """ Входные параметры для регистрации"""
@@ -288,10 +292,6 @@ input testInput {
 type testOutput {
     test: String!
 }`, BuiltIn: false},
-	{Name: "../../../../api/graphql/schema/field.graphql", Input: `"""
-GraphQL converter
-"""
-directive @field(force: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION`, BuiltIn: false},
 	{Name: "../../../../api/graphql/schema/schema.graphql", Input: `### *** Schema *** ###
 
 schema {

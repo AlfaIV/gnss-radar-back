@@ -7,8 +7,11 @@ package graphql
 import (
 	"context"
 	"fmt"
+	"net/http"
 
+	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 // Authorization is the resolver for the authorization field.
@@ -20,3 +23,40 @@ func (r *mutationResolver) Authorization(ctx context.Context) (*model.Authorizat
 func (r *queryResolver) Test(ctx context.Context, input *model.TestInput) (*model.TestOutput, error) {
 	panic(fmt.Errorf("not implemented: Test - test"))
 }
+
+// AuthorizationMutations returns generated.AuthorizationMutationsResolver implementation.
+func (r *Resolver) AuthorizationMutations() generated.AuthorizationMutationsResolver {
+	return &authorizationMutationsResolver{r}
+}
+
+// Signup is the resolver for the signup field.
+func (r *authorizationMutationsResolver) Signup(ctx context.Context, obj *model.AuthorizationMutations, input model.SignupInput) (*model.SignupOutput, error) {
+	if err := validation.ValidateStruct(obj); err != nil {
+		return nil, fmt.Errorf("validation.ValidateStruct %w", err)
+	}
+
+	_, err := r.authService.Signup(input.Login, input.Password)
+	if err != nil {
+		return nil, fmt.Errorf("authService.Signup %w", err)
+	}
+
+	http.SetCookie(ctx.Value("response").(http.ResponseWriter), &http.Cookie{
+		Name:     "auth_token",
+		Value:    "kek",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true, // Убедитесь, что это true в продакшене
+		MaxAge:   3600, // 1 час
+	})
+
+	return &model.SignupOutput{Result: 404}, nil
+}
+
+func (r *authorizationMutationsResolver) validateSignup(input model.SignupInput) error {
+	return validation.ValidateStruct(input,
+		validation.Field(&input.Login, validation.Required),
+		validation.Field(&input.Password, validation.Required),
+	)
+}
+
+type authorizationMutationsResolver struct{ *Resolver }

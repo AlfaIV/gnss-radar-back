@@ -17,8 +17,7 @@ func (a AuthorizationStore) Signin(username, password string) (string, error) {
 }
 
 func (a AuthorizationStore) Signup(username, password string) (string, error) {
-	//TODO implement me
-	panic("implement me")
+	return username, nil
 }
 
 func (a AuthorizationStore) Authcheck(value string) (bool, error) {
