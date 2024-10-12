@@ -7,11 +7,10 @@ import (
 	authorization "github.com/Gokert/gnss-radar/internal/service"
 	"github.com/Gokert/gnss-radar/internal/store"
 	"log"
-	"time"
 )
 
 func main() {
-	postgresConfig, err := configurations.ParsePostgresConfig(utils.utils.PathPostgresConf)
+	postgresConfig, err := configurations.ParsePostgresConfig(utils.PathPostgresConf)
 	if err != nil {
 		log.Fatalf("configurations.ParsePostgresConfig: %v", err)
 		return
@@ -23,10 +22,10 @@ func main() {
 		return
 	}
 
-	//serviceConfig, err := configurations.ParseServiceConfig(utils.PathServiceConf)
-	//if err != nil {
-	//	log.Fatalf("configurations.ParseServiceConfig: %v", err)
-	//}
+	serviceConfig, err := configurations.ParseServiceConfig(utils.PathServiceConf)
+	if err != nil {
+		log.Fatalf("configurations.ParseServiceConfig: %v", err)
+	}
 
 	postgresDB, err := store.ConnectToPostgres(postgresConfig)
 	if err != nil {
@@ -43,10 +42,13 @@ func main() {
 	storage := store.NewStorage(postgresDB, redisDB)
 	storageManager := store.NewStore(storage)
 
-	authorization.NewService(storageManager.GetAuthorizationStore())
+	authService := authorization.NewService(storageManager.GetAuthorizationStore())
+	app := delivery.NewApp(authService)
 
-	app := delivery.App{}
-
-	log.Printf("App created")
-	time.Sleep(10 * time.Second)
+	//
+	// Run app
+	//
+	if err = app.Run(serviceConfig.Port); err != nil {
+		log.Fatalf("delivery.Run: %v", err)
+	}
 }

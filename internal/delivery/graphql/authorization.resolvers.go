@@ -13,7 +13,7 @@ import (
 
 // Authorization is the resolver for the authorization field.
 func (r *mutationResolver) Authorization(ctx context.Context) (*model.AuthorizationMutations, error) {
-	panic(fmt.Errorf("not implemented: Authorization - authorization"))
+	return &model.AuthorizationMutations{}, nil
 }
 
 // Test is the resolver for the test field.

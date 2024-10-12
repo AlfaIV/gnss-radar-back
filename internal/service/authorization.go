@@ -2,7 +2,7 @@ package authorization
 
 import "github.com/Gokert/gnss-radar/internal/store"
 
-// IService - сервис для работы c авторизацией
+// IAuthorizationService - сервис для работы c авторизацией
 //
 //go:generate mockgen -source=$GOFILE -destination=../../../mocks/authorization_service/mock.go
 type IAuthorizationService interface {
@@ -18,4 +18,24 @@ type AuthorizationService struct {
 
 func NewService(authorization store.IAuthorizationStore) *AuthorizationService {
 	return &AuthorizationService{authorization: authorization}
+}
+
+func (a AuthorizationService) Signin(username, password string) (string, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a AuthorizationService) Signup(username, password string) (string, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a AuthorizationService) Authcheck(value string) (bool, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a AuthorizationService) Logout(value string) (bool, error) {
+	//TODO implement me
+	panic("implement me")
 }
