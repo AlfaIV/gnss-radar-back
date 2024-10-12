@@ -1,0 +1,4 @@
+"""
+GraphQL converter
+"""
+directive @field(force: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION

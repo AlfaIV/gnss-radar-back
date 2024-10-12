@@ -1,0 +1,21 @@
+extend type Mutation {
+    """ Мутации связанные с авторизацией """
+    authorization: AuthorizationMutations!
+}
+
+""" Мутации связанные с авторизацией """
+type AuthorizationMutations {
+    """ Регистрация """
+    signup(input: SignupInput!): SignupOutput! @field(force: true)
+}
+
+""" Входные параметры для регистрации"""
+input SignupInput {
+    login: String!
+    password: String!
+}
+
+""" Выходные параметры для регистрации """
+type SignupOutput {
+    result: Int!
+}

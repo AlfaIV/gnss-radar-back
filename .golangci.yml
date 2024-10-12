@@ -1,0 +1,10 @@
+linters:
+  enable:
+#    - revive   # Замените golint на revive
+    - errcheck
+    - staticcheck
+    - unused    # Замените deadcode на unused
+issues:
+  exclude-rules:
+    - path: _test\.go
+      source: "CWE"

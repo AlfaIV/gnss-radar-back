@@ -1,0 +1,11 @@
+extend type Query {
+    test(input: testInput): testOutput!
+}
+
+input testInput {
+    test: String!
+}
+
+type testOutput {
+    test: String!
+}
