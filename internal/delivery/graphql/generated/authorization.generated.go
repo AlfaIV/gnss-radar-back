@@ -19,7 +19,7 @@ import (
 type AuthorizationMutationsResolver interface {
 	Signup(ctx context.Context, obj *model.AuthorizationMutations, input model.SignupInput) (*model.SignupOutput, error)
 	Signin(ctx context.Context, obj *model.AuthorizationMutations, input model.SigninInput) (*model.SigninOutput, error)
-	Logout(ctx context.Context, obj *model.AuthorizationMutations, input model.LogoutInput) (*model.LogoutOutput, error)
+	Logout(ctx context.Context, obj *model.AuthorizationMutations, input *model.LogoutInput) (*model.LogoutOutput, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -29,10 +29,10 @@ type AuthorizationMutationsResolver interface {
 func (ec *executionContext) field_AuthorizationMutations_logout_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.LogoutInput
+	var arg0 *model.LogoutInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNLogoutInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutInput(ctx, tmp)
+		arg0, err = ec.unmarshalOLogoutInput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -252,21 +252,18 @@ func (ec *executionContext) _AuthorizationMutations_logout(ctx context.Context, 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.AuthorizationMutations().Logout(rctx, obj, fc.Args["input"].(model.LogoutInput))
+		return ec.resolvers.AuthorizationMutations().Logout(rctx, obj, fc.Args["input"].(*model.LogoutInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*model.LogoutOutput)
 	fc.Result = res
-	return ec.marshalNLogoutOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutOutput(ctx, field.Selections, res)
+	return ec.marshalOLogoutOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutOutput(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_AuthorizationMutations_logout(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -679,16 +676,13 @@ func (ec *executionContext) _AuthorizationMutations(ctx context.Context, sel ast
 		case "logout":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._AuthorizationMutations_logout(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -864,25 +858,6 @@ func (ec *executionContext) marshalNAuthorizationMutations2ᚖgithubᚗcomᚋGok
 	return ec._AuthorizationMutations(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNLogoutInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutInput(ctx context.Context, v interface{}) (model.LogoutInput, error) {
-	res, err := ec.unmarshalInputLogoutInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNLogoutOutput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutOutput(ctx context.Context, sel ast.SelectionSet, v model.LogoutOutput) graphql.Marshaler {
-	return ec._LogoutOutput(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNLogoutOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutOutput(ctx context.Context, sel ast.SelectionSet, v *model.LogoutOutput) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._LogoutOutput(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNSigninInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSigninInput(ctx context.Context, v interface{}) (model.SigninInput, error) {
 	res, err := ec.unmarshalInputSigninInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -934,6 +909,21 @@ func (ec *executionContext) marshalOAuthcheckOutput2ᚖgithubᚗcomᚋGokertᚋg
 		return graphql.Null
 	}
 	return ec._AuthcheckOutput(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOLogoutInput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutInput(ctx context.Context, v interface{}) (*model.LogoutInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputLogoutInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOLogoutOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutOutput(ctx context.Context, sel ast.SelectionSet, v *model.LogoutOutput) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._LogoutOutput(ctx, sel, v)
 }
 
 // endregion ***************************** type.gotpl *****************************

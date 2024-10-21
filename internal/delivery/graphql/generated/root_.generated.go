@@ -47,7 +47,7 @@ type ComplexityRoot struct {
 	}
 
 	AuthorizationMutations struct {
-		Logout func(childComplexity int, input model.LogoutInput) int
+		Logout func(childComplexity int, input *model.LogoutInput) int
 		Signin func(childComplexity int, input model.SigninInput) int
 		Signup func(childComplexity int, input model.SignupInput) int
 	}
@@ -115,7 +115,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.AuthorizationMutations.Logout(childComplexity, args["input"].(model.LogoutInput)), true
+		return e.complexity.AuthorizationMutations.Logout(childComplexity, args["input"].(*model.LogoutInput)), true
 
 	case "AuthorizationMutations.signin":
 		if e.complexity.AuthorizationMutations.Signin == nil {
@@ -343,7 +343,7 @@ type AuthorizationMutations {
     """ Авторизация """
     signin(input: SigninInput!): SigninOutput! @goField(forceResolver: true)
     """ Выход """
-    logout(input: LogoutInput!): LogoutOutput! @goField(forceResolver: true)
+    logout(input: LogoutInput): LogoutOutput @goField(forceResolver: true)
 }
 
 """ Входные параметры для регистрации"""

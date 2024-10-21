@@ -8,12 +8,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Gokert/gnss-radar/internal/pkg/utils"
-	"github.com/Gokert/gnss-radar/internal/service"
-	"github.com/Gokert/gnss-radar/internal/store"
 
 	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
+	"github.com/Gokert/gnss-radar/internal/pkg/utils"
+	"github.com/Gokert/gnss-radar/internal/service"
+	"github.com/Gokert/gnss-radar/internal/store"
 )
 
 // Signup is the resolver for the signup field.
@@ -57,7 +57,7 @@ func (r *authorizationMutationsResolver) Signin(ctx context.Context, obj *model.
 }
 
 // Logout is the resolver for the logout field.
-func (r *authorizationMutationsResolver) Logout(ctx context.Context, obj *model.AuthorizationMutations, input model.LogoutInput) (*model.LogoutOutput, error) {
+func (r *authorizationMutationsResolver) Logout(ctx context.Context, obj *model.AuthorizationMutations, input *model.LogoutInput) (*model.LogoutOutput, error) {
 	cookie, err := utils.GetRequest(ctx).Cookie("session_id")
 	if err != nil {
 		return nil, model.ErrorBadRequest
@@ -71,7 +71,7 @@ func (r *authorizationMutationsResolver) Logout(ctx context.Context, obj *model.
 		return nil, model.ErrorInternalError
 	}
 
-	return nil, nil
+	return &model.LogoutOutput{}, nil
 }
 
 // Authorization is the resolver for the authorization field.
@@ -83,7 +83,7 @@ func (r *mutationResolver) Authorization(ctx context.Context) (*model.Authorizat
 func (r *queryResolver) Authcheck(ctx context.Context, input *model.AuthcheckInput) (*model.AuthcheckOutput, error) {
 	cookie, err := utils.GetRequest(ctx).Cookie("session_id")
 	if err != nil {
-		return nil, model.ErrorBadRequest
+		return &model.AuthcheckOutput{}, nil
 	}
 
 	result, err := r.authService.Authcheck(ctx, cookie.Value)

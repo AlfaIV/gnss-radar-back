@@ -27,7 +27,7 @@ type AuthorizationMutations struct {
 	//  Авторизация
 	Signin *SigninOutput `json:"signin"`
 	//  Выход
-	Logout *LogoutOutput `json:"logout"`
+	Logout *LogoutOutput `json:"logout,omitempty"`
 }
 
 // Выходные параметры для выхода
