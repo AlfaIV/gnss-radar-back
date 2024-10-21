@@ -10,7 +10,7 @@ type AuthorizationMutations {
     """ Авторизация """
     signin(input: SigninInput!): SigninOutput! @goField(forceResolver: true)
     """ Выход """
-    logout(input: LogoutInput!): LogoutOutput! @goField(forceResolver: true)
+    logout(input: LogoutInput): LogoutOutput @goField(forceResolver: true)
 }
 
 """ Входные параметры для регистрации"""
