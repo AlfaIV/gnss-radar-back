@@ -14,7 +14,7 @@ services:
       POSTGRES_PASSWORD: "admin"
       POSTGRES_USER: "admin"
     volumes:
-      - ./scripts/sql/migrations:/docker-entrypoint-initdb.d
+      - ./scripts/sql/init:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
     networks:

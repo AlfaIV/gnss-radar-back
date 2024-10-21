@@ -1,17 +1,17 @@
 package graphql
 
-import authorization "github.com/Gokert/gnss-radar/internal/service"
+import "github.com/Gokert/gnss-radar/internal/service"
 
 // This file will not be regenerated automatically.
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	authService authorization.IAuthorizationService
+	authService service.IAuthorizationService
 }
 
-func NewResolver(authService authorization.IAuthorizationService) *Resolver {
+func NewResolver(service2 *service.Service) *Resolver {
 	return &Resolver{
-		authService: authService,
+		authService: service2.GetAuthorizationService(),
 	}
 }

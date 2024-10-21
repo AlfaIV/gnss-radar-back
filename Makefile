@@ -28,3 +28,15 @@ gg:
 
 gg-init:
 	go run github.com/99designs/gqlgen init
+
+migrate:
+	psql postgres -c "drop database if exists gnss;"
+	createdb gnss
+	goose -allow-missing -dir migrations postgres "dbname=gnss sslmode=disable" up
+
+SQL_NAME ?= new_sql
+
+create-goose:
+	goose -dir ./migrations -s create $(SQL_NAME) sql
+
+

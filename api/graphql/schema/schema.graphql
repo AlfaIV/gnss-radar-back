@@ -17,8 +17,3 @@ type Query
 ### *** Mutations *** ###
 
 type Mutation
-
-extend type Query {
-    """ Словарь ошибок """
-    errors: [Error]!
-}

@@ -3,26 +3,26 @@ package main
 import (
 	"github.com/Gokert/gnss-radar/configurations"
 	"github.com/Gokert/gnss-radar/internal/delivery"
-	"github.com/Gokert/gnss-radar/internal/pkg"
-	authorization "github.com/Gokert/gnss-radar/internal/service"
+	"github.com/Gokert/gnss-radar/internal/pkg/consts"
+	"github.com/Gokert/gnss-radar/internal/service"
 	"github.com/Gokert/gnss-radar/internal/store"
 	"log"
 )
 
 func main() {
-	postgresConfig, err := configurations.ParsePostgresConfig(utils.PathPostgresConf)
+	postgresConfig, err := configurations.ParsePostgresConfig(consts.PathPostgresConf)
 	if err != nil {
 		log.Fatalf("configurations.ParsePostgresConfig: %v", err)
 		return
 	}
 
-	redisConfig, err := configurations.ParseRedisConfig(utils.PathRedisConf)
+	redisConfig, err := configurations.ParseRedisConfig(consts.PathRedisConf)
 	if err != nil {
 		log.Fatalf("configurations.ParseRedisConfig: %v", err)
 		return
 	}
 
-	serviceConfig, err := configurations.ParseServiceConfig(utils.PathServiceConf)
+	serviceConfig, err := configurations.ParseServiceConfig(consts.PathServiceConf)
 	if err != nil {
 		log.Fatalf("configurations.ParseServiceConfig: %v", err)
 	}
@@ -39,11 +39,13 @@ func main() {
 	}
 	log.Printf("Successfully connected to redis")
 
-	storage := store.NewStorage(postgresDB, redisDB)
-	storageManager := store.NewStore(storage)
+	storage := store.NewStorage(postgresDB)
+	cacheStorage := store.NewCacheStorage(redisDB)
 
-	authService := authorization.NewService(storageManager.GetAuthorizationStore())
-	app := delivery.NewApp(authService)
+	storageManager := store.NewStore(storage, cacheStorage)
+
+	newService := service.NewService(storageManager.GetAuthorizationStore(), storageManager.GetSessionStore())
+	app := delivery.NewApp(newService)
 
 	//
 	// Run app

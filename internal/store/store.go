@@ -2,59 +2,74 @@ package store
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"github.com/Gokert/gnss-radar/configurations"
-	"github.com/Gokert/gnss-radar/internal/pkg"
+	"github.com/Gokert/gnss-radar/internal/pkg/consts"
+	"github.com/Gokert/gnss-radar/internal/pkg/executor"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/go-redis/redis/v8"
-	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jackc/pgx/v4/pgxpool"
+	_ "github.com/jackc/pgx/v4/stdlib"
 	"log"
 	"time"
 )
 
 type Store struct {
 	authorization *AuthorizationStore
+	session       *SessionStore
 }
 
-func NewStore(storage *Storage) *Store {
+func NewStore(storage *Storage, cacheStorage *CacheStorage) *Store {
 	return &Store{
 		authorization: NewAuthorizationStore(storage),
+		session:       NewSessionStore(cacheStorage),
 	}
 }
 
 type Storage struct {
-	postgres *sql.DB
-	redis    *redis.Client
+	db executor.Executor
 }
 
-func NewStorage(postgres *sql.DB, redis *redis.Client) *Storage {
+type CacheStorage struct {
+	db *redis.Client
+}
+
+func NewStorage(postgres *pgxpool.Pool) *Storage {
 	return &Storage{
-		postgres: postgres,
-		redis:    redis,
+		db: executor.NewExecutor(postgres),
 	}
 }
 
-func ConnectToPostgres(config *configurations.DbPsxConfig) (*sql.DB, error) {
+func NewCacheStorage(redis *redis.Client) *CacheStorage {
+	return &CacheStorage{
+		db: redis,
+	}
+}
+
+func (s *Storage) Builder() sq.StatementBuilderType {
+	return sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+}
+
+type connectResult struct {
+	pool *pgxpool.Pool
+	err  error
+}
+
+func ConnectToPostgres(config *configurations.DbPsxConfig) (*pgxpool.Pool, error) {
 	dsn := fmt.Sprintf("user=%s dbname=%s password= %s host=%s port=%d sslmode=%s",
 		config.User, config.Dbname, config.Password, config.Host, config.Port, config.Sslmode)
-	db, err := sql.Open("pgx", dsn)
-	if err != nil {
-		return nil, fmt.Errorf("sql.Open: %s", err.Error())
-	}
-	fmt.Print(config)
 
-	errs := make(chan error)
+	result := make(chan connectResult)
 	go func() {
-		errs <- pingDb(db)
+		result <- pingDb(dsn)
 	}()
 
-	if err = <-errs; err != nil {
-		return nil, err
+	res := <-result
+	if res.err != nil {
+		return nil, res.err
 	}
 
-	db.SetMaxOpenConns(config.MaxOpenConns)
-
-	return db, nil
+	return res.pool, nil
 }
 
 func ConnectToRedis(config *configurations.DbRedisCfg) (*redis.Client, error) {
@@ -72,25 +87,29 @@ func ConnectToRedis(config *configurations.DbRedisCfg) (*redis.Client, error) {
 	return redisClient, nil
 }
 
-func pingDb(db *sql.DB) error {
+func pingDb(dsn string) connectResult {
 	var err error
 	var retries int
 
-	for retries < utils.MaxRetries {
-		err = db.Ping()
+	for retries < consts.MaxRetries {
+		connect, err := pgxpool.Connect(context.Background(), dsn)
 		if err == nil {
-			return nil
+			return connectResult{connect, err}
 		}
 
 		retries++
 		log.Printf("sql ping error: %v", err)
 
-		time.Sleep(time.Duration(utils.MaxTimer) * time.Second)
+		time.Sleep(time.Duration(consts.MaxTimer) * time.Second)
 	}
 
-	return fmt.Errorf("sql max pinging error: %v", err)
+	return connectResult{nil, fmt.Errorf("pgxpool.Connect: sql max pinging error: %v", err)}
 }
 
 func (s *Store) GetAuthorizationStore() *AuthorizationStore {
 	return s.authorization
+}
+
+func (s *Store) GetSessionStore() *SessionStore {
+	return s.session
 }

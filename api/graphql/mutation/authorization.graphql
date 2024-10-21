@@ -7,6 +7,10 @@ extend type Mutation {
 type AuthorizationMutations {
     """ Регистрация """
     signup(input: SignupInput!): SignupOutput! @goField(forceResolver: true)
+    """ Авторизация """
+    signin(input: SigninInput!): SigninOutput! @goField(forceResolver: true)
+    """ Выход """
+    logout(input: LogoutInput!): LogoutOutput! @goField(forceResolver: true)
 }
 
 """ Входные параметры для регистрации"""
@@ -17,6 +21,29 @@ input SignupInput {
 
 """ Выходные параметры для регистрации """
 type SignupOutput {
-    result: Int!
+    userId: String!
+}
 
+""" Входные параметры для авторизации"""
+input SigninInput {
+    login: String!
+    password: String!
+}
+
+""" Выходные параметры для авторизации """
+type SigninOutput {
+    """ Пусто """
+    _empty: Empty
+}
+
+""" Выходные параметры для выхода """
+input LogoutInput {
+    """ Пусто """
+    _empty: Empty
+}
+
+""" Выходные параметры для выхода """
+type LogoutOutput {
+    """ Пусто """
+    _empty: Empty
 }

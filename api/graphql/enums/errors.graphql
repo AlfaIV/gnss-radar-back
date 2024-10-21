@@ -1,0 +1,15 @@
+""" Бизнес ошибки """
+enum Error {
+    """ Уже cуществует """
+    ALREADY_EXISTS
+    """ Не авторизован """
+    NOT_AUTHORIZED
+    """ Не найден"""
+    NOT_FOUND
+    """ Нет прав """
+    PERMISSION_DENIED
+    """ Ошибка сервера """
+    INTERNAL_ERROR
+    """ Ошибка запроса """
+    BAD_REQUEST
+}

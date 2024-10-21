@@ -18,11 +18,43 @@ import (
 
 type AuthorizationMutationsResolver interface {
 	Signup(ctx context.Context, obj *model.AuthorizationMutations, input model.SignupInput) (*model.SignupOutput, error)
+	Signin(ctx context.Context, obj *model.AuthorizationMutations, input model.SigninInput) (*model.SigninOutput, error)
+	Logout(ctx context.Context, obj *model.AuthorizationMutations, input model.LogoutInput) (*model.LogoutOutput, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_AuthorizationMutations_logout_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.LogoutInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNLogoutInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_AuthorizationMutations_signin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.SigninInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNSigninInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSigninInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_AuthorizationMutations_signup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -46,6 +78,47 @@ func (ec *executionContext) field_AuthorizationMutations_signup_args(ctx context
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _AuthcheckOutput__empty(ctx context.Context, field graphql.CollectedField, obj *model.AuthcheckOutput) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AuthcheckOutput__empty(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Empty, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AuthcheckOutput__empty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AuthcheckOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Empty does not have child fields")
+		},
+	}
+	return fc, nil
+}
 
 func (ec *executionContext) _AuthorizationMutations_signup(ctx context.Context, field graphql.CollectedField, obj *model.AuthorizationMutations) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_AuthorizationMutations_signup(ctx, field)
@@ -86,8 +159,8 @@ func (ec *executionContext) fieldContext_AuthorizationMutations_signup(ctx conte
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "result":
-				return ec.fieldContext_SignupOutput_result(ctx, field)
+			case "userId":
+				return ec.fieldContext_SignupOutput_userId(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SignupOutput", field.Name)
 		},
@@ -106,8 +179,8 @@ func (ec *executionContext) fieldContext_AuthorizationMutations_signup(ctx conte
 	return fc, nil
 }
 
-func (ec *executionContext) _SignupOutput_result(ctx context.Context, field graphql.CollectedField, obj *model.SignupOutput) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignupOutput_result(ctx, field)
+func (ec *executionContext) _AuthorizationMutations_signin(ctx context.Context, field graphql.CollectedField, obj *model.AuthorizationMutations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AuthorizationMutations_signin(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -120,7 +193,7 @@ func (ec *executionContext) _SignupOutput_result(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Result, nil
+		return ec.resolvers.AuthorizationMutations().Signin(rctx, obj, fc.Args["input"].(model.SigninInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -132,26 +205,41 @@ func (ec *executionContext) _SignupOutput_result(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(*model.SigninOutput)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNSigninOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSigninOutput(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignupOutput_result(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_AuthorizationMutations_signin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "SignupOutput",
+		Object:     "AuthorizationMutations",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
+			switch field.Name {
+			case "_empty":
+				return ec.fieldContext_SigninOutput__empty(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SigninOutput", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_AuthorizationMutations_signin_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _testOutput_test(ctx context.Context, field graphql.CollectedField, obj *model.TestOutput) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_testOutput_test(ctx, field)
+func (ec *executionContext) _AuthorizationMutations_logout(ctx context.Context, field graphql.CollectedField, obj *model.AuthorizationMutations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AuthorizationMutations_logout(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -164,7 +252,148 @@ func (ec *executionContext) _testOutput_test(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Test, nil
+		return ec.resolvers.AuthorizationMutations().Logout(rctx, obj, fc.Args["input"].(model.LogoutInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.LogoutOutput)
+	fc.Result = res
+	return ec.marshalNLogoutOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutOutput(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AuthorizationMutations_logout(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AuthorizationMutations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "_empty":
+				return ec.fieldContext_LogoutOutput__empty(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type LogoutOutput", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_AuthorizationMutations_logout_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LogoutOutput__empty(ctx context.Context, field graphql.CollectedField, obj *model.LogoutOutput) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LogoutOutput__empty(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Empty, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LogoutOutput__empty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LogoutOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Empty does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SigninOutput__empty(ctx context.Context, field graphql.CollectedField, obj *model.SigninOutput) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SigninOutput__empty(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Empty, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SigninOutput__empty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SigninOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Empty does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignupOutput_userId(ctx context.Context, field graphql.CollectedField, obj *model.SignupOutput) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignupOutput_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -181,9 +410,9 @@ func (ec *executionContext) _testOutput_test(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_testOutput_test(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SignupOutput_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "testOutput",
+		Object:     "SignupOutput",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -197,6 +426,94 @@ func (ec *executionContext) fieldContext_testOutput_test(_ context.Context, fiel
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
+
+func (ec *executionContext) unmarshalInputAuthcheckInput(ctx context.Context, obj interface{}) (model.AuthcheckInput, error) {
+	var it model.AuthcheckInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"_empty"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "_empty":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("_empty"))
+			data, err := ec.unmarshalOEmpty2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Empty = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputLogoutInput(ctx context.Context, obj interface{}) (model.LogoutInput, error) {
+	var it model.LogoutInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"_empty"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "_empty":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("_empty"))
+			data, err := ec.unmarshalOEmpty2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Empty = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSigninInput(ctx context.Context, obj interface{}) (model.SigninInput, error) {
+	var it model.SigninInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"login", "password"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "login":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("login"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Login = data
+		case "password":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Password = data
+		}
+	}
+
+	return it, nil
+}
 
 func (ec *executionContext) unmarshalInputSignupInput(ctx context.Context, obj interface{}) (model.SignupInput, error) {
 	var it model.SignupInput
@@ -232,33 +549,6 @@ func (ec *executionContext) unmarshalInputSignupInput(ctx context.Context, obj i
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputtestInput(ctx context.Context, obj interface{}) (model.TestInput, error) {
-	var it model.TestInput
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"test"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "test":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("test"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Test = data
-		}
-	}
-
-	return it, nil
-}
-
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -266,6 +556,42 @@ func (ec *executionContext) unmarshalInputtestInput(ctx context.Context, obj int
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var authcheckOutputImplementors = []string{"AuthcheckOutput"}
+
+func (ec *executionContext) _AuthcheckOutput(ctx context.Context, sel ast.SelectionSet, obj *model.AuthcheckOutput) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, authcheckOutputImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AuthcheckOutput")
+		case "_empty":
+			out.Values[i] = ec._AuthcheckOutput__empty(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
 
 var authorizationMutationsImplementors = []string{"AuthorizationMutations"}
 
@@ -288,6 +614,78 @@ func (ec *executionContext) _AuthorizationMutations(ctx context.Context, sel ast
 					}
 				}()
 				res = ec._AuthorizationMutations_signup(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "signin":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AuthorizationMutations_signin(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "logout":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AuthorizationMutations_logout(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -337,22 +735,19 @@ func (ec *executionContext) _AuthorizationMutations(ctx context.Context, sel ast
 	return out
 }
 
-var signupOutputImplementors = []string{"SignupOutput"}
+var logoutOutputImplementors = []string{"LogoutOutput"}
 
-func (ec *executionContext) _SignupOutput(ctx context.Context, sel ast.SelectionSet, obj *model.SignupOutput) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, signupOutputImplementors)
+func (ec *executionContext) _LogoutOutput(ctx context.Context, sel ast.SelectionSet, obj *model.LogoutOutput) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, logoutOutputImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("SignupOutput")
-		case "result":
-			out.Values[i] = ec._SignupOutput_result(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
+			out.Values[i] = graphql.MarshalString("LogoutOutput")
+		case "_empty":
+			out.Values[i] = ec._LogoutOutput__empty(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -376,19 +771,55 @@ func (ec *executionContext) _SignupOutput(ctx context.Context, sel ast.Selection
 	return out
 }
 
-var testOutputImplementors = []string{"testOutput"}
+var signinOutputImplementors = []string{"SigninOutput"}
 
-func (ec *executionContext) _testOutput(ctx context.Context, sel ast.SelectionSet, obj *model.TestOutput) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, testOutputImplementors)
+func (ec *executionContext) _SigninOutput(ctx context.Context, sel ast.SelectionSet, obj *model.SigninOutput) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, signinOutputImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("testOutput")
-		case "test":
-			out.Values[i] = ec._testOutput_test(ctx, field, obj)
+			out.Values[i] = graphql.MarshalString("SigninOutput")
+		case "_empty":
+			out.Values[i] = ec._SigninOutput__empty(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var signupOutputImplementors = []string{"SignupOutput"}
+
+func (ec *executionContext) _SignupOutput(ctx context.Context, sel ast.SelectionSet, obj *model.SignupOutput) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, signupOutputImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SignupOutput")
+		case "userId":
+			out.Values[i] = ec._SignupOutput_userId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -433,6 +864,44 @@ func (ec *executionContext) marshalNAuthorizationMutations2ᚖgithubᚗcomᚋGok
 	return ec._AuthorizationMutations(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNLogoutInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutInput(ctx context.Context, v interface{}) (model.LogoutInput, error) {
+	res, err := ec.unmarshalInputLogoutInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNLogoutOutput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutOutput(ctx context.Context, sel ast.SelectionSet, v model.LogoutOutput) graphql.Marshaler {
+	return ec._LogoutOutput(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNLogoutOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐLogoutOutput(ctx context.Context, sel ast.SelectionSet, v *model.LogoutOutput) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._LogoutOutput(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSigninInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSigninInput(ctx context.Context, v interface{}) (model.SigninInput, error) {
+	res, err := ec.unmarshalInputSigninInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSigninOutput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSigninOutput(ctx context.Context, sel ast.SelectionSet, v model.SigninOutput) graphql.Marshaler {
+	return ec._SigninOutput(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSigninOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSigninOutput(ctx context.Context, sel ast.SelectionSet, v *model.SigninOutput) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SigninOutput(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNSignupInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSignupInput(ctx context.Context, v interface{}) (model.SignupInput, error) {
 	res, err := ec.unmarshalInputSignupInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -452,26 +921,19 @@ func (ec *executionContext) marshalNSignupOutput2ᚖgithubᚗcomᚋGokertᚋgnss
 	return ec._SignupOutput(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNtestOutput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTestOutput(ctx context.Context, sel ast.SelectionSet, v model.TestOutput) graphql.Marshaler {
-	return ec._testOutput(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNtestOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTestOutput(ctx context.Context, sel ast.SelectionSet, v *model.TestOutput) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._testOutput(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOtestInput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTestInput(ctx context.Context, v interface{}) (*model.TestInput, error) {
+func (ec *executionContext) unmarshalOAuthcheckInput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐAuthcheckInput(ctx context.Context, v interface{}) (*model.AuthcheckInput, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputtestInput(ctx, v)
+	res, err := ec.unmarshalInputAuthcheckInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOAuthcheckOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐAuthcheckOutput(ctx context.Context, sel ast.SelectionSet, v *model.AuthcheckOutput) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AuthcheckOutput(ctx, sel, v)
 }
 
 // endregion ***************************** type.gotpl *****************************

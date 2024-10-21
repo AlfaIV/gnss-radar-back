@@ -42,8 +42,18 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	AuthcheckOutput struct {
+		Empty func(childComplexity int) int
+	}
+
 	AuthorizationMutations struct {
+		Logout func(childComplexity int, input model.LogoutInput) int
+		Signin func(childComplexity int, input model.SigninInput) int
 		Signup func(childComplexity int, input model.SignupInput) int
+	}
+
+	LogoutOutput struct {
+		Empty func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -51,20 +61,21 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Test               func(childComplexity int, input *model.TestInput) int
+		Authcheck          func(childComplexity int, input *model.AuthcheckInput) int
+		Errors             func(childComplexity int) int
 		__resolve__service func(childComplexity int) int
 	}
 
+	SigninOutput struct {
+		Empty func(childComplexity int) int
+	}
+
 	SignupOutput struct {
-		Result func(childComplexity int) int
+		UserID func(childComplexity int) int
 	}
 
 	_Service struct {
 		SDL func(childComplexity int) int
-	}
-
-	TestOutput struct {
-		Test func(childComplexity int) int
 	}
 }
 
@@ -87,6 +98,37 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "AuthcheckOutput._empty":
+		if e.complexity.AuthcheckOutput.Empty == nil {
+			break
+		}
+
+		return e.complexity.AuthcheckOutput.Empty(childComplexity), true
+
+	case "AuthorizationMutations.logout":
+		if e.complexity.AuthorizationMutations.Logout == nil {
+			break
+		}
+
+		args, err := ec.field_AuthorizationMutations_logout_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.AuthorizationMutations.Logout(childComplexity, args["input"].(model.LogoutInput)), true
+
+	case "AuthorizationMutations.signin":
+		if e.complexity.AuthorizationMutations.Signin == nil {
+			break
+		}
+
+		args, err := ec.field_AuthorizationMutations_signin_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.AuthorizationMutations.Signin(childComplexity, args["input"].(model.SigninInput)), true
+
 	case "AuthorizationMutations.signup":
 		if e.complexity.AuthorizationMutations.Signup == nil {
 			break
@@ -99,6 +141,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AuthorizationMutations.Signup(childComplexity, args["input"].(model.SignupInput)), true
 
+	case "LogoutOutput._empty":
+		if e.complexity.LogoutOutput.Empty == nil {
+			break
+		}
+
+		return e.complexity.LogoutOutput.Empty(childComplexity), true
+
 	case "Mutation.authorization":
 		if e.complexity.Mutation.Authorization == nil {
 			break
@@ -106,17 +155,24 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Authorization(childComplexity), true
 
-	case "Query.test":
-		if e.complexity.Query.Test == nil {
+	case "Query.authcheck":
+		if e.complexity.Query.Authcheck == nil {
 			break
 		}
 
-		args, err := ec.field_Query_test_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_authcheck_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Test(childComplexity, args["input"].(*model.TestInput)), true
+		return e.complexity.Query.Authcheck(childComplexity, args["input"].(*model.AuthcheckInput)), true
+
+	case "Query.errors":
+		if e.complexity.Query.Errors == nil {
+			break
+		}
+
+		return e.complexity.Query.Errors(childComplexity), true
 
 	case "Query._service":
 		if e.complexity.Query.__resolve__service == nil {
@@ -125,12 +181,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.__resolve__service(childComplexity), true
 
-	case "SignupOutput.result":
-		if e.complexity.SignupOutput.Result == nil {
+	case "SigninOutput._empty":
+		if e.complexity.SigninOutput.Empty == nil {
 			break
 		}
 
-		return e.complexity.SignupOutput.Result(childComplexity), true
+		return e.complexity.SigninOutput.Empty(childComplexity), true
+
+	case "SignupOutput.userId":
+		if e.complexity.SignupOutput.UserID == nil {
+			break
+		}
+
+		return e.complexity.SignupOutput.UserID(childComplexity), true
 
 	case "_Service.sdl":
 		if e.complexity._Service.SDL == nil {
@@ -138,13 +201,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity._Service.SDL(childComplexity), true
-
-	case "testOutput.test":
-		if e.complexity.TestOutput.Test == nil {
-			break
-		}
-
-		return e.complexity.TestOutput.Test(childComplexity), true
 
 	}
 	return 0, false
@@ -154,8 +210,10 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputAuthcheckInput,
+		ec.unmarshalInputLogoutInput,
+		ec.unmarshalInputSigninInput,
 		ec.unmarshalInputSignupInput,
-		ec.unmarshalInputtestInput,
 	)
 	first := true
 
@@ -257,8 +315,22 @@ var sources = []*ast.Source{
 GraphQL converter
 """
 directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION`, BuiltIn: false},
-	{Name: "../../../../api/graphql/enums/enums.graphql", Input: ``, BuiltIn: false},
-	{Name: "../../../../api/graphql/errors/errors.graphql", Input: ``, BuiltIn: false},
+	{Name: "../../../../api/graphql/enums/enums.graphql", Input: `scalar Empty`, BuiltIn: false},
+	{Name: "../../../../api/graphql/enums/errors.graphql", Input: `""" Бизнес ошибки """
+enum Error {
+    """ Уже cуществует """
+    ALREADY_EXISTS
+    """ Не авторизован """
+    NOT_AUTHORIZED
+    """ Не найден"""
+    NOT_FOUND
+    """ Нет прав """
+    PERMISSION_DENIED
+    """ Ошибка сервера """
+    INTERNAL_ERROR
+    """ Ошибка запроса """
+    BAD_REQUEST
+}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/mutation/authorization.graphql", Input: `extend type Mutation {
     """ Мутации связанные с авторизацией """
     authorization: AuthorizationMutations!
@@ -268,6 +340,10 @@ directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITI
 type AuthorizationMutations {
     """ Регистрация """
     signup(input: SignupInput!): SignupOutput! @goField(forceResolver: true)
+    """ Авторизация """
+    signin(input: SigninInput!): SigninOutput! @goField(forceResolver: true)
+    """ Выход """
+    logout(input: LogoutInput!): LogoutOutput! @goField(forceResolver: true)
 }
 
 """ Входные параметры для регистрации"""
@@ -278,19 +354,48 @@ input SignupInput {
 
 """ Выходные параметры для регистрации """
 type SignupOutput {
-    result: Int!
+    userId: String!
+}
+
+""" Входные параметры для авторизации"""
+input SigninInput {
+    login: String!
+    password: String!
+}
+
+""" Выходные параметры для авторизации """
+type SigninOutput {
+    """ Пусто """
+    _empty: Empty
+}
+
+""" Выходные параметры для выхода """
+input LogoutInput {
+    """ Пусто """
+    _empty: Empty
+}
+
+""" Выходные параметры для выхода """
+type LogoutOutput {
+    """ Пусто """
+    _empty: Empty
 }
 `, BuiltIn: false},
 	{Name: "../../../../api/graphql/query/authorization.graphql", Input: `extend type Query {
-    test(input: testInput): testOutput!
+    """ Проверка авторизации """
+    authcheck(input: AuthcheckInput): AuthcheckOutput
 }
 
-input testInput {
-    test: String!
+""" Выходные параметры для проверки авторизации """
+input AuthcheckInput {
+    """ Пусто """
+    _empty: Empty
 }
 
-type testOutput {
-    test: String!
+""" Выходные параметры для проверки авторизации """
+type AuthcheckOutput {
+    """ Пусто """
+    _empty: Empty
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/schema/schema.graphql", Input: `### *** Schema *** ###
 
@@ -312,6 +417,10 @@ type Query
 
 type Mutation
 `, BuiltIn: false},
+	{Name: "../../../../api/graphql/types/errors.graphql", Input: `extend type Query {
+    """ Словарь ошибок """
+    errors: [Error]!
+}`, BuiltIn: false},
 	{Name: "../../../../federation/directives.graphql", Input: `
 	directive @authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 	directive @composeDirective(name: String!) repeatable on SCHEMA
