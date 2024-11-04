@@ -8,6 +8,7 @@ import "github.com/Gokert/gnss-radar/internal/service"
 
 type Resolver struct {
 	authService service.IAuthorizationService
+	gnssSevice  service.IGnss
 }
 
 func NewResolver(service2 *service.Service) *Resolver {

@@ -1,0 +1,23 @@
+extend type Query {
+    """ Получить список GNSS """
+    listgnss(filter: GNSSFilter!): GNSSPagination!
+}
+
+input GNSSFilter {
+    """ Фильтр по индетификаторам """
+    Coordinates: CoordsInput
+}
+
+type GNSSPagination {
+    """ Загруженные элементы """
+    items: [GNSS!]
+}
+
+input CoordsInput {
+    """ Координата X """
+    X: String!
+    """ Координата Y """
+    Y: String!
+    """ Координата Z """
+    Z: String!
+}

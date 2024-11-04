@@ -52,6 +52,23 @@ type ComplexityRoot struct {
 		Signup func(childComplexity int, input model.SignupInput) int
 	}
 
+	CoordsResults struct {
+		X func(childComplexity int) int
+		Y func(childComplexity int) int
+		Z func(childComplexity int) int
+	}
+
+	GNSS struct {
+		Coordinates   func(childComplexity int) int
+		ID            func(childComplexity int) int
+		SatelliteID   func(childComplexity int) int
+		SatelliteName func(childComplexity int) int
+	}
+
+	GNSSPagination struct {
+		Items func(childComplexity int) int
+	}
+
 	LogoutOutput struct {
 		Empty func(childComplexity int) int
 	}
@@ -63,6 +80,7 @@ type ComplexityRoot struct {
 	Query struct {
 		Authcheck          func(childComplexity int, input *model.AuthcheckInput) int
 		Errors             func(childComplexity int) int
+		Listgnss           func(childComplexity int, filter model.GNSSFilter) int
 		__resolve__service func(childComplexity int) int
 	}
 
@@ -141,6 +159,62 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AuthorizationMutations.Signup(childComplexity, args["input"].(model.SignupInput)), true
 
+	case "CoordsResults.X":
+		if e.complexity.CoordsResults.X == nil {
+			break
+		}
+
+		return e.complexity.CoordsResults.X(childComplexity), true
+
+	case "CoordsResults.Y":
+		if e.complexity.CoordsResults.Y == nil {
+			break
+		}
+
+		return e.complexity.CoordsResults.Y(childComplexity), true
+
+	case "CoordsResults.Z":
+		if e.complexity.CoordsResults.Z == nil {
+			break
+		}
+
+		return e.complexity.CoordsResults.Z(childComplexity), true
+
+	case "GNSS.Coordinates":
+		if e.complexity.GNSS.Coordinates == nil {
+			break
+		}
+
+		return e.complexity.GNSS.Coordinates(childComplexity), true
+
+	case "GNSS.Id":
+		if e.complexity.GNSS.ID == nil {
+			break
+		}
+
+		return e.complexity.GNSS.ID(childComplexity), true
+
+	case "GNSS.SatelliteId":
+		if e.complexity.GNSS.SatelliteID == nil {
+			break
+		}
+
+		return e.complexity.GNSS.SatelliteID(childComplexity), true
+
+	case "GNSS.SatelliteName":
+		if e.complexity.GNSS.SatelliteName == nil {
+			break
+		}
+
+		return e.complexity.GNSS.SatelliteName(childComplexity), true
+
+	case "GNSSPagination.items":
+		if e.complexity.GNSSPagination.Items == nil {
+			break
+		}
+
+		return e.complexity.GNSSPagination.Items(childComplexity), true
+
 	case "LogoutOutput._empty":
 		if e.complexity.LogoutOutput.Empty == nil {
 			break
@@ -173,6 +247,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Errors(childComplexity), true
+
+	case "Query.listgnss":
+		if e.complexity.Query.Listgnss == nil {
+			break
+		}
+
+		args, err := ec.field_Query_listgnss_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Listgnss(childComplexity, args["filter"].(model.GNSSFilter)), true
 
 	case "Query._service":
 		if e.complexity.Query.__resolve__service == nil {
@@ -211,6 +297,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAuthcheckInput,
+		ec.unmarshalInputCoordsInput,
+		ec.unmarshalInputGNSSFilter,
 		ec.unmarshalInputLogoutInput,
 		ec.unmarshalInputSigninInput,
 		ec.unmarshalInputSignupInput,
@@ -397,6 +485,29 @@ type AuthcheckOutput {
     """ Пусто """
     _empty: Empty
 }`, BuiltIn: false},
+	{Name: "../../../../api/graphql/query/gnss.graphql", Input: `extend type Query {
+    """ Получить список GNSS """
+    listgnss(filter: GNSSFilter!): GNSSPagination!
+}
+
+input GNSSFilter {
+    """ Фильтр по индетификаторам """
+    Coordinates: CoordsInput
+}
+
+type GNSSPagination {
+    """ Загруженные элементы """
+    items: [GNSS!]
+}
+
+input CoordsInput {
+    """ Координата X """
+    X: String!
+    """ Координата Y """
+    Y: String!
+    """ Координата Z """
+    Z: String!
+}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/schema/schema.graphql", Input: `### *** Schema *** ###
 
 schema {
@@ -421,6 +532,25 @@ type Mutation
     """ Словарь ошибок """
     errors: [Error]!
 }`, BuiltIn: false},
+	{Name: "../../../../api/graphql/types/gnss.graphql", Input: `type GNSS {
+    Id: String!
+    """ Ид спутника """
+    SatelliteId: String!
+    """ Имя спутника """
+    SatelliteName: String!
+    """ Координаты спутника """
+    Coordinates: CoordsResults!
+}
+
+type CoordsResults {
+    """ Координата X """
+    X: String!
+    """ Координата Y """
+    Y: String!
+    """ Координата Z """
+    Z: String!
+}
+`, BuiltIn: false},
 	{Name: "../../../../federation/directives.graphql", Input: `
 	directive @authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 	directive @composeDirective(name: String!) repeatable on SCHEMA

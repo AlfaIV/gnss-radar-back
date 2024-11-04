@@ -30,6 +30,44 @@ type AuthorizationMutations struct {
 	Logout *LogoutOutput `json:"logout,omitempty"`
 }
 
+type CoordsInput struct {
+	//  Координата X
+	X string `json:"X"`
+	//  Координата Y
+	Y string `json:"Y"`
+	//  Координата Z
+	Z string `json:"Z"`
+}
+
+type CoordsResults struct {
+	//  Координата X
+	X string `json:"X"`
+	//  Координата Y
+	Y string `json:"Y"`
+	//  Координата Z
+	Z string `json:"Z"`
+}
+
+type Gnss struct {
+	ID string `json:"Id"`
+	//  Ид спутника
+	SatelliteID string `json:"SatelliteId"`
+	//  Имя спутника
+	SatelliteName string `json:"SatelliteName"`
+	//  Координаты спутника
+	Coordinates *CoordsResults `json:"Coordinates"`
+}
+
+type GNSSFilter struct {
+	//  Фильтр по индетификаторам
+	Coordinates *CoordsInput `json:"Coordinates,omitempty"`
+}
+
+type GNSSPagination struct {
+	//  Загруженные элементы
+	Items []*Gnss `json:"items,omitempty"`
+}
+
 // Выходные параметры для выхода
 type LogoutInput struct {
 	//  Пусто
