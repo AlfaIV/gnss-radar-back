@@ -41,7 +41,7 @@ func (g *GnssService) ListGnss(ctx context.Context, req ListRequest) (*model.GNS
 		return nil, fmt.Errorf(" strconv.ParseFloat: %w", err)
 	}
 
-	gnss, err := g.gnssStore.List(store.ListParams{X: Xf, Y: yf, Z: zf})
+	gnss, err := g.gnssStore.List(ctx, store.ListParams{X: Xf, Y: yf, Z: zf})
 	if err != nil {
 		return nil, fmt.Errorf("gnssStore.List: %w", err)
 	}

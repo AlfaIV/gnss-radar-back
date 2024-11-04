@@ -1,13 +1,16 @@
 package store
 
-import "github.com/Gokert/gnss-radar/internal/pkg/model"
+import (
+	"context"
+	"github.com/Gokert/gnss-radar/internal/pkg/model"
+)
 
 const (
 	gnssTable = "gnss"
 )
 
 type IGnssStore interface {
-	List(params ListParams) ([]*model.Gnss, error)
+	List(ctx context.Context, params ListParams) ([]*model.Gnss, error)
 }
 
 type GnssStore struct {
@@ -23,7 +26,7 @@ type ListParams struct {
 	Z float64
 }
 
-// func (g *GnssStore) List(params ListParams) ([]*model.Gnss, error) {
+// func (g *GnssStore) List(ctx context.Context, params ListParams) ([]*model.Gnss, error) {
 // 	query := g.storage.Builder().
 // 		Select("name, x, y, z").From(gnssTable)
 
@@ -46,7 +49,7 @@ type ListParams struct {
 // 	return coords, nil
 // }
 
-func (g *GnssStore) List(params ListParams) ([]*model.Gnss, error) {
+func (g *GnssStore) List(ctx context.Context, params ListParams) ([]*model.Gnss, error) {
 	jsonData := []*model.Gnss{
 		{
 			ID:            "PC06",
