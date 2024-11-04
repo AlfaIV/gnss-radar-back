@@ -92,6 +92,15 @@ func (a *AuthorizationService) Authcheck(ctx context.Context, value string) (boo
 }
 
 func (a *AuthorizationService) Logout(ctx context.Context, value string) (bool, error) {
+	findSession, err := a.session.CheckActiveSession(ctx, value)
+	if err != nil {
+		return false, fmt.Errorf("session.CheckActiveSession: %w", err)
+	}
+
+	if !findSession {
+		return false, model.ErrorNotAuthorized
+	}
+
 	result, err := a.session.DeleteSession(ctx, value)
 	if err != nil {
 		return false, fmt.Errorf("session.DeleteSession: %w", err)

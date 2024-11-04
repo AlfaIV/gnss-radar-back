@@ -77,8 +77,14 @@ func (r *authorizationMutationsResolver) Logout(ctx context.Context, obj *model.
 
 	result, err := r.authService.Logout(ctx, cookie.Value)
 	if err != nil {
-		return nil, fmt.Errorf("authService.Logout: %w", err)
+		switch {
+		case errors.Is(err, model.ErrorNotAuthorized):
+			return nil, model.ErrorNotAuthorized
+		default:
+			return nil, fmt.Errorf("authService.Logout: %w", err)
+		}
 	}
+
 	if !result {
 		return nil, model.ErrorInternalError
 	}
