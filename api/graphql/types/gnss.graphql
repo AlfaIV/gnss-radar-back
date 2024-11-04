@@ -1,0 +1,18 @@
+type GNSS {
+    Id: String!
+    """ id спутника """
+    SatelliteId: String!
+    """ Имя спутника """
+    SatelliteName: String!
+    """ Координаты спутника """
+    Coordinates: CoordsResults!
+}
+
+type CoordsResults {
+    """ Координата X """
+    X: String!
+    """ Координата Y """
+    Y: String!
+    """ Координата Z """
+    Z: String!
+}

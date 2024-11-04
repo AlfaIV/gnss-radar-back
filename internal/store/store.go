@@ -3,6 +3,9 @@ package store
 import (
 	"context"
 	"fmt"
+	"log"
+	"time"
+
 	"github.com/Gokert/gnss-radar/configurations"
 	"github.com/Gokert/gnss-radar/internal/pkg/consts"
 	"github.com/Gokert/gnss-radar/internal/pkg/executor"
@@ -10,19 +13,19 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/jackc/pgx/v4/pgxpool"
 	_ "github.com/jackc/pgx/v4/stdlib"
-	"log"
-	"time"
 )
 
 type Store struct {
 	authorization *AuthorizationStore
 	session       *SessionStore
+	gnss          *GnssStore
 }
 
 func NewStore(storage *Storage, cacheStorage *CacheStorage) *Store {
 	return &Store{
 		authorization: NewAuthorizationStore(storage),
 		session:       NewSessionStore(cacheStorage),
+		gnss:          NewGnssStore(),
 	}
 }
 
@@ -112,4 +115,8 @@ func (s *Store) GetAuthorizationStore() *AuthorizationStore {
 
 func (s *Store) GetSessionStore() *SessionStore {
 	return s.session
+}
+
+func (s *Store) GetGnssStore() *GnssStore {
+	return s.gnss
 }

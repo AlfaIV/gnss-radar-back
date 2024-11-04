@@ -1,12 +1,13 @@
 package main
 
 import (
+	"log"
+
 	"github.com/Gokert/gnss-radar/configurations"
 	"github.com/Gokert/gnss-radar/internal/delivery"
 	"github.com/Gokert/gnss-radar/internal/pkg/consts"
 	"github.com/Gokert/gnss-radar/internal/service"
 	"github.com/Gokert/gnss-radar/internal/store"
-	"log"
 )
 
 func main() {
@@ -44,7 +45,7 @@ func main() {
 
 	storageManager := store.NewStore(storage, cacheStorage)
 
-	newService := service.NewService(storageManager.GetAuthorizationStore(), storageManager.GetSessionStore())
+	newService := service.NewService(storageManager.GetAuthorizationStore(), storageManager.GetSessionStore(), storageManager.GetGnssStore())
 	app := delivery.NewApp(newService)
 
 	//
