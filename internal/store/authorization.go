@@ -21,12 +21,12 @@ type AuthorizationStore struct {
 }
 
 type SignupParams struct {
-	Login    string `json:"login"`
-	Password []byte `json:"password"`
+	Login    string
+	Password []byte
 }
 
 type SignupResponse struct {
-	ID string `json:"id"`
+	ID string
 }
 
 func (a *AuthorizationStore) Signup(ctx context.Context, params SignupParams) (*model.User, error) {
@@ -47,9 +47,9 @@ func (a *AuthorizationStore) Signup(ctx context.Context, params SignupParams) (*
 }
 
 type UserFilter struct {
-	IDs    []string `json:"id"`
-	Logins []string `json:"login"`
-	Roles  []string `json:"role"`
+	IDs    []string
+	Logins []string
+	Roles  []string
 }
 
 func (a *AuthorizationStore) ListUsers(ctx context.Context, filter UserFilter) ([]*model.User, error) {
@@ -76,8 +76,8 @@ func (a *AuthorizationStore) ListUsers(ctx context.Context, filter UserFilter) (
 }
 
 type SigninParams struct {
-	Login    string `json:"login"`
-	Password []byte `json:"password"`
+	Login    string
+	Password []byte
 }
 
 func (a *AuthorizationStore) Signin(ctx context.Context, params SigninParams) (*model.User, error) {

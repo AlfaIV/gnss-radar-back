@@ -95,7 +95,7 @@ func (r *mutationResolver) Authorization(ctx context.Context) (*model.Authorizat
 func (r *queryResolver) Authcheck(ctx context.Context, input *model.AuthcheckInput) (*model.AuthcheckOutput, error) {
 	cookie, err := utils.GetRequest(ctx).Cookie("session_id")
 	if err != nil {
-		return &model.AuthcheckOutput{}, model.ErrorNotAuthorized
+		return nil, model.ErrorNotAuthorized
 	}
 
 	result, user, err := r.authService.Authcheck(ctx, cookie.Value)

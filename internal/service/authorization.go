@@ -75,7 +75,12 @@ func (a *AuthorizationService) Authcheck(ctx context.Context, value string) (boo
 		return false, nil, fmt.Errorf("session.CheckActiveSession: %w", err)
 	}
 
-	users, err := a.authorization.ListUsers(ctx, store.UserFilter{Logins: []string{value}})
+	login, err := a.session.GetUserLogin(ctx, value)
+	if err != nil {
+		return false, nil, fmt.Errorf("session.GetUserLogin: %w", err)
+	}
+
+	users, err := a.authorization.ListUsers(ctx, store.UserFilter{Logins: []string{login}})
 	if err != nil {
 		return false, nil, fmt.Errorf("authorization.ListUsers: %w", err)
 	}
