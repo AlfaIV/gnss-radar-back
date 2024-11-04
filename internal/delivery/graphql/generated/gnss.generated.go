@@ -29,8 +29,8 @@ import (
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _CoordsResults_X(ctx context.Context, field graphql.CollectedField, obj *model.CoordsResults) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CoordsResults_X(ctx, field)
+func (ec *executionContext) _CoordsResults_x(ctx context.Context, field graphql.CollectedField, obj *model.CoordsResults) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CoordsResults_x(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -60,7 +60,7 @@ func (ec *executionContext) _CoordsResults_X(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CoordsResults_X(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CoordsResults_x(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CoordsResults",
 		Field:      field,
@@ -73,8 +73,8 @@ func (ec *executionContext) fieldContext_CoordsResults_X(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _CoordsResults_Y(ctx context.Context, field graphql.CollectedField, obj *model.CoordsResults) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CoordsResults_Y(ctx, field)
+func (ec *executionContext) _CoordsResults_y(ctx context.Context, field graphql.CollectedField, obj *model.CoordsResults) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CoordsResults_y(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -104,7 +104,7 @@ func (ec *executionContext) _CoordsResults_Y(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CoordsResults_Y(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CoordsResults_y(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CoordsResults",
 		Field:      field,
@@ -117,8 +117,8 @@ func (ec *executionContext) fieldContext_CoordsResults_Y(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _CoordsResults_Z(ctx context.Context, field graphql.CollectedField, obj *model.CoordsResults) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CoordsResults_Z(ctx, field)
+func (ec *executionContext) _CoordsResults_z(ctx context.Context, field graphql.CollectedField, obj *model.CoordsResults) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CoordsResults_z(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -148,7 +148,7 @@ func (ec *executionContext) _CoordsResults_Z(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CoordsResults_Z(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CoordsResults_z(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CoordsResults",
 		Field:      field,
@@ -332,12 +332,12 @@ func (ec *executionContext) fieldContext_GNSS_Coordinates(_ context.Context, fie
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "X":
-				return ec.fieldContext_CoordsResults_X(ctx, field)
-			case "Y":
-				return ec.fieldContext_CoordsResults_Y(ctx, field)
-			case "Z":
-				return ec.fieldContext_CoordsResults_Z(ctx, field)
+			case "x":
+				return ec.fieldContext_CoordsResults_x(ctx, field)
+			case "y":
+				return ec.fieldContext_CoordsResults_y(ctx, field)
+			case "z":
+				return ec.fieldContext_CoordsResults_z(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CoordsResults", field.Name)
 		},
@@ -407,29 +407,29 @@ func (ec *executionContext) unmarshalInputCoordsInput(ctx context.Context, obj i
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"X", "Y", "Z"}
+	fieldsInOrder := [...]string{"x", "y", "z"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "X":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("X"))
+		case "x":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("x"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.X = data
-		case "Y":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Y"))
+		case "y":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("y"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Y = data
-		case "Z":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Z"))
+		case "z":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("z"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -487,18 +487,18 @@ func (ec *executionContext) _CoordsResults(ctx context.Context, sel ast.Selectio
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("CoordsResults")
-		case "X":
-			out.Values[i] = ec._CoordsResults_X(ctx, field, obj)
+		case "x":
+			out.Values[i] = ec._CoordsResults_x(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "Y":
-			out.Values[i] = ec._CoordsResults_Y(ctx, field, obj)
+		case "y":
+			out.Values[i] = ec._CoordsResults_y(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "Z":
-			out.Values[i] = ec._CoordsResults_Z(ctx, field, obj)
+		case "z":
+			out.Values[i] = ec._CoordsResults_z(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

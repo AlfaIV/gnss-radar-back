@@ -7,6 +7,7 @@ package graphql
 import (
 	"context"
 	"fmt"
+	"github.com/Gokert/gnss-radar/internal/pkg/utils"
 
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	"github.com/Gokert/gnss-radar/internal/service"
@@ -18,9 +19,12 @@ func (r *queryResolver) Listgnss(ctx context.Context, filter model.GNSSFilter) (
 		return nil, nil
 	}
 
-	jsonRawData, err := r.gnssSevice.ListGnss(ctx, service.ListRequest{X: filter.Coordinates.X, Y: filter.Coordinates.Y, Z: filter.Coordinates.Z})
+	gnssList, err := r.gnssSevice.ListGnss(ctx, service.ListRequest{X: filter.Coordinates.X, Y: filter.Coordinates.Y, Z: filter.Coordinates.Z})
 	if err != nil {
 		return nil, fmt.Errorf("gnssSevice.ListGnss: %w", err)
 	}
-	return jsonRawData, nil
+
+	return &model.GNSSPagination{
+		Items: utils.SerializerGnssCoords(gnssList),
+	}, nil
 }

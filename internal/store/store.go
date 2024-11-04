@@ -25,7 +25,7 @@ func NewStore(storage *Storage, cacheStorage *CacheStorage) *Store {
 	return &Store{
 		authorization: NewAuthorizationStore(storage),
 		session:       NewSessionStore(cacheStorage),
-		gnss:          NewGnssStore(),
+		gnss:          NewGnssStore(storage),
 	}
 }
 

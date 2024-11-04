@@ -32,20 +32,20 @@ type AuthorizationMutations struct {
 
 type CoordsInput struct {
 	//  Координата X
-	X string `json:"X"`
+	X string `json:"x"`
 	//  Координата Y
-	Y string `json:"Y"`
+	Y string `json:"y"`
 	//  Координата Z
-	Z string `json:"Z"`
+	Z string `json:"z"`
 }
 
 type CoordsResults struct {
 	//  Координата X
-	X string `json:"X"`
+	X string `json:"x"`
 	//  Координата Y
-	Y string `json:"Y"`
+	Y string `json:"y"`
 	//  Координата Z
-	Z string `json:"Z"`
+	Z string `json:"z"`
 }
 
 type Gnss struct {

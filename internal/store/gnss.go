@@ -3,21 +3,25 @@ package store
 import (
 	"context"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
+	sq "github.com/Masterminds/squirrel"
 )
 
 const (
-	gnssTable = "gnss"
+	gnssTable = "gnss_coords"
 )
 
 type IGnssStore interface {
-	List(ctx context.Context, params ListParams) ([]*model.Gnss, error)
+	ListGnssCoords(ctx context.Context, params ListParams) ([]*ListResult, error)
 }
 
 type GnssStore struct {
+	storage *Storage
 }
 
-func NewGnssStore() *GnssStore {
-	return &GnssStore{}
+func NewGnssStore(storage *Storage) *GnssStore {
+	return &GnssStore{
+		storage: storage,
+	}
 }
 
 type ListParams struct {
@@ -26,30 +30,39 @@ type ListParams struct {
 	Z float64
 }
 
-// func (g *GnssStore) List(ctx context.Context, params ListParams) ([]*model.Gnss, error) {
-// 	query := g.storage.Builder().
-// 		Select("name, x, y, z").From(gnssTable)
+type ListResult struct {
+	ID            string  `db:"id"`
+	SatelliteID   string  `db:"satellite_id"`
+	SatelliteName string  `db:"satellite_name"`
+	X             float64 `db:"x"`
+	Y             float64 `db:"y"`
+	Z             float64 `db:"z"`
+}
 
-// 	if params.X != 0 {
-// 		query = query.Where("x = ?", params.X)
-// 	}
-// 	if params.Y != 0 {
-// 		query = query.Where("y = ?", params.Y)
-// 	}
-// 	if params.Z != 0 {
-// 		query = query.Where("z = ?", params.Z)
-// 	}
+func (g *GnssStore) ListGnssCoords(ctx context.Context, params ListParams) ([]*ListResult, error) {
+	query := g.storage.Builder().
+		Select("id, satellite_id, satellite_name, x, y, z").
+		From(gnssTable)
 
-// 	var coords []*model.Coord
-// 	err := g.storage.Query(query, &coords)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	if params.X != 0 {
+		query = query.Where(sq.Eq{"x": params.X})
+	}
+	if params.Y != 0 {
+		query = query.Where(sq.Eq{"y": params.Y})
+	}
+	if params.Z != 0 {
+		query = query.Where(sq.Eq{"z": params.Z})
+	}
 
-// 	return coords, nil
-// }
+	var coords []*ListResult
+	if err := g.storage.db.Selectx(ctx, &coords, query); err != nil {
+		return nil, postgresError(err)
+	}
 
-func (g *GnssStore) List(ctx context.Context, params ListParams) ([]*model.Gnss, error) {
+	return coords, nil
+}
+
+func (g *GnssStore) List1(ctx context.Context, params ListParams) ([]*model.Gnss, error) {
 	jsonData := []*model.Gnss{
 		{
 			ID:            "PC06",

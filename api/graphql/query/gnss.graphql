@@ -15,9 +15,9 @@ type GNSSPagination {
 
 input CoordsInput {
     """ Координата X """
-    X: String!
+    x: String!
     """ Координата Y """
-    Y: String!
+    y: String!
     """ Координата Z """
-    Z: String!
+    z: String!
 }

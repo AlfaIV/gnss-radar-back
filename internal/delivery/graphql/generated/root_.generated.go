@@ -165,21 +165,21 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AuthorizationMutations.Signup(childComplexity, args["input"].(model.SignupInput)), true
 
-	case "CoordsResults.X":
+	case "CoordsResults.x":
 		if e.complexity.CoordsResults.X == nil {
 			break
 		}
 
 		return e.complexity.CoordsResults.X(childComplexity), true
 
-	case "CoordsResults.Y":
+	case "CoordsResults.y":
 		if e.complexity.CoordsResults.Y == nil {
 			break
 		}
 
 		return e.complexity.CoordsResults.Y(childComplexity), true
 
-	case "CoordsResults.Z":
+	case "CoordsResults.z":
 		if e.complexity.CoordsResults.Z == nil {
 			break
 		}
@@ -530,11 +530,11 @@ type GNSSPagination {
 
 input CoordsInput {
     """ Координата X """
-    X: String!
+    x: String!
     """ Координата Y """
-    Y: String!
+    y: String!
     """ Координата Z """
-    Z: String!
+    z: String!
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/schema/schema.graphql", Input: `### *** Schema *** ###
 
@@ -572,11 +572,11 @@ type Mutation
 
 type CoordsResults {
     """ Координата X """
-    X: String!
+    x: String!
     """ Координата Y """
-    Y: String!
+    y: String!
     """ Координата Z """
-    Z: String!
+    z: String!
 }
 `, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/user.graphql", Input: `""" Информация о юзере """
