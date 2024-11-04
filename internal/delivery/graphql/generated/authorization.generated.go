@@ -79,8 +79,8 @@ func (ec *executionContext) field_AuthorizationMutations_signup_args(ctx context
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _AuthcheckOutput__empty(ctx context.Context, field graphql.CollectedField, obj *model.AuthcheckOutput) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_AuthcheckOutput__empty(ctx, field)
+func (ec *executionContext) _AuthcheckOutput_userInfo(ctx context.Context, field graphql.CollectedField, obj *model.AuthcheckOutput) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AuthcheckOutput_userInfo(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -93,28 +93,39 @@ func (ec *executionContext) _AuthcheckOutput__empty(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Empty, nil
+		return obj.UserInfo, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalOEmpty2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_AuthcheckOutput__empty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_AuthcheckOutput_userInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "AuthcheckOutput",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Empty does not have child fields")
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "login":
+				return ec.fieldContext_User_login(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
 	}
 	return fc, nil
@@ -159,8 +170,8 @@ func (ec *executionContext) fieldContext_AuthorizationMutations_signup(ctx conte
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "userId":
-				return ec.fieldContext_SignupOutput_userId(ctx, field)
+			case "userInfo":
+				return ec.fieldContext_SignupOutput_userInfo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SignupOutput", field.Name)
 		},
@@ -218,8 +229,8 @@ func (ec *executionContext) fieldContext_AuthorizationMutations_signin(ctx conte
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "_empty":
-				return ec.fieldContext_SigninOutput__empty(ctx, field)
+			case "userInfo":
+				return ec.fieldContext_SigninOutput_userInfo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SigninOutput", field.Name)
 		},
@@ -335,8 +346,8 @@ func (ec *executionContext) fieldContext_LogoutOutput__empty(_ context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _SigninOutput__empty(ctx context.Context, field graphql.CollectedField, obj *model.SigninOutput) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SigninOutput__empty(ctx, field)
+func (ec *executionContext) _SigninOutput_userInfo(ctx context.Context, field graphql.CollectedField, obj *model.SigninOutput) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SigninOutput_userInfo(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -349,48 +360,7 @@ func (ec *executionContext) _SigninOutput__empty(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Empty, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOEmpty2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_SigninOutput__empty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SigninOutput",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Empty does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SignupOutput_userId(ctx context.Context, field graphql.CollectedField, obj *model.SignupOutput) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SignupOutput_userId(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.UserID, nil
+		return obj.UserInfo, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -402,19 +372,79 @@ func (ec *executionContext) _SignupOutput_userId(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SignupOutput_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SigninOutput_userInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SigninOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "login":
+				return ec.fieldContext_User_login(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignupOutput_userInfo(ctx context.Context, field graphql.CollectedField, obj *model.SignupOutput) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignupOutput_userInfo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignupOutput_userInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SignupOutput",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "login":
+				return ec.fieldContext_User_login(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
 	}
 	return fc, nil
@@ -565,8 +595,11 @@ func (ec *executionContext) _AuthcheckOutput(ctx context.Context, sel ast.Select
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("AuthcheckOutput")
-		case "_empty":
-			out.Values[i] = ec._AuthcheckOutput__empty(ctx, field, obj)
+		case "userInfo":
+			out.Values[i] = ec._AuthcheckOutput_userInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -776,8 +809,11 @@ func (ec *executionContext) _SigninOutput(ctx context.Context, sel ast.Selection
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("SigninOutput")
-		case "_empty":
-			out.Values[i] = ec._SigninOutput__empty(ctx, field, obj)
+		case "userInfo":
+			out.Values[i] = ec._SigninOutput_userInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -812,8 +848,8 @@ func (ec *executionContext) _SignupOutput(ctx context.Context, sel ast.Selection
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("SignupOutput")
-		case "userId":
-			out.Values[i] = ec._SignupOutput_userId(ctx, field, obj)
+		case "userInfo":
+			out.Values[i] = ec._SignupOutput_userInfo(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

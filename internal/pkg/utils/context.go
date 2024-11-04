@@ -16,7 +16,7 @@ func SetCookie(ctx context.Context, value string) {
 		Value:    value,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		MaxAge:   60 * 60 * 24,
 	})
 }

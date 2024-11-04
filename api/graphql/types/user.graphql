@@ -1,0 +1,6 @@
+""" Информация о юзере """
+type User {
+    id: String!
+    login: String!
+    role: String!
+}

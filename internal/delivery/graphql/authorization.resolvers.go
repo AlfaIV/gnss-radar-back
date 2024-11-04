@@ -32,7 +32,13 @@ func (r *authorizationMutationsResolver) Signup(ctx context.Context, obj *model.
 		}
 	}
 
-	return &model.SignupOutput{UserID: result.ID}, nil
+	return &model.SignupOutput{
+		UserInfo: &model.User{
+			ID:    result.ID,
+			Login: result.Login,
+			Role:  result.Role,
+		},
+	}, nil
 }
 
 // Signin is the resolver for the signin field.
@@ -41,7 +47,7 @@ func (r *authorizationMutationsResolver) Signin(ctx context.Context, obj *model.
 		return nil, fmt.Errorf("validation.ValidateStruct %w", err)
 	}
 
-	result, err := r.authService.Signin(ctx, service.SigninRequest{Login: input.Login, Password: input.Password})
+	result, user, err := r.authService.Signin(ctx, service.SigninRequest{Login: input.Login, Password: input.Password})
 	if err != nil {
 		switch {
 		case errors.Is(err, store.ErrNotFound):
@@ -53,7 +59,13 @@ func (r *authorizationMutationsResolver) Signin(ctx context.Context, obj *model.
 
 	utils.SetCookie(ctx, result.SID)
 
-	return &model.SigninOutput{}, nil
+	return &model.SigninOutput{
+		UserInfo: &model.User{
+			ID:    user.ID,
+			Login: user.Login,
+			Role:  user.Role,
+		},
+	}, nil
 }
 
 // Logout is the resolver for the logout field.
@@ -83,19 +95,30 @@ func (r *mutationResolver) Authorization(ctx context.Context) (*model.Authorizat
 func (r *queryResolver) Authcheck(ctx context.Context, input *model.AuthcheckInput) (*model.AuthcheckOutput, error) {
 	cookie, err := utils.GetRequest(ctx).Cookie("session_id")
 	if err != nil {
-		return &model.AuthcheckOutput{}, nil
+		return &model.AuthcheckOutput{}, model.ErrorNotAuthorized
 	}
 
-	result, err := r.authService.Authcheck(ctx, cookie.Value)
+	result, user, err := r.authService.Authcheck(ctx, cookie.Value)
 	if err != nil {
-		return nil, fmt.Errorf("authService.Authcheck: %w", err)
+		switch {
+		case errors.Is(err, store.ErrNotFound):
+			return nil, model.ErrorNotFound
+		default:
+			return nil, fmt.Errorf("authService.Authcheck: %w", err)
+		}
 	}
 
 	if !result {
 		return nil, model.ErrorNotAuthorized
 	}
 
-	return &model.AuthcheckOutput{}, nil
+	return &model.AuthcheckOutput{
+		UserInfo: &model.User{
+			ID:    user.ID,
+			Login: user.Login,
+			Role:  user.Role,
+		},
+	}, nil
 }
 
 // AuthorizationMutations returns generated.AuthorizationMutationsResolver implementation.

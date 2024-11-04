@@ -1,11 +1,14 @@
 .generate-graphql:
 	go run github.com/99designs/gqlgen generate
 
-up:
+build:
 	go get github.com/99designs/gqlgen/graphql/handler/lru@v0.17.49
 	go get github.com/99designs/gqlgen/graphql/handler/extension@v0.17.49
 
-	docker-compose up --build
+	docker compose up --build
+
+up:
+	docker compose up
 
 run:
 	go run cmd/gnss-radar/main.go

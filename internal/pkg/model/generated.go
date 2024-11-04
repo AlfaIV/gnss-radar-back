@@ -16,8 +16,8 @@ type AuthcheckInput struct {
 
 // Выходные параметры для проверки авторизации
 type AuthcheckOutput struct {
-	//  Пусто
-	Empty *string `json:"_empty,omitempty"`
+	//  Информация о юзере
+	UserInfo *User `json:"userInfo"`
 }
 
 // Мутации связанные с авторизацией
@@ -56,8 +56,8 @@ type SigninInput struct {
 
 // Выходные параметры для авторизации
 type SigninOutput struct {
-	//  Пусто
-	Empty *string `json:"_empty,omitempty"`
+	//  Информация о юзере
+	UserInfo *User `json:"userInfo"`
 }
 
 // Входные параметры для регистрации
@@ -68,7 +68,8 @@ type SignupInput struct {
 
 // Выходные параметры для регистрации
 type SignupOutput struct {
-	UserID string `json:"userId"`
+	//  Информация о юзере
+	UserInfo *User `json:"userInfo"`
 }
 
 // Бизнес ошибки

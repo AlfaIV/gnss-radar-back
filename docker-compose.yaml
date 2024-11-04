@@ -16,16 +16,14 @@ services:
     volumes:
       - ./scripts/sql/init:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432"
+      - "5431:5432"
     networks:
       - net
 
   nginx:
-    image: "nginx:latest"
+    image: "alfaiv/gnss-radar:latest"
     ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - "1000:80"
     depends_on:
       - app
     networks:

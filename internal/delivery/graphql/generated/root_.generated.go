@@ -43,7 +43,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	AuthcheckOutput struct {
-		Empty func(childComplexity int) int
+		UserInfo func(childComplexity int) int
 	}
 
 	AuthorizationMutations struct {
@@ -67,11 +67,17 @@ type ComplexityRoot struct {
 	}
 
 	SigninOutput struct {
-		Empty func(childComplexity int) int
+		UserInfo func(childComplexity int) int
 	}
 
 	SignupOutput struct {
-		UserID func(childComplexity int) int
+		UserInfo func(childComplexity int) int
+	}
+
+	User struct {
+		ID    func(childComplexity int) int
+		Login func(childComplexity int) int
+		Role  func(childComplexity int) int
 	}
 
 	_Service struct {
@@ -98,12 +104,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "AuthcheckOutput._empty":
-		if e.complexity.AuthcheckOutput.Empty == nil {
+	case "AuthcheckOutput.userInfo":
+		if e.complexity.AuthcheckOutput.UserInfo == nil {
 			break
 		}
 
-		return e.complexity.AuthcheckOutput.Empty(childComplexity), true
+		return e.complexity.AuthcheckOutput.UserInfo(childComplexity), true
 
 	case "AuthorizationMutations.logout":
 		if e.complexity.AuthorizationMutations.Logout == nil {
@@ -181,19 +187,40 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.__resolve__service(childComplexity), true
 
-	case "SigninOutput._empty":
-		if e.complexity.SigninOutput.Empty == nil {
+	case "SigninOutput.userInfo":
+		if e.complexity.SigninOutput.UserInfo == nil {
 			break
 		}
 
-		return e.complexity.SigninOutput.Empty(childComplexity), true
+		return e.complexity.SigninOutput.UserInfo(childComplexity), true
 
-	case "SignupOutput.userId":
-		if e.complexity.SignupOutput.UserID == nil {
+	case "SignupOutput.userInfo":
+		if e.complexity.SignupOutput.UserInfo == nil {
 			break
 		}
 
-		return e.complexity.SignupOutput.UserID(childComplexity), true
+		return e.complexity.SignupOutput.UserInfo(childComplexity), true
+
+	case "User.id":
+		if e.complexity.User.ID == nil {
+			break
+		}
+
+		return e.complexity.User.ID(childComplexity), true
+
+	case "User.login":
+		if e.complexity.User.Login == nil {
+			break
+		}
+
+		return e.complexity.User.Login(childComplexity), true
+
+	case "User.role":
+		if e.complexity.User.Role == nil {
+			break
+		}
+
+		return e.complexity.User.Role(childComplexity), true
 
 	case "_Service.sdl":
 		if e.complexity._Service.SDL == nil {
@@ -354,7 +381,8 @@ input SignupInput {
 
 """ Выходные параметры для регистрации """
 type SignupOutput {
-    userId: String!
+    """ Информация о юзере """
+    userInfo: User!
 }
 
 """ Входные параметры для авторизации"""
@@ -365,8 +393,8 @@ input SigninInput {
 
 """ Выходные параметры для авторизации """
 type SigninOutput {
-    """ Пусто """
-    _empty: Empty
+    """ Информация о юзере """
+    userInfo: User!
 }
 
 """ Выходные параметры для выхода """
@@ -394,8 +422,8 @@ input AuthcheckInput {
 
 """ Выходные параметры для проверки авторизации """
 type AuthcheckOutput {
-    """ Пусто """
-    _empty: Empty
+    """ Информация о юзере """
+    userInfo: User!
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/schema/schema.graphql", Input: `### *** Schema *** ###
 
@@ -420,6 +448,12 @@ type Mutation
 	{Name: "../../../../api/graphql/types/errors.graphql", Input: `extend type Query {
     """ Словарь ошибок """
     errors: [Error]!
+}`, BuiltIn: false},
+	{Name: "../../../../api/graphql/types/user.graphql", Input: `""" Информация о юзере """
+type User {
+    id: String!
+    login: String!
+    role: String!
 }`, BuiltIn: false},
 	{Name: "../../../../federation/directives.graphql", Input: `
 	directive @authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM

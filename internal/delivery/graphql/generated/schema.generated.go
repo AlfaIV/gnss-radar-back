@@ -156,8 +156,8 @@ func (ec *executionContext) fieldContext_Query_authcheck(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "_empty":
-				return ec.fieldContext_AuthcheckOutput__empty(ctx, field)
+			case "userInfo":
+				return ec.fieldContext_AuthcheckOutput_userInfo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AuthcheckOutput", field.Name)
 		},

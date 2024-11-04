@@ -13,10 +13,10 @@ import (
 //
 //go:generate mockgen -source=$GOFILE -destination=../../../mocks/authorization_service/mock.go
 type IAuthorizationService interface {
-	Signin(ctx context.Context, req SigninRequest) (*model.Session, error)
+	Signin(ctx context.Context, req SigninRequest) (*model.Session, *model.User, error)
 	Signup(ctx context.Context, req SignupRequest) (*model.User, error)
 	ListUsers(ctx context.Context, filter ListUsersFilter) ([]*model.User, error)
-	Authcheck(ctx context.Context, value string) (bool, error)
+	Authcheck(ctx context.Context, value string) (bool, *model.User, error)
 	Logout(ctx context.Context, value string) (bool, error)
 }
 
@@ -37,14 +37,14 @@ type SigninRequest struct {
 	Password string `json:"password"`
 }
 
-func (a *AuthorizationService) Signin(ctx context.Context, req SigninRequest) (*model.Session, error) {
+func (a *AuthorizationService) Signin(ctx context.Context, req SigninRequest) (*model.Session, *model.User, error) {
 	users, err := a.authorization.ListUsers(ctx, store.UserFilter{Logins: []string{req.Login}})
 	if err != nil {
-		return nil, fmt.Errorf("authorization.ListUsers: %w", err)
+		return nil, nil, fmt.Errorf("authorization.ListUsers: %w", err)
 	}
 
 	if len(users) == 0 {
-		return nil, store.ErrNotFound
+		return nil, nil, store.ErrNotFound
 	}
 
 	newSession := model.Session{
@@ -55,23 +55,35 @@ func (a *AuthorizationService) Signin(ctx context.Context, req SigninRequest) (*
 
 	sessionAdded, err := a.session.AddSession(ctx, newSession)
 	if err != nil {
-		return nil, fmt.Errorf("session.AddSession: %w", err)
+		return nil, nil, fmt.Errorf("session.AddSession: %w", err)
 	}
 
 	if !sessionAdded {
-		return nil, store.ErrEntityAlreadyExist
+		return nil, nil, store.ErrEntityAlreadyExist
 	}
 
-	return &newSession, nil
+	return &newSession, &model.User{
+		ID:    users[0].ID,
+		Login: users[0].Login,
+		Role:  users[0].Role,
+	}, nil
 }
 
-func (a *AuthorizationService) Authcheck(ctx context.Context, value string) (bool, error) {
+func (a *AuthorizationService) Authcheck(ctx context.Context, value string) (bool, *model.User, error) {
 	result, err := a.session.CheckActiveSession(ctx, value)
 	if err != nil {
-		return false, fmt.Errorf("session.CheckActiveSession: %w", err)
+		return false, nil, fmt.Errorf("session.CheckActiveSession: %w", err)
 	}
 
-	return result, nil
+	users, err := a.authorization.ListUsers(ctx, store.UserFilter{Logins: []string{value}})
+	if err != nil {
+		return false, nil, fmt.Errorf("authorization.ListUsers: %w", err)
+	}
+	if len(users) == 0 {
+		return false, nil, store.ErrNotFound
+	}
+
+	return result, users[0], nil
 }
 
 func (a *AuthorizationService) Logout(ctx context.Context, value string) (bool, error) {

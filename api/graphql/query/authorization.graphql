@@ -11,6 +11,6 @@ input AuthcheckInput {
 
 """ Выходные параметры для проверки авторизации """
 type AuthcheckOutput {
-    """ Пусто """
-    _empty: Empty
+    """ Информация о юзере """
+    userInfo: User!
 }
