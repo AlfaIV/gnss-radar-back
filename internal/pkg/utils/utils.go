@@ -24,9 +24,9 @@ func SerializerGnssCoords(list []*model.GnssCoords) []*model.Gnss {
 			SatelliteID:   item.SatelliteID,
 			SatelliteName: item.SatelliteName,
 			Coordinates: &model.CoordsResults{
-				X: strconv.FormatFloat(item.Coords.X, 'f', -1, 64),
-				Y: strconv.FormatFloat(item.Coords.Y, 'f', -1, 64),
-				Z: strconv.FormatFloat(item.Coords.Z, 'f', -1, 64),
+				X: strconv.FormatFloat(item.X, 'f', -1, 64),
+				Y: strconv.FormatFloat(item.Y, 'f', -1, 64),
+				Z: strconv.FormatFloat(item.Z, 'f', -1, 64),
 			},
 		}
 	})
