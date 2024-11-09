@@ -21,6 +21,7 @@ type IGnssStore interface {
 	CreateTask(ctx context.Context, params CreateTaskParams) (*model.Task, error)
 	UpdateTask(ctx context.Context, params UpdateTaskParams) (*model.Task, error)
 	DeleteTask(ctx context.Context, filter DeleteTaskFilter) error
+	ListTask(ctx context.Context, filter ListTasksFilter) ([]*model.Task, error)
 	RinexList(ctx context.Context) ([]*model.RinexResults, error)
 }
 
@@ -244,6 +245,58 @@ func (g *GnssStore) UpdateTask(ctx context.Context, params UpdateTaskParams) (*m
 	}
 
 	return &device, nil
+}
+
+type ListTasksFilter struct {
+	Ids           []string
+	SatelliteIds  []string
+	SatelliteName []string
+	SignalType    []model.SignalType
+	GroupingType  []model.GroupingType
+	StartAt       *time.Time
+	EndAt         *time.Time
+	Paginator     model.Paginator
+}
+
+func (g *GnssStore) ListTask(ctx context.Context, filter ListTasksFilter) ([]*model.Task, error) {
+	query := g.storage.Builder().
+		Select("id, satellite_id, satellite_name, signal_type, grouping_type, start_at, end_at").
+		From(taskTable)
+
+	if len(filter.Ids) > 0 {
+		query = query.Where(sq.Eq{"id": filter.Ids})
+	}
+	if len(filter.SatelliteIds) > 0 {
+		query = query.Where(sq.Eq{"satellite_id": filter.SatelliteIds})
+	}
+	if len(filter.SatelliteName) > 0 {
+		query = query.Where(sq.Eq{"satellite_name": filter.SatelliteName})
+	}
+	if len(filter.SignalType) > 0 {
+		query = query.Where(sq.Eq{"signal_type": filter.SignalType})
+	}
+	if len(filter.GroupingType) > 0 {
+		query = query.Where(sq.Eq{"grouping_type": filter.GroupingType})
+	}
+	if filter.StartAt != nil {
+		query = query.Where(sq.GtOrEq{"start_at": *filter.StartAt})
+	}
+	if filter.EndAt != nil {
+		query = query.Where(sq.LtOrEq{"end_at": *filter.EndAt})
+	}
+	if filter.Paginator.Page != 0 {
+		query = query.Offset(filter.Paginator.Page)
+	}
+	if filter.Paginator.PerPage != 0 {
+		query = query.Limit(filter.Paginator.PerPage)
+	}
+
+	var tasks []*model.Task
+	if err := g.storage.db.Selectx(ctx, &tasks, query); err != nil {
+		return nil, postgresError(err)
+	}
+
+	return tasks, nil
 }
 
 func (g *GnssStore) RinexList(ctx context.Context) ([]*model.RinexResults, error) {

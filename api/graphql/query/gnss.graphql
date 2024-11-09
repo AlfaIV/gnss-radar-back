@@ -3,6 +3,8 @@ extend type Query {
     listGnss(filter: GNSSFilter!, page: Int! = 1, perPage: Int! = 10): GNSSPagination!
     """ Получить список Device """
     listDevice(filter: DeviceFilter!, page: Int! = 1, perPage: Int! = 10): DevicePagination!
+    """ Получить список задач"""
+    listTask(filter: TaskFilter!, page: Int! = 1, perPage: Int! = 10): TaskPagination!
     """ Получить список Rinex """
     Rinexlist(input: RinexInput, , page: Int! = 1, perPage: Int! = 10): RinexPagination!
 }
@@ -38,6 +40,22 @@ input DeviceFilter {
 type DevicePagination {
     """ Загруженные элементы """
     items: [Device!]
+}
+
+input TaskFilter {
+    """ Фильтр по индетификаторам """
+    ids: [String!]
+    satelliteIds: [String!]
+    satelliteName: [String!]
+    signalType: [SignalType!]
+    groupingType: [GroupingType!]
+    startAt: Time
+    endAt: Time
+}
+
+type TaskPagination {
+    """ Загруженные элементы """
+    items: [Task!]
 }
 
 input CoordsInput {

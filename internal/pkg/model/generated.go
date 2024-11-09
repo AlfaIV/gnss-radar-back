@@ -235,6 +235,22 @@ type SignupOutput struct {
 	UserInfo *User `json:"userInfo"`
 }
 
+type TaskFilter struct {
+	//  Фильтр по индетификаторам
+	Ids           []string       `json:"ids,omitempty"`
+	SatelliteIds  []string       `json:"satelliteIds,omitempty"`
+	SatelliteName []string       `json:"satelliteName,omitempty"`
+	SignalType    []SignalType   `json:"signalType,omitempty"`
+	GroupingType  []GroupingType `json:"groupingType,omitempty"`
+	StartAt       *time.Time     `json:"startAt,omitempty"`
+	EndAt         *time.Time     `json:"endAt,omitempty"`
+}
+
+type TaskPagination struct {
+	//  Загруженные элементы
+	Items []*Task `json:"items,omitempty"`
+}
+
 // Входные параметры для update device
 type UpdateDeviceInput struct {
 	//  Индетификатор

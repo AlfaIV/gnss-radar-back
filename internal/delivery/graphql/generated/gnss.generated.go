@@ -2134,6 +2134,63 @@ func (ec *executionContext) fieldContext_Satellite_observations(_ context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _TaskPagination_items(ctx context.Context, field graphql.CollectedField, obj *model.TaskPagination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_TaskPagination_items(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Items, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Task)
+	fc.Result = res
+	return ec.marshalOTask2ᚕᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTaskᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_TaskPagination_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TaskPagination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Task_id(ctx, field)
+			case "satelliteId":
+				return ec.fieldContext_Task_satelliteId(ctx, field)
+			case "satelliteName":
+				return ec.fieldContext_Task_satelliteName(ctx, field)
+			case "signalType":
+				return ec.fieldContext_Task_signalType(ctx, field)
+			case "groupingType":
+				return ec.fieldContext_Task_groupingType(ctx, field)
+			case "startAt":
+				return ec.fieldContext_Task_startAt(ctx, field)
+			case "endAt":
+				return ec.fieldContext_Task_endAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _UpdateDeviceOutput_device(ctx context.Context, field graphql.CollectedField, obj *model.UpdateDeviceOutput) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UpdateDeviceOutput_device(ctx, field)
 	if err != nil {
@@ -2518,6 +2575,75 @@ func (ec *executionContext) unmarshalInputRinexInput(ctx context.Context, obj in
 				return it, err
 			}
 			it.Empty = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputTaskFilter(ctx context.Context, obj interface{}) (model.TaskFilter, error) {
+	var it model.TaskFilter
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"ids", "satelliteIds", "satelliteName", "signalType", "groupingType", "startAt", "endAt"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "ids":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Ids = data
+		case "satelliteIds":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("satelliteIds"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SatelliteIds = data
+		case "satelliteName":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("satelliteName"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SatelliteName = data
+		case "signalType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("signalType"))
+			data, err := ec.unmarshalOSignalType2ᚕgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSignalTypeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SignalType = data
+		case "groupingType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("groupingType"))
+			data, err := ec.unmarshalOGroupingType2ᚕgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐGroupingTypeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.GroupingType = data
+		case "startAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StartAt = data
+		case "endAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("endAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.EndAt = data
 		}
 	}
 
@@ -3448,6 +3574,42 @@ func (ec *executionContext) _Satellite(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
+var taskPaginationImplementors = []string{"TaskPagination"}
+
+func (ec *executionContext) _TaskPagination(ctx context.Context, sel ast.SelectionSet, obj *model.TaskPagination) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, taskPaginationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TaskPagination")
+		case "items":
+			out.Values[i] = ec._TaskPagination_items(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var updateDeviceOutputImplementors = []string{"UpdateDeviceOutput"}
 
 func (ec *executionContext) _UpdateDeviceOutput(ctx context.Context, sel ast.SelectionSet, obj *model.UpdateDeviceOutput) graphql.Marshaler {
@@ -3800,6 +3962,25 @@ func (ec *executionContext) marshalNSatellite2ᚖgithubᚗcomᚋGokertᚋgnssᚑ
 		return graphql.Null
 	}
 	return ec._Satellite(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNTaskFilter2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTaskFilter(ctx context.Context, v interface{}) (model.TaskFilter, error) {
+	res, err := ec.unmarshalInputTaskFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTaskPagination2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTaskPagination(ctx context.Context, sel ast.SelectionSet, v model.TaskPagination) graphql.Marshaler {
+	return ec._TaskPagination(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTaskPagination2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTaskPagination(ctx context.Context, sel ast.SelectionSet, v *model.TaskPagination) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._TaskPagination(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNUpdateDeviceInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐUpdateDeviceInput(ctx context.Context, v interface{}) (model.UpdateDeviceInput, error) {

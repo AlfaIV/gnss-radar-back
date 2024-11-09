@@ -148,6 +148,28 @@ func (r *queryResolver) ListDevice(ctx context.Context, filter model.DeviceFilte
 	return &model.DevicePagination{Items: devices}, nil
 }
 
+// ListTask is the resolver for the listTask field.
+func (r *queryResolver) ListTask(ctx context.Context, filter model.TaskFilter, page int, perPage int) (*model.TaskPagination, error) {
+	tasks, err := r.gnssSevice.ListTasks(ctx, store.ListTasksFilter{
+		Ids:           filter.Ids,
+		SatelliteIds:  filter.SatelliteIds,
+		SatelliteName: filter.SatelliteName,
+		SignalType:    filter.SignalType,
+		GroupingType:  filter.GroupingType,
+		StartAt:       filter.StartAt,
+		EndAt:         filter.EndAt,
+		Paginator: model.Paginator{
+			Page:    uint64(page),
+			PerPage: uint64(perPage),
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gnssSevice.ListTasks: %w", err)
+	}
+
+	return &model.TaskPagination{Items: tasks}, nil
+}
+
 // Rinexlist is the resolver for the Rinexlist field.
 func (r *queryResolver) Rinexlist(ctx context.Context, input *model.RinexInput, page int, perPage int) (*model.RinexPagination, error) {
 	gnssRinex, err := r.gnssSevice.RinexList(ctx, service.RinexRequest{})

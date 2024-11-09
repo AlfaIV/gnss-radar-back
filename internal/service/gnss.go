@@ -17,6 +17,7 @@ type IGnss interface {
 	CreateTask(ctx context.Context, params store.CreateTaskParams) (*model.Task, error)
 	UpdateTask(ctx context.Context, params store.UpdateTaskParams) (*model.Task, error)
 	DeleteTask(ctx context.Context, filter store.DeleteTaskFilter) error
+	ListTasks(ctx context.Context, filter store.ListDeviceFilter) ([]*model.Task, error)
 }
 
 type GnssService struct {
@@ -196,4 +197,13 @@ func (g *GnssService) DeleteTask(ctx context.Context, filter store.DeleteTaskFil
 	}
 
 	return nil
+}
+
+func (g *GnssService) ListTasks(ctx context.Context, filter store.ListTasksFilter) ([]*model.Task, error) {
+	tasks, err := g.gnssStore.ListTask(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.ListTask: %w", err)
+	}
+
+	return tasks, nil
 }

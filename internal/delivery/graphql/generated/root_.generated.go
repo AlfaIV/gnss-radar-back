@@ -143,6 +143,7 @@ type ComplexityRoot struct {
 		Errors             func(childComplexity int) int
 		ListDevice         func(childComplexity int, filter model.DeviceFilter, page int, perPage int) int
 		ListGnss           func(childComplexity int, filter model.GNSSFilter, page int, perPage int) int
+		ListTask           func(childComplexity int, filter model.TaskFilter, page int, perPage int) int
 		Rinexlist          func(childComplexity int, input *model.RinexInput, page int, perPage int) int
 		__resolve__service func(childComplexity int) int
 	}
@@ -177,6 +178,10 @@ type ComplexityRoot struct {
 		SatelliteName func(childComplexity int) int
 		SignalType    func(childComplexity int) int
 		StartAt       func(childComplexity int) int
+	}
+
+	TaskPagination struct {
+		Items func(childComplexity int) int
 	}
 
 	UpdateDeviceOutput struct {
@@ -643,6 +648,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ListGnss(childComplexity, args["filter"].(model.GNSSFilter), args["page"].(int), args["perPage"].(int)), true
 
+	case "Query.listTask":
+		if e.complexity.Query.ListTask == nil {
+			break
+		}
+
+		args, err := ec.field_Query_listTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ListTask(childComplexity, args["filter"].(model.TaskFilter), args["page"].(int), args["perPage"].(int)), true
+
 	case "Query.Rinexlist":
 		if e.complexity.Query.Rinexlist == nil {
 			break
@@ -760,6 +777,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Task.StartAt(childComplexity), true
 
+	case "TaskPagination.items":
+		if e.complexity.TaskPagination.Items == nil {
+			break
+		}
+
+		return e.complexity.TaskPagination.Items(childComplexity), true
+
 	case "UpdateDeviceOutput.device":
 		if e.complexity.UpdateDeviceOutput.Device == nil {
 			break
@@ -821,6 +845,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputRinexInput,
 		ec.unmarshalInputSigninInput,
 		ec.unmarshalInputSignupInput,
+		ec.unmarshalInputTaskFilter,
 		ec.unmarshalInputUpdateDeviceInput,
 		ec.unmarshalInputUpdateTaskInput,
 	)
@@ -1149,6 +1174,8 @@ type AuthcheckOutput {
     listGnss(filter: GNSSFilter!, page: Int! = 1, perPage: Int! = 10): GNSSPagination!
     """ Получить список Device """
     listDevice(filter: DeviceFilter!, page: Int! = 1, perPage: Int! = 10): DevicePagination!
+    """ Получить список задач"""
+    listTask(filter: TaskFilter!, page: Int! = 1, perPage: Int! = 10): TaskPagination!
     """ Получить список Rinex """
     Rinexlist(input: RinexInput, , page: Int! = 1, perPage: Int! = 10): RinexPagination!
 }
@@ -1184,6 +1211,22 @@ input DeviceFilter {
 type DevicePagination {
     """ Загруженные элементы """
     items: [Device!]
+}
+
+input TaskFilter {
+    """ Фильтр по индетификаторам """
+    ids: [String!]
+    satelliteIds: [String!]
+    satelliteName: [String!]
+    signalType: [SignalType!]
+    groupingType: [GroupingType!]
+    startAt: Time
+    endAt: Time
+}
+
+type TaskPagination {
+    """ Загруженные элементы """
+    items: [Task!]
 }
 
 input CoordsInput {
