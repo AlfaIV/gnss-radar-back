@@ -80,6 +80,17 @@ func (r *queryResolver) ListDevice(ctx context.Context, filter model.DeviceFilte
 	return &model.DevicePagination{Items: devices}, nil
 }
 
+// Rinexlist is the resolver for the Rinexlist field.
+func (r *queryResolver) Rinexlist(ctx context.Context, input *model.RinexInput) (*model.RinexPagination, error) {
+	gnssRinex, err := r.gnssSevice.RinexList(ctx, service.RinexRequest{})
+	if err != nil {
+		return nil, fmt.Errorf("gnssSevice.Rinexlist: %w", err)
+	}
+	return &model.RinexPagination{
+		Items: gnssRinex,
+	}, nil
+}
+
 // GnssMutations returns generated.GnssMutationsResolver implementation.
 func (r *Resolver) GnssMutations() generated.GnssMutationsResolver { return &gnssMutationsResolver{r} }
 

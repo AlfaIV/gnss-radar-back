@@ -13,6 +13,7 @@ type IGnss interface {
 	ListGnss(ctx context.Context, req ListGnssRequest) ([]*model.GnssCoords, error)
 	ListDevice(ctx context.Context, filter ListDeviceFilter) ([]*model.Device, error)
 	UpsetDevice(ctx context.Context, params UpsetDeviceParams) (*model.Device, error)
+	RinexList(ctx context.Context, req RinexRequest) ([]*model.RinexResults, error)
 }
 
 type GnssService struct {
@@ -112,4 +113,15 @@ func (g *GnssService) ListDevice(ctx context.Context, filter ListDeviceFilter) (
 	}
 
 	return device, nil
+}
+
+type RinexRequest struct{}
+
+func (g *GnssService) RinexList(ctx context.Context, req RinexRequest) ([]*model.RinexResults, error) {
+	rinexlist, err := g.gnssStore.RinexList(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.ListRinexlist: %w", err)
+	}
+
+	return rinexlist, nil
 }

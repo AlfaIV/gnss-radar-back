@@ -6,9 +6,10 @@ package graphql
 
 import (
 	"context"
+	"strconv"
+
 	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
-	"strconv"
 )
 
 // Coords is the resolver for the Coords field.

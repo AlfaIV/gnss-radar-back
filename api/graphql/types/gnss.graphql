@@ -16,3 +16,40 @@ type CoordsResults {
     """ Координата Z """
     z: String!
 }
+
+
+type Header {
+    rinex_version: String!
+    file_type: String!
+    pgm_run_by_date: String!
+    comments: [String!]!
+    marker_name: String!
+    marker_number: String!
+    observer_agency: String!
+    rec_info: String!
+    ant_info: String!
+    approx_position_xyz: [Float!]!
+    antenna_delta_hen: [Float!]!
+    wavelength_fact_l1_l2: [Int!]!
+    types_of_obs: [String!]!
+    interval: Float!
+    time_of_first_obs: String!
+    time_of_last_obs: String!
+    end_of_header: Boolean!
+}
+
+type Satellite {
+    satellite_id: String!
+    observations: [String!]!
+}
+
+type Observation {
+    time: String!
+    epoch_flag: Int!
+    satellites: [Satellite!]!
+}
+
+type RinexResults {
+    header: Header!
+    observations: [Observation!]!
+}

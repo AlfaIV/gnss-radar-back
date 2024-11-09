@@ -88,6 +88,26 @@ type GnssMutations struct {
 	UpsetDevice *UpsetDeviceOutput `json:"upsetDevice"`
 }
 
+type Header struct {
+	RinexVersion       string    `json:"rinex_version"`
+	FileType           string    `json:"file_type"`
+	PgmRunByDate       string    `json:"pgm_run_by_date"`
+	Comments           []string  `json:"comments"`
+	MarkerName         string    `json:"marker_name"`
+	MarkerNumber       string    `json:"marker_number"`
+	ObserverAgency     string    `json:"observer_agency"`
+	RecInfo            string    `json:"rec_info"`
+	AntInfo            string    `json:"ant_info"`
+	ApproxPositionXyz  []float64 `json:"approx_position_xyz"`
+	AntennaDeltaHen    []float64 `json:"antenna_delta_hen"`
+	WavelengthFactL1L2 []int     `json:"wavelength_fact_l1_l2"`
+	TypesOfObs         []string  `json:"types_of_obs"`
+	Interval           float64   `json:"interval"`
+	TimeOfFirstObs     string    `json:"time_of_first_obs"`
+	TimeOfLastObs      string    `json:"time_of_last_obs"`
+	EndOfHeader        bool      `json:"end_of_header"`
+}
+
 // Выходные параметры для выхода
 type LogoutInput struct {
 	//  Пусто
@@ -103,7 +123,32 @@ type LogoutOutput struct {
 type Mutation struct {
 }
 
+type Observation struct {
+	Time       string       `json:"time"`
+	EpochFlag  int          `json:"epoch_flag"`
+	Satellites []*Satellite `json:"satellites"`
+}
+
 type Query struct {
+}
+
+type RinexInput struct {
+	//  Пусто
+	Empty *string `json:"_empty,omitempty"`
+}
+
+type RinexPagination struct {
+	Items []*RinexResults `json:"items,omitempty"`
+}
+
+type RinexResults struct {
+	Header       *Header        `json:"header"`
+	Observations []*Observation `json:"observations"`
+}
+
+type Satellite struct {
+	SatelliteID  string   `json:"satellite_id"`
+	Observations []string `json:"observations"`
 }
 
 // Входные параметры для авторизации
