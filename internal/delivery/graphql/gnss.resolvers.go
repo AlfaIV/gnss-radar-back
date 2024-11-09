@@ -17,6 +17,7 @@ import (
 // UpdateDevice is the resolver for the updateDevice field.
 func (r *gnssMutationsResolver) UpdateDevice(ctx context.Context, obj *model.GnssMutations, input model.UpdateDeviceInput) (*model.UpdateDeviceOutput, error) {
 	device, err := r.gnssSevice.UpdateDevice(ctx, service.UpdateDeviceParams{
+		ID:          input.ID,
 		Name:        input.Name,
 		Token:       input.Token,
 		Description: input.Description,

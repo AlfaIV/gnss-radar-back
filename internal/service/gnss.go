@@ -98,6 +98,7 @@ func (g *GnssService) CreateDevice(ctx context.Context, params CreateDeviceParam
 }
 
 type UpdateDeviceParams struct {
+	ID          string
 	Name        string
 	Token       string
 	Description *string
@@ -121,6 +122,7 @@ func (g *GnssService) UpdateDevice(ctx context.Context, params UpdateDeviceParam
 	}
 
 	device, err := g.gnssStore.UpdateDevice(ctx, store.UpdateDeviceParams{
+		Id:          params.ID,
 		Name:        params.Name,
 		Token:       params.Token,
 		Description: params.Description,

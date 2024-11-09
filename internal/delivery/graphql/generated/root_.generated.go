@@ -792,6 +792,29 @@ GraphQL converter
 directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION`, BuiltIn: false},
 	{Name: "../../../../api/graphql/directives/goModel.graphql", Input: `directive @goModel(model: String, models: [String!]) on OBJECT | UNION | INPUT_OBJECT | ENUM | INTERFACE | SCALAR
 `, BuiltIn: false},
+	{Name: "../../../../api/graphql/enums/devices.graphql", Input: `enum GroupingType {
+    """ Неизвестно """
+    GROUPING_TYPE_UNKNOWN
+    """ GPS """
+    GROUPING_TYPE_GPS
+    """ Glonass """
+    GROUPING_TYPE_GLONASS
+    """ Galileo """
+    GROUPING_TYPE_GALILEO
+    """ Beidou """
+    GROUPING_TYPE_BEIDOU
+}
+
+enum SignalType {
+    """ Неизвестно """
+    SIGNAL_TYPE_UNKNOWN
+    """ L1 """
+    SIGNAL_TYPE_L1
+    """ L2 """
+    SIGNAL_TYPE_L2
+    """ L3 """
+    SIGNAL_TYPE_L3
+}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/enums/enums.graphql", Input: `scalar Empty`, BuiltIn: false},
 	{Name: "../../../../api/graphql/enums/errors.graphql", Input: `""" Бизнес ошибки """
 enum Error {
@@ -1002,7 +1025,7 @@ type Device {
     """ Токен """
     token: String!
     """ Описание """
-    description: String!
+    description: String
     """ Координаты """
     Coords: CoordsResults!
 }`, BuiltIn: false},
@@ -1011,6 +1034,7 @@ type Device {
     errors: [Error]!
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/gnss.graphql", Input: `type GNSS {
+    """ Индентификатор """
     Id: String!
     """ id спутника """
     SatelliteId: String!

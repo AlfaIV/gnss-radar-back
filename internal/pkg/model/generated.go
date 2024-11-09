@@ -80,6 +80,7 @@ type DevicePagination struct {
 }
 
 type Gnss struct {
+	//  Индентификатор
 	ID string `json:"Id"`
 	//  id спутника
 	SatelliteID string `json:"SatelliteId"`
@@ -266,5 +267,106 @@ func (e *Error) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Error) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type GroupingType string
+
+const (
+	//  Неизвестно
+	GroupingTypeGroupingTypeUnknown GroupingType = "GROUPING_TYPE_UNKNOWN"
+	//  GPS
+	GroupingTypeGroupingTypeGps GroupingType = "GROUPING_TYPE_GPS"
+	//  Glonass
+	GroupingTypeGroupingTypeGlonass GroupingType = "GROUPING_TYPE_GLONASS"
+	//  Galileo
+	GroupingTypeGroupingTypeGalileo GroupingType = "GROUPING_TYPE_GALILEO"
+	//  Beidou
+	GroupingTypeGroupingTypeBeidou GroupingType = "GROUPING_TYPE_BEIDOU"
+)
+
+var AllGroupingType = []GroupingType{
+	GroupingTypeGroupingTypeUnknown,
+	GroupingTypeGroupingTypeGps,
+	GroupingTypeGroupingTypeGlonass,
+	GroupingTypeGroupingTypeGalileo,
+	GroupingTypeGroupingTypeBeidou,
+}
+
+func (e GroupingType) IsValid() bool {
+	switch e {
+	case GroupingTypeGroupingTypeUnknown, GroupingTypeGroupingTypeGps, GroupingTypeGroupingTypeGlonass, GroupingTypeGroupingTypeGalileo, GroupingTypeGroupingTypeBeidou:
+		return true
+	}
+	return false
+}
+
+func (e GroupingType) String() string {
+	return string(e)
+}
+
+func (e *GroupingType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = GroupingType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid GroupingType", str)
+	}
+	return nil
+}
+
+func (e GroupingType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type SignalType string
+
+const (
+	//  Неизвестно
+	SignalTypeSignalTypeUnknown SignalType = "SIGNAL_TYPE_UNKNOWN"
+	//  L1
+	SignalTypeSignalTypeL1 SignalType = "SIGNAL_TYPE_L1"
+	//  L2
+	SignalTypeSignalTypeL2 SignalType = "SIGNAL_TYPE_L2"
+	//  L3
+	SignalTypeSignalTypeL3 SignalType = "SIGNAL_TYPE_L3"
+)
+
+var AllSignalType = []SignalType{
+	SignalTypeSignalTypeUnknown,
+	SignalTypeSignalTypeL1,
+	SignalTypeSignalTypeL2,
+	SignalTypeSignalTypeL3,
+}
+
+func (e SignalType) IsValid() bool {
+	switch e {
+	case SignalTypeSignalTypeUnknown, SignalTypeSignalTypeL1, SignalTypeSignalTypeL2, SignalTypeSignalTypeL3:
+		return true
+	}
+	return false
+}
+
+func (e SignalType) String() string {
+	return string(e)
+}
+
+func (e *SignalType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SignalType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SignalType", str)
+	}
+	return nil
+}
+
+func (e SignalType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
