@@ -6,15 +6,22 @@ package graphql
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
+	"strconv"
 )
 
 // Coords is the resolver for the Coords field.
 func (r *deviceResolver) Coords(ctx context.Context, obj *model.Device) (*model.CoordsResults, error) {
-	panic(fmt.Errorf("not implemented: Coords - Coords"))
+	if obj == nil {
+		return nil, nil
+	}
+
+	return &model.CoordsResults{
+		X: strconv.FormatFloat(obj.X, 'f', -1, 64),
+		Y: strconv.FormatFloat(obj.Y, 'f', -1, 64),
+		Z: strconv.FormatFloat(obj.Z, 'f', -1, 64),
+	}, nil
 }
 
 // Device returns generated.DeviceResolver implementation.
