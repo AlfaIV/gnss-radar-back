@@ -1,0 +1,13 @@
+""" Девайс """
+type Device {
+    """ Индетификатор """
+    id: String!
+    """ Название девайса """
+    name: String!
+    """ Токен """
+    token: String!
+    """ Описание """
+    description: String!
+    """ Координаты """
+    Coords: CoordsResults!
+}

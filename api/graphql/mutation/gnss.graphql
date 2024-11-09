@@ -1,0 +1,27 @@
+extend type Mutation {
+    """ Мутации связанные с gnss """
+    gnss: GnssMutations!
+}
+
+""" Мутации связанные с авторизацией """
+type GnssMutations {
+    """ Регистрация """
+    upsetDevice(input: UpsetDeviceInput!): UpsetDeviceOutput! @goField(forceResolver: true)
+}
+
+""" Входные параметры для upset device"""
+input UpsetDeviceInput {
+    """ Название девайса """
+    Name: String!
+    """ Токен """
+    Token: String!
+    """ Описание """
+    Description: String
+    """ Координаты """
+    Coords: CoordsInput!
+}
+
+""" Выходные параметры для upset device """
+type UpsetDeviceOutput {
+    device: Device!
+}

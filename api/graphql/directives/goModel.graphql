@@ -1,0 +1,1 @@
+directive @goModel(model: String, models: [String!]) on OBJECT | UNION | INPUT_OBJECT | ENUM | INTERFACE | SCALAR
