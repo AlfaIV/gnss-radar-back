@@ -118,7 +118,7 @@ func (g *GnssStore) UpsetDevice(ctx context.Context, params UpsetDeviceParams) (
 			y = EXCLUDED.y,
 			z = EXCLUDED.z,
 		`).
-		Suffix("RETURNING " + deviceTable)
+		Suffix("RETURNING id, name, token, description, x, y, z")
 
 	var device *model.Device
 	if err := g.storage.db.Selectx(ctx, &device, query); err != nil {
