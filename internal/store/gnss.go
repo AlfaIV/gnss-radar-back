@@ -13,7 +13,8 @@ const (
 
 type IGnssStore interface {
 	ListGnssCoords(ctx context.Context, filter ListGnssCoordsFilter) ([]*model.GnssCoords, error)
-	UpsetDevice(ctx context.Context, params UpsetDeviceParams) (*model.Device, error)
+	CreateDevice(ctx context.Context, params CreateDeviceParams) (*model.Device, error)
+	UpdateDevice(ctx context.Context, params UpdateDeviceParams) (*model.Device, error)
 	ListDevice(ctx context.Context, filter ListDeviceFilter) ([]*model.Device, error)
 	RinexList(ctx context.Context) ([]*model.RinexResults, error)
 }
@@ -100,14 +101,14 @@ func (g *GnssStore) ListGnssCoords(ctx context.Context, filter ListGnssCoordsFil
 	return coords, nil
 }
 
-type UpsetDeviceParams struct {
+type CreateDeviceParams struct {
 	Name        string  `db:"name"`
 	Token       string  `db:"token"`
 	Description *string `db:"description"`
 	Coords      model.Coords
 }
 
-func (g *GnssStore) UpsetDevice(ctx context.Context, params UpsetDeviceParams) (*model.Device, error) {
+func (g *GnssStore) CreateDevice(ctx context.Context, params CreateDeviceParams) (*model.Device, error) {
 	query := g.storage.Builder().
 		Insert(deviceTable).
 		SetMap(map[string]any{
@@ -118,14 +119,36 @@ func (g *GnssStore) UpsetDevice(ctx context.Context, params UpsetDeviceParams) (
 			"y":           params.Coords.Y,
 			"z":           params.Coords.Z,
 		}).
-		Suffix(`                                                            
-			ON CONFLICT (name) DO UPDATE SET
-			token = EXCLUDED.token,
-			description = EXCLUDED.description,
-			x = EXCLUDED.x,
-			y = EXCLUDED.y,
-			z = EXCLUDED.z
-		`).
+		Suffix("RETURNING id, name, token, description, x, y, z")
+
+	var device model.Device
+	if err := g.storage.db.Getx(ctx, &device, query); err != nil {
+		return nil, postgresError(err)
+	}
+
+	return &device, nil
+}
+
+type UpdateDeviceParams struct {
+	Id          string  `db:"id"`
+	Name        string  `db:"name"`
+	Token       string  `db:"token"`
+	Description *string `db:"description"`
+	Coords      model.Coords
+}
+
+func (g *GnssStore) UpdateDevice(ctx context.Context, params UpdateDeviceParams) (*model.Device, error) {
+	query := g.storage.Builder().
+		Update(deviceTable).
+		Where(sq.Eq{"id": params.Id}).
+		SetMap(map[string]any{
+			"name":        params.Name,
+			"token":       params.Token,
+			"description": params.Description,
+			"x":           params.Coords.X,
+			"y":           params.Coords.Y,
+			"z":           params.Coords.Z,
+		}).
 		Suffix("RETURNING id, name, token, description, x, y, z")
 
 	var device model.Device

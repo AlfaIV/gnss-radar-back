@@ -12,7 +12,8 @@ import (
 type IGnss interface {
 	ListGnss(ctx context.Context, req ListGnssRequest) ([]*model.GnssCoords, error)
 	ListDevice(ctx context.Context, filter ListDeviceFilter) ([]*model.Device, error)
-	UpsetDevice(ctx context.Context, params UpsetDeviceParams) (*model.Device, error)
+	CreateDevice(ctx context.Context, params CreateDeviceParams) (*model.Device, error)
+	UpdateDevice(ctx context.Context, params UpdateDeviceParams) (*model.Device, error)
 	RinexList(ctx context.Context, req RinexRequest) ([]*model.RinexResults, error)
 }
 
@@ -56,7 +57,7 @@ func (g *GnssService) ListGnss(ctx context.Context, req ListGnssRequest) ([]*mod
 	return gnss, nil
 }
 
-type UpsetDeviceParams struct {
+type CreateDeviceParams struct {
 	Name        string
 	Token       string
 	Description *string
@@ -65,7 +66,7 @@ type UpsetDeviceParams struct {
 	Z           string
 }
 
-func (g *GnssService) UpsetDevice(ctx context.Context, params UpsetDeviceParams) (*model.Device, error) {
+func (g *GnssService) CreateDevice(ctx context.Context, params CreateDeviceParams) (*model.Device, error) {
 	xf, err := strconv.ParseFloat(params.X, 64)
 	if err != nil {
 		return nil, fmt.Errorf("strconv.ParseFloat: %w", err)
@@ -79,7 +80,7 @@ func (g *GnssService) UpsetDevice(ctx context.Context, params UpsetDeviceParams)
 		return nil, fmt.Errorf("strconv.ParseFloat: %w", err)
 	}
 
-	device, err := g.gnssStore.UpsetDevice(ctx, store.UpsetDeviceParams{
+	device, err := g.gnssStore.CreateDevice(ctx, store.CreateDeviceParams{
 		Name:        params.Name,
 		Token:       params.Token,
 		Description: params.Description,
@@ -91,6 +92,46 @@ func (g *GnssService) UpsetDevice(ctx context.Context, params UpsetDeviceParams)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("gnssStore.UpsetDevice: %w", err)
+	}
+
+	return device, nil
+}
+
+type UpdateDeviceParams struct {
+	Name        string
+	Token       string
+	Description *string
+	X           string
+	Y           string
+	Z           string
+}
+
+func (g *GnssService) UpdateDevice(ctx context.Context, params UpdateDeviceParams) (*model.Device, error) {
+	xf, err := strconv.ParseFloat(params.X, 64)
+	if err != nil {
+		return nil, fmt.Errorf("strconv.ParseFloat: %w", err)
+	}
+	yf, err := strconv.ParseFloat(params.Y, 64)
+	if err != nil {
+		return nil, fmt.Errorf("strconv.ParseFloat: %w", err)
+	}
+	zf, err := strconv.ParseFloat(params.Z, 64)
+	if err != nil {
+		return nil, fmt.Errorf("strconv.ParseFloat: %w", err)
+	}
+
+	device, err := g.gnssStore.UpdateDevice(ctx, store.UpdateDeviceParams{
+		Name:        params.Name,
+		Token:       params.Token,
+		Description: params.Description,
+		Coords: model.Coords{
+			X: xf,
+			Y: yf,
+			Z: zf,
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.UpdateDevice: %w", err)
 	}
 
 	return device, nil

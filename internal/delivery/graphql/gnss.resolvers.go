@@ -14,9 +14,9 @@ import (
 	"github.com/Gokert/gnss-radar/internal/service"
 )
 
-// UpsetDevice is the resolver for the upsetDevice field.
-func (r *gnssMutationsResolver) UpsetDevice(ctx context.Context, obj *model.GnssMutations, input model.UpsetDeviceInput) (*model.UpsetDeviceOutput, error) {
-	device, err := r.gnssSevice.UpsetDevice(ctx, service.UpsetDeviceParams{
+// UpdateDevice is the resolver for the updateDevice field.
+func (r *gnssMutationsResolver) UpdateDevice(ctx context.Context, obj *model.GnssMutations, input model.UpdateDeviceInput) (*model.UpdateDeviceOutput, error) {
+	device, err := r.gnssSevice.UpdateDevice(ctx, service.UpdateDeviceParams{
 		Name:        input.Name,
 		Token:       input.Token,
 		Description: input.Description,
@@ -25,10 +25,29 @@ func (r *gnssMutationsResolver) UpsetDevice(ctx context.Context, obj *model.Gnss
 		Z:           input.Coords.Z,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("gnssSevice.UpsetDevice %w", err)
+		return nil, fmt.Errorf("gnssSevice.UpdateDevice %w", err)
 	}
 
-	return &model.UpsetDeviceOutput{
+	return &model.UpdateDeviceOutput{
+		Device: device,
+	}, nil
+}
+
+// CreateDevice is the resolver for the createDevice field.
+func (r *gnssMutationsResolver) CreateDevice(ctx context.Context, obj *model.GnssMutations, input model.UpdateDeviceInput) (*model.CreateDeviceOutput, error) {
+	device, err := r.gnssSevice.CreateDevice(ctx, service.CreateDeviceParams{
+		Name:        input.Name,
+		Token:       input.Token,
+		Description: input.Description,
+		X:           input.Coords.X,
+		Y:           input.Coords.Y,
+		Z:           input.Coords.Z,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gnssSevice.CreateDevice %w", err)
+	}
+
+	return &model.CreateDeviceOutput{
 		Device: device,
 	}, nil
 }
@@ -81,7 +100,7 @@ func (r *queryResolver) ListDevice(ctx context.Context, filter model.DeviceFilte
 }
 
 // Rinexlist is the resolver for the Rinexlist field.
-func (r *queryResolver) Rinexlist(ctx context.Context, input *model.RinexInput) (*model.RinexPagination, error) {
+func (r *queryResolver) Rinexlist(ctx context.Context, input *model.RinexInput, page int, perPage int) (*model.RinexPagination, error) {
 	gnssRinex, err := r.gnssSevice.RinexList(ctx, service.RinexRequest{})
 	if err != nil {
 		return nil, fmt.Errorf("gnssSevice.Rinexlist: %w", err)

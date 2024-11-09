@@ -26,7 +26,7 @@ type QueryResolver interface {
 	Authcheck(ctx context.Context, input *model.AuthcheckInput) (*model.AuthcheckOutput, error)
 	ListGnss(ctx context.Context, filter model.GNSSFilter, page int, perPage int) (*model.GNSSPagination, error)
 	ListDevice(ctx context.Context, filter model.DeviceFilter, page int, perPage int) (*model.DevicePagination, error)
-	Rinexlist(ctx context.Context, input *model.RinexInput) (*model.RinexPagination, error)
+	Rinexlist(ctx context.Context, input *model.RinexInput, page int, perPage int) (*model.RinexPagination, error)
 	Errors(ctx context.Context) ([]*model.Error, error)
 }
 
@@ -46,6 +46,24 @@ func (ec *executionContext) field_Query_Rinexlist_args(ctx context.Context, rawA
 		}
 	}
 	args["input"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["page"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["page"] = arg1
+	var arg2 int
+	if tmp, ok := rawArgs["perPage"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("perPage"))
+		arg2, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["perPage"] = arg2
 	return args, nil
 }
 
@@ -244,8 +262,10 @@ func (ec *executionContext) fieldContext_Mutation_gnss(_ context.Context, field 
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "upsetDevice":
-				return ec.fieldContext_GnssMutations_upsetDevice(ctx, field)
+			case "updateDevice":
+				return ec.fieldContext_GnssMutations_updateDevice(ctx, field)
+			case "createDevice":
+				return ec.fieldContext_GnssMutations_createDevice(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GnssMutations", field.Name)
 		},
@@ -441,7 +461,7 @@ func (ec *executionContext) _Query_Rinexlist(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Rinexlist(rctx, fc.Args["input"].(*model.RinexInput))
+		return ec.resolvers.Query().Rinexlist(rctx, fc.Args["input"].(*model.RinexInput), fc.Args["page"].(int), fc.Args["perPage"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

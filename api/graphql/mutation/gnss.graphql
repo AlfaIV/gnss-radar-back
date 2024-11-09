@@ -3,14 +3,18 @@ extend type Mutation {
     gnss: GnssMutations!
 }
 
-""" Мутации связанные с авторизацией """
+""" Мутации связанные с gnss """
 type GnssMutations {
-    """ Регистрация """
-    upsetDevice(input: UpsetDeviceInput!): UpsetDeviceOutput! @goField(forceResolver: true)
+    """ Обновить device """
+    updateDevice(input: UpdateDeviceInput!): UpdateDeviceOutput! @goField(forceResolver: true)
+    """ Создать device """
+    createDevice(input: UpdateDeviceInput!): CreateDeviceOutput! @goField(forceResolver: true)
 }
 
-""" Входные параметры для upset device"""
-input UpsetDeviceInput {
+""" Входные параметры для update device"""
+input UpdateDeviceInput {
+    """ Индетификатор """
+    Id: String!
     """ Название девайса """
     Name: String!
     """ Токен """
@@ -21,7 +25,24 @@ input UpsetDeviceInput {
     Coords: CoordsInput!
 }
 
-""" Выходные параметры для upset device """
-type UpsetDeviceOutput {
+""" Входные параметры для create device"""
+input CreateDeviceInput {
+    """ Название девайса """
+    Name: String!
+    """ Токен """
+    Token: String!
+    """ Описание """
+    Description: String
+    """ Координаты """
+    Coords: CoordsInput!
+}
+
+""" Выходные параметры для update device """
+type UpdateDeviceOutput {
+    device: Device!
+}
+
+""" Выходные параметры для create device """
+type CreateDeviceOutput {
     device: Device!
 }

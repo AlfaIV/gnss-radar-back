@@ -48,6 +48,23 @@ type CoordsResults struct {
 	Z string `json:"z"`
 }
 
+// Входные параметры для create device
+type CreateDeviceInput struct {
+	//  Название девайса
+	Name string `json:"Name"`
+	//  Токен
+	Token string `json:"Token"`
+	//  Описание
+	Description *string `json:"Description,omitempty"`
+	//  Координаты
+	Coords *CoordsInput `json:"Coords"`
+}
+
+// Выходные параметры для create device
+type CreateDeviceOutput struct {
+	Device *Device `json:"device"`
+}
+
 type DeviceFilter struct {
 	//  Индетификатор
 	Ids []string `json:"Ids,omitempty"`
@@ -82,10 +99,12 @@ type GNSSPagination struct {
 	Items []*Gnss `json:"items,omitempty"`
 }
 
-// Мутации связанные с авторизацией
+// Мутации связанные с gnss
 type GnssMutations struct {
-	//  Регистрация
-	UpsetDevice *UpsetDeviceOutput `json:"upsetDevice"`
+	//  Обновить device
+	UpdateDevice *UpdateDeviceOutput `json:"updateDevice"`
+	//  Создать device
+	CreateDevice *CreateDeviceOutput `json:"createDevice"`
 }
 
 type Header struct {
@@ -175,8 +194,10 @@ type SignupOutput struct {
 	UserInfo *User `json:"userInfo"`
 }
 
-// Входные параметры для upset device
-type UpsetDeviceInput struct {
+// Входные параметры для update device
+type UpdateDeviceInput struct {
+	//  Индетификатор
+	ID string `json:"Id"`
 	//  Название девайса
 	Name string `json:"Name"`
 	//  Токен
@@ -187,8 +208,8 @@ type UpsetDeviceInput struct {
 	Coords *CoordsInput `json:"Coords"`
 }
 
-// Выходные параметры для upset device
-type UpsetDeviceOutput struct {
+// Выходные параметры для update device
+type UpdateDeviceOutput struct {
 	Device *Device `json:"device"`
 }
 

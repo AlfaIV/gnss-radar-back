@@ -60,6 +60,10 @@ type ComplexityRoot struct {
 		Z func(childComplexity int) int
 	}
 
+	CreateDeviceOutput struct {
+		Device func(childComplexity int) int
+	}
+
 	Device struct {
 		Coords      func(childComplexity int) int
 		Description func(childComplexity int) int
@@ -84,7 +88,8 @@ type ComplexityRoot struct {
 	}
 
 	GnssMutations struct {
-		UpsetDevice func(childComplexity int, input model.UpsetDeviceInput) int
+		CreateDevice func(childComplexity int, input model.UpdateDeviceInput) int
+		UpdateDevice func(childComplexity int, input model.UpdateDeviceInput) int
 	}
 
 	Header struct {
@@ -127,7 +132,7 @@ type ComplexityRoot struct {
 		Errors             func(childComplexity int) int
 		ListDevice         func(childComplexity int, filter model.DeviceFilter, page int, perPage int) int
 		ListGnss           func(childComplexity int, filter model.GNSSFilter, page int, perPage int) int
-		Rinexlist          func(childComplexity int, input *model.RinexInput) int
+		Rinexlist          func(childComplexity int, input *model.RinexInput, page int, perPage int) int
 		__resolve__service func(childComplexity int) int
 	}
 
@@ -153,7 +158,7 @@ type ComplexityRoot struct {
 		UserInfo func(childComplexity int) int
 	}
 
-	UpsetDeviceOutput struct {
+	UpdateDeviceOutput struct {
 		Device func(childComplexity int) int
 	}
 
@@ -251,6 +256,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CoordsResults.Z(childComplexity), true
 
+	case "CreateDeviceOutput.device":
+		if e.complexity.CreateDeviceOutput.Device == nil {
+			break
+		}
+
+		return e.complexity.CreateDeviceOutput.Device(childComplexity), true
+
 	case "Device.Coords":
 		if e.complexity.Device.Coords == nil {
 			break
@@ -328,17 +340,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.GNSSPagination.Items(childComplexity), true
 
-	case "GnssMutations.upsetDevice":
-		if e.complexity.GnssMutations.UpsetDevice == nil {
+	case "GnssMutations.createDevice":
+		if e.complexity.GnssMutations.CreateDevice == nil {
 			break
 		}
 
-		args, err := ec.field_GnssMutations_upsetDevice_args(context.TODO(), rawArgs)
+		args, err := ec.field_GnssMutations_createDevice_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.GnssMutations.UpsetDevice(childComplexity, args["input"].(model.UpsetDeviceInput)), true
+		return e.complexity.GnssMutations.CreateDevice(childComplexity, args["input"].(model.UpdateDeviceInput)), true
+
+	case "GnssMutations.updateDevice":
+		if e.complexity.GnssMutations.UpdateDevice == nil {
+			break
+		}
+
+		args, err := ec.field_GnssMutations_updateDevice_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.GnssMutations.UpdateDevice(childComplexity, args["input"].(model.UpdateDeviceInput)), true
 
 	case "Header.ant_info":
 		if e.complexity.Header.AntInfo == nil {
@@ -554,7 +578,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Rinexlist(childComplexity, args["input"].(*model.RinexInput)), true
+		return e.complexity.Query.Rinexlist(childComplexity, args["input"].(*model.RinexInput), args["page"].(int), args["perPage"].(int)), true
 
 	case "Query._service":
 		if e.complexity.Query.__resolve__service == nil {
@@ -612,12 +636,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignupOutput.UserInfo(childComplexity), true
 
-	case "UpsetDeviceOutput.device":
-		if e.complexity.UpsetDeviceOutput.Device == nil {
+	case "UpdateDeviceOutput.device":
+		if e.complexity.UpdateDeviceOutput.Device == nil {
 			break
 		}
 
-		return e.complexity.UpsetDeviceOutput.Device(childComplexity), true
+		return e.complexity.UpdateDeviceOutput.Device(childComplexity), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -657,13 +681,14 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAuthcheckInput,
 		ec.unmarshalInputCoordsInput,
+		ec.unmarshalInputCreateDeviceInput,
 		ec.unmarshalInputDeviceFilter,
 		ec.unmarshalInputGNSSFilter,
 		ec.unmarshalInputLogoutInput,
 		ec.unmarshalInputRinexInput,
 		ec.unmarshalInputSigninInput,
 		ec.unmarshalInputSignupInput,
-		ec.unmarshalInputUpsetDeviceInput,
+		ec.unmarshalInputUpdateDeviceInput,
 	)
 	first := true
 
@@ -839,14 +864,18 @@ type LogoutOutput {
     gnss: GnssMutations!
 }
 
-""" Мутации связанные с авторизацией """
+""" Мутации связанные с gnss """
 type GnssMutations {
-    """ Регистрация """
-    upsetDevice(input: UpsetDeviceInput!): UpsetDeviceOutput! @goField(forceResolver: true)
+    """ Обновить device """
+    updateDevice(input: UpdateDeviceInput!): UpdateDeviceOutput! @goField(forceResolver: true)
+    """ Создать device """
+    createDevice(input: UpdateDeviceInput!): CreateDeviceOutput! @goField(forceResolver: true)
 }
 
-""" Входные параметры для upset device"""
-input UpsetDeviceInput {
+""" Входные параметры для update device"""
+input UpdateDeviceInput {
+    """ Индетификатор """
+    Id: String!
     """ Название девайса """
     Name: String!
     """ Токен """
@@ -857,8 +886,25 @@ input UpsetDeviceInput {
     Coords: CoordsInput!
 }
 
-""" Выходные параметры для upset device """
-type UpsetDeviceOutput {
+""" Входные параметры для create device"""
+input CreateDeviceInput {
+    """ Название девайса """
+    Name: String!
+    """ Токен """
+    Token: String!
+    """ Описание """
+    Description: String
+    """ Координаты """
+    Coords: CoordsInput!
+}
+
+""" Выходные параметры для update device """
+type UpdateDeviceOutput {
+    device: Device!
+}
+
+""" Выходные параметры для create device """
+type CreateDeviceOutput {
     device: Device!
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/query/authorization.graphql", Input: `extend type Query {
@@ -882,7 +928,8 @@ type AuthcheckOutput {
     listGnss(filter: GNSSFilter!, page: Int! = 1, perPage: Int! = 10): GNSSPagination!
     """ Получить список Device """
     listDevice(filter: DeviceFilter!, page: Int! = 1, perPage: Int! = 10): DevicePagination!
-    Rinexlist(input: RinexInput): RinexPagination!
+    """ Получить список Rinex """
+    Rinexlist(input: RinexInput, , page: Int! = 1, perPage: Int! = 10): RinexPagination!
 }
 
 input RinexInput {
