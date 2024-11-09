@@ -1,8 +1,12 @@
 extend type Query {
     """ Получить список GNSS """
-    listGnss(filter: GNSSFilter!, page: Int! = 1, perPage: Int! = 10): GNSSPagination!
-    """ Получить список Device """
-    listDevice(filter: DeviceFilter!, page: Int! = 1, perPage: Int! = 10): DevicePagination!
+    listgnss(filter: GNSSFilter!): GNSSPagination!
+    rinexlist(input: RinexInput): RinexPagination!
+}
+
+input RinexInput {
+    """ Пусто """
+    _empty: Empty
 }
 
 input GNSSFilter {
@@ -10,23 +14,13 @@ input GNSSFilter {
     Coordinates: CoordsInput!
 }
 
+type RinexPagination {
+    items: [RinexResults!]
+}
+
 type GNSSPagination {
     """ Загруженные элементы """
     items: [GNSS!]
-}
-
-input DeviceFilter {
-    """ Индетификатор """
-    Ids: [String!]
-    """ Название девайса """
-    Names: [String!]
-    """ Токен """
-    Tokens: [String!]
-}
-
-type DevicePagination {
-    """ Загруженные элементы """
-    items: [Device!]
 }
 
 input CoordsInput {

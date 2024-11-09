@@ -34,8 +34,6 @@ type Config struct {
 
 type ResolverRoot interface {
 	AuthorizationMutations() AuthorizationMutationsResolver
-	Device() DeviceResolver
-	GnssMutations() GnssMutationsResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 }
@@ -60,18 +58,6 @@ type ComplexityRoot struct {
 		Z func(childComplexity int) int
 	}
 
-	Device struct {
-		Coords      func(childComplexity int) int
-		Description func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Name        func(childComplexity int) int
-		Token       func(childComplexity int) int
-	}
-
-	DevicePagination struct {
-		Items func(childComplexity int) int
-	}
-
 	GNSS struct {
 		Coordinates   func(childComplexity int) int
 		ID            func(childComplexity int) int
@@ -83,8 +69,24 @@ type ComplexityRoot struct {
 		Items func(childComplexity int) int
 	}
 
-	GnssMutations struct {
-		UpsetDevice func(childComplexity int, input model.UpsetDeviceInput) int
+	Header struct {
+		AntInfo            func(childComplexity int) int
+		AntennaDeltaHen    func(childComplexity int) int
+		ApproxPositionXyz  func(childComplexity int) int
+		Comments           func(childComplexity int) int
+		EndOfHeader        func(childComplexity int) int
+		FileType           func(childComplexity int) int
+		Interval           func(childComplexity int) int
+		MarkerName         func(childComplexity int) int
+		MarkerNumber       func(childComplexity int) int
+		ObserverAgency     func(childComplexity int) int
+		PgmRunByDate       func(childComplexity int) int
+		RecInfo            func(childComplexity int) int
+		RinexVersion       func(childComplexity int) int
+		TimeOfFirstObs     func(childComplexity int) int
+		TimeOfLastObs      func(childComplexity int) int
+		TypesOfObs         func(childComplexity int) int
+		WavelengthFactL1L2 func(childComplexity int) int
 	}
 
 	LogoutOutput struct {
@@ -93,15 +95,34 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		Authorization func(childComplexity int) int
-		Gnss          func(childComplexity int) int
+	}
+
+	Observation struct {
+		EpochFlag  func(childComplexity int) int
+		Satellites func(childComplexity int) int
+		Time       func(childComplexity int) int
 	}
 
 	Query struct {
 		Authcheck          func(childComplexity int, input *model.AuthcheckInput) int
 		Errors             func(childComplexity int) int
-		ListDevice         func(childComplexity int, filter model.DeviceFilter, page int, perPage int) int
-		ListGnss           func(childComplexity int, filter model.GNSSFilter, page int, perPage int) int
+		Listgnss           func(childComplexity int, filter model.GNSSFilter) int
+		Rinexlist          func(childComplexity int, input *model.RinexInput) int
 		__resolve__service func(childComplexity int) int
+	}
+
+	RinexPagination struct {
+		Items func(childComplexity int) int
+	}
+
+	RinexResults struct {
+		Header       func(childComplexity int) int
+		Observations func(childComplexity int) int
+	}
+
+	Satellite struct {
+		Observations func(childComplexity int) int
+		SatelliteID  func(childComplexity int) int
 	}
 
 	SigninOutput struct {
@@ -110,10 +131,6 @@ type ComplexityRoot struct {
 
 	SignupOutput struct {
 		UserInfo func(childComplexity int) int
-	}
-
-	UpsetDeviceOutput struct {
-		Device func(childComplexity int) int
 	}
 
 	User struct {
@@ -210,48 +227,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CoordsResults.Z(childComplexity), true
 
-	case "Device.Coords":
-		if e.complexity.Device.Coords == nil {
-			break
-		}
-
-		return e.complexity.Device.Coords(childComplexity), true
-
-	case "Device.description":
-		if e.complexity.Device.Description == nil {
-			break
-		}
-
-		return e.complexity.Device.Description(childComplexity), true
-
-	case "Device.id":
-		if e.complexity.Device.ID == nil {
-			break
-		}
-
-		return e.complexity.Device.ID(childComplexity), true
-
-	case "Device.name":
-		if e.complexity.Device.Name == nil {
-			break
-		}
-
-		return e.complexity.Device.Name(childComplexity), true
-
-	case "Device.token":
-		if e.complexity.Device.Token == nil {
-			break
-		}
-
-		return e.complexity.Device.Token(childComplexity), true
-
-	case "DevicePagination.items":
-		if e.complexity.DevicePagination.Items == nil {
-			break
-		}
-
-		return e.complexity.DevicePagination.Items(childComplexity), true
-
 	case "GNSS.Coordinates":
 		if e.complexity.GNSS.Coordinates == nil {
 			break
@@ -287,17 +262,124 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.GNSSPagination.Items(childComplexity), true
 
-	case "GnssMutations.upsetDevice":
-		if e.complexity.GnssMutations.UpsetDevice == nil {
+	case "Header.ant_info":
+		if e.complexity.Header.AntInfo == nil {
 			break
 		}
 
-		args, err := ec.field_GnssMutations_upsetDevice_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
+		return e.complexity.Header.AntInfo(childComplexity), true
+
+	case "Header.antenna_delta_hen":
+		if e.complexity.Header.AntennaDeltaHen == nil {
+			break
 		}
 
-		return e.complexity.GnssMutations.UpsetDevice(childComplexity, args["input"].(model.UpsetDeviceInput)), true
+		return e.complexity.Header.AntennaDeltaHen(childComplexity), true
+
+	case "Header.approx_position_xyz":
+		if e.complexity.Header.ApproxPositionXyz == nil {
+			break
+		}
+
+		return e.complexity.Header.ApproxPositionXyz(childComplexity), true
+
+	case "Header.comments":
+		if e.complexity.Header.Comments == nil {
+			break
+		}
+
+		return e.complexity.Header.Comments(childComplexity), true
+
+	case "Header.end_of_header":
+		if e.complexity.Header.EndOfHeader == nil {
+			break
+		}
+
+		return e.complexity.Header.EndOfHeader(childComplexity), true
+
+	case "Header.file_type":
+		if e.complexity.Header.FileType == nil {
+			break
+		}
+
+		return e.complexity.Header.FileType(childComplexity), true
+
+	case "Header.interval":
+		if e.complexity.Header.Interval == nil {
+			break
+		}
+
+		return e.complexity.Header.Interval(childComplexity), true
+
+	case "Header.marker_name":
+		if e.complexity.Header.MarkerName == nil {
+			break
+		}
+
+		return e.complexity.Header.MarkerName(childComplexity), true
+
+	case "Header.marker_number":
+		if e.complexity.Header.MarkerNumber == nil {
+			break
+		}
+
+		return e.complexity.Header.MarkerNumber(childComplexity), true
+
+	case "Header.observer_agency":
+		if e.complexity.Header.ObserverAgency == nil {
+			break
+		}
+
+		return e.complexity.Header.ObserverAgency(childComplexity), true
+
+	case "Header.pgm_run_by_date":
+		if e.complexity.Header.PgmRunByDate == nil {
+			break
+		}
+
+		return e.complexity.Header.PgmRunByDate(childComplexity), true
+
+	case "Header.rec_info":
+		if e.complexity.Header.RecInfo == nil {
+			break
+		}
+
+		return e.complexity.Header.RecInfo(childComplexity), true
+
+	case "Header.rinex_version":
+		if e.complexity.Header.RinexVersion == nil {
+			break
+		}
+
+		return e.complexity.Header.RinexVersion(childComplexity), true
+
+	case "Header.time_of_first_obs":
+		if e.complexity.Header.TimeOfFirstObs == nil {
+			break
+		}
+
+		return e.complexity.Header.TimeOfFirstObs(childComplexity), true
+
+	case "Header.time_of_last_obs":
+		if e.complexity.Header.TimeOfLastObs == nil {
+			break
+		}
+
+		return e.complexity.Header.TimeOfLastObs(childComplexity), true
+
+	case "Header.types_of_obs":
+		if e.complexity.Header.TypesOfObs == nil {
+			break
+		}
+
+		return e.complexity.Header.TypesOfObs(childComplexity), true
+
+	case "Header.wavelength_fact_l1_l2":
+		if e.complexity.Header.WavelengthFactL1L2 == nil {
+			break
+		}
+
+		return e.complexity.Header.WavelengthFactL1L2(childComplexity), true
 
 	case "LogoutOutput._empty":
 		if e.complexity.LogoutOutput.Empty == nil {
@@ -313,12 +395,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Authorization(childComplexity), true
 
-	case "Mutation.gnss":
-		if e.complexity.Mutation.Gnss == nil {
+	case "Observation.epoch_flag":
+		if e.complexity.Observation.EpochFlag == nil {
 			break
 		}
 
-		return e.complexity.Mutation.Gnss(childComplexity), true
+		return e.complexity.Observation.EpochFlag(childComplexity), true
+
+	case "Observation.satellites":
+		if e.complexity.Observation.Satellites == nil {
+			break
+		}
+
+		return e.complexity.Observation.Satellites(childComplexity), true
+
+	case "Observation.time":
+		if e.complexity.Observation.Time == nil {
+			break
+		}
+
+		return e.complexity.Observation.Time(childComplexity), true
 
 	case "Query.authcheck":
 		if e.complexity.Query.Authcheck == nil {
@@ -339,29 +435,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Errors(childComplexity), true
 
-	case "Query.listDevice":
-		if e.complexity.Query.ListDevice == nil {
+	case "Query.listgnss":
+		if e.complexity.Query.Listgnss == nil {
 			break
 		}
 
-		args, err := ec.field_Query_listDevice_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_listgnss_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.ListDevice(childComplexity, args["filter"].(model.DeviceFilter), args["page"].(int), args["perPage"].(int)), true
+		return e.complexity.Query.Listgnss(childComplexity, args["filter"].(model.GNSSFilter)), true
 
-	case "Query.listGnss":
-		if e.complexity.Query.ListGnss == nil {
+	case "Query.rinexlist":
+		if e.complexity.Query.Rinexlist == nil {
 			break
 		}
 
-		args, err := ec.field_Query_listGnss_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_rinexlist_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.ListGnss(childComplexity, args["filter"].(model.GNSSFilter), args["page"].(int), args["perPage"].(int)), true
+		return e.complexity.Query.Rinexlist(childComplexity, args["input"].(*model.RinexInput)), true
 
 	case "Query._service":
 		if e.complexity.Query.__resolve__service == nil {
@@ -369,6 +465,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.__resolve__service(childComplexity), true
+
+	case "RinexPagination.items":
+		if e.complexity.RinexPagination.Items == nil {
+			break
+		}
+
+		return e.complexity.RinexPagination.Items(childComplexity), true
+
+	case "RinexResults.header":
+		if e.complexity.RinexResults.Header == nil {
+			break
+		}
+
+		return e.complexity.RinexResults.Header(childComplexity), true
+
+	case "RinexResults.observations":
+		if e.complexity.RinexResults.Observations == nil {
+			break
+		}
+
+		return e.complexity.RinexResults.Observations(childComplexity), true
+
+	case "Satellite.observations":
+		if e.complexity.Satellite.Observations == nil {
+			break
+		}
+
+		return e.complexity.Satellite.Observations(childComplexity), true
+
+	case "Satellite.satellite_id":
+		if e.complexity.Satellite.SatelliteID == nil {
+			break
+		}
+
+		return e.complexity.Satellite.SatelliteID(childComplexity), true
 
 	case "SigninOutput.userInfo":
 		if e.complexity.SigninOutput.UserInfo == nil {
@@ -383,13 +514,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignupOutput.UserInfo(childComplexity), true
-
-	case "UpsetDeviceOutput.device":
-		if e.complexity.UpsetDeviceOutput.Device == nil {
-			break
-		}
-
-		return e.complexity.UpsetDeviceOutput.Device(childComplexity), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -429,12 +553,11 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAuthcheckInput,
 		ec.unmarshalInputCoordsInput,
-		ec.unmarshalInputDeviceFilter,
 		ec.unmarshalInputGNSSFilter,
 		ec.unmarshalInputLogoutInput,
+		ec.unmarshalInputRinexInput,
 		ec.unmarshalInputSigninInput,
 		ec.unmarshalInputSignupInput,
-		ec.unmarshalInputUpsetDeviceInput,
 	)
 	first := true
 
@@ -536,8 +659,6 @@ var sources = []*ast.Source{
 GraphQL converter
 """
 directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION`, BuiltIn: false},
-	{Name: "../../../../api/graphql/directives/goModel.graphql", Input: `directive @goModel(model: String, models: [String!]) on OBJECT | UNION | INPUT_OBJECT | ENUM | INTERFACE | SCALAR
-`, BuiltIn: false},
 	{Name: "../../../../api/graphql/enums/enums.graphql", Input: `scalar Empty`, BuiltIn: false},
 	{Name: "../../../../api/graphql/enums/errors.graphql", Input: `""" Бизнес ошибки """
 enum Error {
@@ -605,33 +726,6 @@ type LogoutOutput {
     _empty: Empty
 }
 `, BuiltIn: false},
-	{Name: "../../../../api/graphql/mutation/gnss.graphql", Input: `extend type Mutation {
-    """ Мутации связанные с gnss """
-    gnss: GnssMutations!
-}
-
-""" Мутации связанные с авторизацией """
-type GnssMutations {
-    """ Регистрация """
-    upsetDevice(input: UpsetDeviceInput!): UpsetDeviceOutput! @goField(forceResolver: true)
-}
-
-""" Входные параметры для upset device"""
-input UpsetDeviceInput {
-    """ Название девайса """
-    Name: String!
-    """ Токен """
-    Token: String!
-    """ Описание """
-    Description: String
-    """ Координаты """
-    Coords: CoordsInput!
-}
-
-""" Выходные параметры для upset device """
-type UpsetDeviceOutput {
-    device: Device!
-}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/query/authorization.graphql", Input: `extend type Query {
     """ Проверка авторизации """
     authcheck(input: AuthcheckInput): AuthcheckOutput
@@ -650,9 +744,13 @@ type AuthcheckOutput {
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/query/gnss.graphql", Input: `extend type Query {
     """ Получить список GNSS """
-    listGnss(filter: GNSSFilter!, page: Int! = 1, perPage: Int! = 10): GNSSPagination!
-    """ Получить список Device """
-    listDevice(filter: DeviceFilter!, page: Int! = 1, perPage: Int! = 10): DevicePagination!
+    listgnss(filter: GNSSFilter!): GNSSPagination!
+    rinexlist(input: RinexInput): RinexPagination!
+}
+
+input RinexInput {
+    """ Пусто """
+    _empty: Empty
 }
 
 input GNSSFilter {
@@ -660,23 +758,13 @@ input GNSSFilter {
     Coordinates: CoordsInput!
 }
 
+type RinexPagination {
+    items: [RinexResults!]
+}
+
 type GNSSPagination {
     """ Загруженные элементы """
     items: [GNSS!]
-}
-
-input DeviceFilter {
-    """ Индетификатор """
-    Ids: [String!]
-    """ Название девайса """
-    Names: [String!]
-    """ Токен """
-    Tokens: [String!]
-}
-
-type DevicePagination {
-    """ Загруженные элементы """
-    items: [Device!]
 }
 
 input CoordsInput {
@@ -707,19 +795,6 @@ type Query
 
 type Mutation
 `, BuiltIn: false},
-	{Name: "../../../../api/graphql/types/device.graphql", Input: `""" Девайс """
-type Device {
-    """ Индетификатор """
-    id: String!
-    """ Название девайса """
-    name: String!
-    """ Токен """
-    token: String!
-    """ Описание """
-    description: String!
-    """ Координаты """
-    Coords: CoordsResults!
-}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/errors.graphql", Input: `extend type Query {
     """ Словарь ошибок """
     errors: [Error]!
@@ -742,7 +817,42 @@ type CoordsResults {
     """ Координата Z """
     z: String!
 }
-`, BuiltIn: false},
+
+type Header {
+  rinex_version: String!
+  file_type: String!
+  pgm_run_by_date: String!
+  comments: [String!]!
+  marker_name: String!
+  marker_number: String!
+  observer_agency: String!
+  rec_info: String!
+  ant_info: String!
+  approx_position_xyz: [Float!]!
+  antenna_delta_hen: [Float!]!
+  wavelength_fact_l1_l2: [Int!]!
+  types_of_obs: [String!]!
+  interval: Float!
+  time_of_first_obs: String!
+  time_of_last_obs: String!
+  end_of_header: Boolean!
+}
+
+type Satellite {
+  satellite_id: String!
+  observations: [String!]!
+}
+
+type Observation {
+  time: String!
+  epoch_flag: Int!
+  satellites: [Satellite!]!
+}
+
+type RinexResults {
+  header: Header!
+  observations: [Observation!]!
+}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/user.graphql", Input: `""" Информация о юзере """
 type User {
     id: String!

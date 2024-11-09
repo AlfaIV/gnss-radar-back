@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
+	"github.com/Gokert/gnss-radar/internal/store"
 	"github.com/samber/lo"
 	"math/rand"
 	"strconv"
@@ -17,8 +18,8 @@ func RandStringRunes(seed int) string {
 	return string(symbols)
 }
 
-func SerializerGnssCoords(list []*model.GnssCoords) []*model.Gnss {
-	return lo.Map(list, func(item *model.GnssCoords, _ int) *model.Gnss {
+func SerializerGnssCoords(list []*store.ListResult) []*model.Gnss {
+	return lo.Map(list, func(item *store.ListResult, _ int) *model.Gnss {
 		return &model.Gnss{
 			ID:            item.ID,
 			SatelliteID:   item.SatelliteID,

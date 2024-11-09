@@ -20,12 +20,11 @@ import (
 
 type MutationResolver interface {
 	Authorization(ctx context.Context) (*model.AuthorizationMutations, error)
-	Gnss(ctx context.Context) (*model.GnssMutations, error)
 }
 type QueryResolver interface {
 	Authcheck(ctx context.Context, input *model.AuthcheckInput) (*model.AuthcheckOutput, error)
-	ListGnss(ctx context.Context, filter model.GNSSFilter, page int, perPage int) (*model.GNSSPagination, error)
-	ListDevice(ctx context.Context, filter model.DeviceFilter, page int, perPage int) (*model.DevicePagination, error)
+	Listgnss(ctx context.Context, filter model.GNSSFilter) (*model.GNSSPagination, error)
+	Rinexlist(ctx context.Context, input *model.RinexInput) (*model.RinexPagination, error)
 	Errors(ctx context.Context) ([]*model.Error, error)
 }
 
@@ -63,40 +62,7 @@ func (ec *executionContext) field_Query_authcheck_args(ctx context.Context, rawA
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_listDevice_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.DeviceFilter
-	if tmp, ok := rawArgs["filter"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg0, err = ec.unmarshalNDeviceFilter2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDeviceFilter(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["filter"] = arg0
-	var arg1 int
-	if tmp, ok := rawArgs["page"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
-		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["page"] = arg1
-	var arg2 int
-	if tmp, ok := rawArgs["perPage"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("perPage"))
-		arg2, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["perPage"] = arg2
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_listGnss_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_listgnss_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.GNSSFilter
@@ -108,24 +74,21 @@ func (ec *executionContext) field_Query_listGnss_args(ctx context.Context, rawAr
 		}
 	}
 	args["filter"] = arg0
-	var arg1 int
-	if tmp, ok := rawArgs["page"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
-		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_rinexlist_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.RinexInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalORinexInput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐRinexInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["page"] = arg1
-	var arg2 int
-	if tmp, ok := rawArgs["perPage"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("perPage"))
-		arg2, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["perPage"] = arg2
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -189,54 +152,6 @@ func (ec *executionContext) fieldContext_Mutation_authorization(_ context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_gnss(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_gnss(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().Gnss(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.GnssMutations)
-	fc.Result = res
-	return ec.marshalNGnssMutations2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐGnssMutations(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_gnss(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "upsetDevice":
-				return ec.fieldContext_GnssMutations_upsetDevice(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type GnssMutations", field.Name)
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Query_authcheck(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_authcheck(ctx, field)
 	if err != nil {
@@ -293,8 +208,8 @@ func (ec *executionContext) fieldContext_Query_authcheck(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_listGnss(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_listGnss(ctx, field)
+func (ec *executionContext) _Query_listgnss(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_listgnss(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -307,7 +222,7 @@ func (ec *executionContext) _Query_listGnss(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ListGnss(rctx, fc.Args["filter"].(model.GNSSFilter), fc.Args["page"].(int), fc.Args["perPage"].(int))
+		return ec.resolvers.Query().Listgnss(rctx, fc.Args["filter"].(model.GNSSFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -324,7 +239,7 @@ func (ec *executionContext) _Query_listGnss(ctx context.Context, field graphql.C
 	return ec.marshalNGNSSPagination2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐGNSSPagination(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_listGnss(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_listgnss(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -345,15 +260,15 @@ func (ec *executionContext) fieldContext_Query_listGnss(ctx context.Context, fie
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_listGnss_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_listgnss_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_listDevice(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_listDevice(ctx, field)
+func (ec *executionContext) _Query_rinexlist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_rinexlist(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -366,7 +281,7 @@ func (ec *executionContext) _Query_listDevice(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ListDevice(rctx, fc.Args["filter"].(model.DeviceFilter), fc.Args["page"].(int), fc.Args["perPage"].(int))
+		return ec.resolvers.Query().Rinexlist(rctx, fc.Args["input"].(*model.RinexInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -378,12 +293,12 @@ func (ec *executionContext) _Query_listDevice(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.DevicePagination)
+	res := resTmp.(*model.RinexPagination)
 	fc.Result = res
-	return ec.marshalNDevicePagination2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDevicePagination(ctx, field.Selections, res)
+	return ec.marshalNRinexPagination2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐRinexPagination(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_listDevice(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_rinexlist(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -392,9 +307,9 @@ func (ec *executionContext) fieldContext_Query_listDevice(ctx context.Context, f
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "items":
-				return ec.fieldContext_DevicePagination_items(ctx, field)
+				return ec.fieldContext_RinexPagination_items(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type DevicePagination", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type RinexPagination", field.Name)
 		},
 	}
 	defer func() {
@@ -404,7 +319,7 @@ func (ec *executionContext) fieldContext_Query_listDevice(ctx context.Context, f
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_listDevice_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_rinexlist_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -670,13 +585,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "gnss":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_gnss(ctx, field)
-			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -738,7 +646,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "listGnss":
+		case "listgnss":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -747,7 +655,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_listGnss(ctx, field)
+				res = ec._Query_listgnss(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -760,7 +668,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "listDevice":
+		case "rinexlist":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -769,7 +677,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_listDevice(ctx, field)
+				res = ec._Query_rinexlist(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
