@@ -28,10 +28,11 @@ type Device struct {
 }
 
 type Task struct {
-	ID           string       `db:"id"`
-	SatelliteID  string       `db:"satellite_id"`
-	SignalType   SignalType   `db:"signal_type"`
-	GroupingType GroupingType `db:"grouping_type"`
-	StartAt      time.Time    `db:"start_at"`
-	EndAt        time.Time    `db:"end_at"`
+	ID            string       `db:"id"`
+	SatelliteID   string       `db:"satellite_id"`
+	SatelliteName string       `db:"satellite_name"`
+	SignalType    SignalType   `db:"signal_type"`
+	GroupingType  GroupingType `db:"grouping_type"`
+	StartAt       time.Time    `db:"start_at"`
+	EndAt         time.Time    `db:"end_at"`
 }

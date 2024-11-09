@@ -4,11 +4,13 @@ import (
 	"context"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	sq "github.com/Masterminds/squirrel"
+	"time"
 )
 
 const (
 	gnssTable   = "gnss_coords"
 	deviceTable = "devices"
+	taskTable   = "tasks"
 )
 
 type IGnssStore interface {
@@ -16,6 +18,9 @@ type IGnssStore interface {
 	CreateDevice(ctx context.Context, params CreateDeviceParams) (*model.Device, error)
 	UpdateDevice(ctx context.Context, params UpdateDeviceParams) (*model.Device, error)
 	ListDevice(ctx context.Context, filter ListDeviceFilter) ([]*model.Device, error)
+	CreateTask(ctx context.Context, params CreateTaskParams) (*model.Task, error)
+	UpdateTask(ctx context.Context, params UpdateTaskParams) (*model.Task, error)
+	DeleteTask(ctx context.Context, filter DeleteTaskFilter) error
 	RinexList(ctx context.Context) ([]*model.RinexResults, error)
 }
 
@@ -150,6 +155,88 @@ func (g *GnssStore) UpdateDevice(ctx context.Context, params UpdateDeviceParams)
 			"z":           params.Coords.Z,
 		}).
 		Suffix("RETURNING id, name, token, description, x, y, z")
+
+	var device model.Device
+	if err := g.storage.db.Getx(ctx, &device, query); err != nil {
+		return nil, postgresError(err)
+	}
+
+	return &device, nil
+}
+
+type CreateTaskParams struct {
+	SatelliteID   string
+	SatelliteName string
+	SignalType    model.SignalType
+	GroupingType  model.GroupingType
+	StartAt       time.Time
+	EndAt         time.Time
+}
+
+func (g *GnssStore) CreateTask(ctx context.Context, params CreateTaskParams) (*model.Task, error) {
+	query := g.storage.Builder().
+		Insert(taskTable).
+		SetMap(map[string]any{
+			"satellite_id":   params.SatelliteID,
+			"satellite_name": params.SatelliteName,
+			"signal_type":    params.SignalType,
+			"grouping_type":  params.GroupingType,
+			"start_at":       params.StartAt,
+			"end_at":         params.EndAt,
+		}).
+		Suffix("RETURNING id, satellite_id, satellite_name, signal_type, grouping_type, start_at, end_at")
+
+	var task model.Task
+	if err := g.storage.db.Getx(ctx, &task, query); err != nil {
+		return nil, postgresError(err)
+	}
+
+	return &task, nil
+}
+
+type DeleteTaskFilter struct {
+	Id string
+}
+
+func (g *GnssStore) DeleteTask(ctx context.Context, filter DeleteTaskFilter) error {
+	query := g.storage.Builder().
+		Delete(taskTable).
+		Where(sq.Eq{"id": filter.Id})
+
+	if filter.Id != "" {
+		query = query.Where(sq.Eq{"id": filter.Id})
+	}
+
+	if _, err := g.storage.db.Execx(ctx, query); err != nil {
+		return postgresError(err)
+	}
+
+	return nil
+}
+
+type UpdateTaskParams struct {
+	Id            string
+	SatelliteID   string
+	SatelliteName string
+	SignalType    model.SignalType
+	GroupingType  model.GroupingType
+	StartAt       time.Time
+	EndAt         time.Time
+}
+
+func (g *GnssStore) UpdateTask(ctx context.Context, params UpdateTaskParams) (*model.Device, error) {
+	query := g.storage.Builder().
+		Update(taskTable).
+		Where(sq.Eq{"id": params.Id}).
+		SetMap(map[string]any{
+			"satellite_id":   params.SatelliteID,
+			"satellite_name": params.SatelliteName,
+			"signal_type":    params.SignalType,
+			"grouping_type":  params.GroupingType,
+			"start_at":       params.StartAt,
+			"end_at":         params.EndAt,
+		}).
+		Suffix("RETURNING id, satellite_id, satellite_name, signal_type, grouping_type, start_at, end_at")
 
 	var device model.Device
 	if err := g.storage.db.Getx(ctx, &device, query); err != nil {

@@ -30,6 +30,17 @@ CREATE TABLE IF NOT EXISTS devices (
     z DOUBLE PRECISION NOT NULL
 );
 
+DROP TABLE IF EXISTS tasks CASCADE;
+CREATE TABLE IF NOT EXISTS tasks (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    satellite_id TEXT NOT NULL,
+    satellite_name TEXT NOT NULL,
+    signal_type TEXT NOT NULL,
+    grouping_type TEXT NOT NULL,
+    start_at timestamptz NOT NULL,
+    end_at timestamptz NOT NULL
+);
+
 INSERT INTO profile(login, password, role) VALUES ('admin', '\xc7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', 'admin');
 
 INSERT INTO gnss_coords (satellite_id, satellite_name, x, y, z) VALUES

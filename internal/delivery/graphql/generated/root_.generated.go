@@ -64,6 +64,14 @@ type ComplexityRoot struct {
 		Device func(childComplexity int) int
 	}
 
+	CreateTaskOutput struct {
+		Task func(childComplexity int) int
+	}
+
+	DeleteTaskOutput struct {
+		Empty func(childComplexity int) int
+	}
+
 	Device struct {
 		Coords      func(childComplexity int) int
 		Description func(childComplexity int) int
@@ -89,7 +97,10 @@ type ComplexityRoot struct {
 
 	GnssMutations struct {
 		CreateDevice func(childComplexity int, input model.UpdateDeviceInput) int
+		CreateTask   func(childComplexity int, input model.CreateTaskInput) int
+		DeleteTask   func(childComplexity int, input model.DeleteTaskInput) int
 		UpdateDevice func(childComplexity int, input model.UpdateDeviceInput) int
+		UpdateTask   func(childComplexity int, input model.UpdateTaskInput) int
 	}
 
 	Header struct {
@@ -158,8 +169,22 @@ type ComplexityRoot struct {
 		UserInfo func(childComplexity int) int
 	}
 
+	Task struct {
+		EndAt         func(childComplexity int) int
+		GroupingType  func(childComplexity int) int
+		ID            func(childComplexity int) int
+		SatelliteID   func(childComplexity int) int
+		SatelliteName func(childComplexity int) int
+		SignalType    func(childComplexity int) int
+		StartAt       func(childComplexity int) int
+	}
+
 	UpdateDeviceOutput struct {
 		Device func(childComplexity int) int
+	}
+
+	UpdateTaskOutput struct {
+		Task func(childComplexity int) int
 	}
 
 	User struct {
@@ -263,6 +288,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CreateDeviceOutput.Device(childComplexity), true
 
+	case "CreateTaskOutput.task":
+		if e.complexity.CreateTaskOutput.Task == nil {
+			break
+		}
+
+		return e.complexity.CreateTaskOutput.Task(childComplexity), true
+
+	case "DeleteTaskOutput._empty":
+		if e.complexity.DeleteTaskOutput.Empty == nil {
+			break
+		}
+
+		return e.complexity.DeleteTaskOutput.Empty(childComplexity), true
+
 	case "Device.Coords":
 		if e.complexity.Device.Coords == nil {
 			break
@@ -352,6 +391,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.GnssMutations.CreateDevice(childComplexity, args["input"].(model.UpdateDeviceInput)), true
 
+	case "GnssMutations.createTask":
+		if e.complexity.GnssMutations.CreateTask == nil {
+			break
+		}
+
+		args, err := ec.field_GnssMutations_createTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.GnssMutations.CreateTask(childComplexity, args["input"].(model.CreateTaskInput)), true
+
+	case "GnssMutations.deleteTask":
+		if e.complexity.GnssMutations.DeleteTask == nil {
+			break
+		}
+
+		args, err := ec.field_GnssMutations_deleteTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.GnssMutations.DeleteTask(childComplexity, args["input"].(model.DeleteTaskInput)), true
+
 	case "GnssMutations.updateDevice":
 		if e.complexity.GnssMutations.UpdateDevice == nil {
 			break
@@ -363,6 +426,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GnssMutations.UpdateDevice(childComplexity, args["input"].(model.UpdateDeviceInput)), true
+
+	case "GnssMutations.updateTask":
+		if e.complexity.GnssMutations.UpdateTask == nil {
+			break
+		}
+
+		args, err := ec.field_GnssMutations_updateTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.GnssMutations.UpdateTask(childComplexity, args["input"].(model.UpdateTaskInput)), true
 
 	case "Header.ant_info":
 		if e.complexity.Header.AntInfo == nil {
@@ -636,12 +711,68 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SignupOutput.UserInfo(childComplexity), true
 
+	case "Task.endAt":
+		if e.complexity.Task.EndAt == nil {
+			break
+		}
+
+		return e.complexity.Task.EndAt(childComplexity), true
+
+	case "Task.groupingType":
+		if e.complexity.Task.GroupingType == nil {
+			break
+		}
+
+		return e.complexity.Task.GroupingType(childComplexity), true
+
+	case "Task.id":
+		if e.complexity.Task.ID == nil {
+			break
+		}
+
+		return e.complexity.Task.ID(childComplexity), true
+
+	case "Task.satelliteId":
+		if e.complexity.Task.SatelliteID == nil {
+			break
+		}
+
+		return e.complexity.Task.SatelliteID(childComplexity), true
+
+	case "Task.satelliteName":
+		if e.complexity.Task.SatelliteName == nil {
+			break
+		}
+
+		return e.complexity.Task.SatelliteName(childComplexity), true
+
+	case "Task.signalType":
+		if e.complexity.Task.SignalType == nil {
+			break
+		}
+
+		return e.complexity.Task.SignalType(childComplexity), true
+
+	case "Task.startAt":
+		if e.complexity.Task.StartAt == nil {
+			break
+		}
+
+		return e.complexity.Task.StartAt(childComplexity), true
+
 	case "UpdateDeviceOutput.device":
 		if e.complexity.UpdateDeviceOutput.Device == nil {
 			break
 		}
 
 		return e.complexity.UpdateDeviceOutput.Device(childComplexity), true
+
+	case "UpdateTaskOutput.task":
+		if e.complexity.UpdateTaskOutput.Task == nil {
+			break
+		}
+
+		return e.complexity.UpdateTaskOutput.Task(childComplexity), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -682,6 +813,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputAuthcheckInput,
 		ec.unmarshalInputCoordsInput,
 		ec.unmarshalInputCreateDeviceInput,
+		ec.unmarshalInputCreateTaskInput,
+		ec.unmarshalInputDeleteTaskInput,
 		ec.unmarshalInputDeviceFilter,
 		ec.unmarshalInputGNSSFilter,
 		ec.unmarshalInputLogoutInput,
@@ -689,6 +822,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputSigninInput,
 		ec.unmarshalInputSignupInput,
 		ec.unmarshalInputUpdateDeviceInput,
+		ec.unmarshalInputUpdateTaskInput,
 	)
 	first := true
 
@@ -815,7 +949,9 @@ enum SignalType {
     """ L3 """
     SIGNAL_TYPE_L3
 }`, BuiltIn: false},
-	{Name: "../../../../api/graphql/enums/enums.graphql", Input: `scalar Empty`, BuiltIn: false},
+	{Name: "../../../../api/graphql/enums/enums.graphql", Input: `scalar Empty
+
+scalar Time`, BuiltIn: false},
 	{Name: "../../../../api/graphql/enums/errors.graphql", Input: `""" Бизнес ошибки """
 enum Error {
     """ Уже cуществует """
@@ -893,9 +1029,15 @@ type GnssMutations {
     updateDevice(input: UpdateDeviceInput!): UpdateDeviceOutput! @goField(forceResolver: true)
     """ Создать device """
     createDevice(input: UpdateDeviceInput!): CreateDeviceOutput! @goField(forceResolver: true)
+    """ Создать task """
+    createTask(input: CreateTaskInput!): CreateTaskOutput! @goField(forceResolver: true)
+    """ Обновить task """
+    updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true)
+    """ Удалить task """
+    deleteTask(input: DeleteTaskInput!): DeleteTaskOutput! @goField(forceResolver: true)
 }
 
-""" Входные параметры для update device"""
+""" Входные параметры для update device """
 input UpdateDeviceInput {
     """ Индетификатор """
     Id: String!
@@ -909,7 +1051,7 @@ input UpdateDeviceInput {
     Coords: CoordsInput!
 }
 
-""" Входные параметры для create device"""
+""" Входные параметры для create device """
 input CreateDeviceInput {
     """ Название девайса """
     Name: String!
@@ -929,6 +1071,62 @@ type UpdateDeviceOutput {
 """ Выходные параметры для create device """
 type CreateDeviceOutput {
     device: Device!
+}
+
+""" Входные параметры для create task """
+input CreateTaskInput {
+    """ Id спутника """
+    satelliteId: String!
+    """ Имя спутника """
+    satelliteName: String!
+    """ Тип сигнала """
+    signalType: SignalType!
+    """ Тип группировки """
+    groupingType: GroupingType!
+    """ Время начала """
+    startAt: Time!
+    """ Время конца """
+    endAt: Time!
+}
+
+""" Выходные параметры для create task """
+type CreateTaskOutput {
+    task: Task
+}
+
+""" Входные параметры для update task """
+input UpdateTaskInput {
+    """ Индетификатор """
+    id: String!
+    """ Id спутника """
+    satelliteId: String!
+    """ Имя спутника """
+    satelliteName: String!
+    """ Тип сигнала """
+    signalType: SignalType!
+    """ Тип группировки """
+    groupingType: GroupingType!
+    """ Время начала """
+    startAt: Time!
+    """ Время конца """
+    endAt: Time!
+}
+
+""" Выходные параметры для update task """
+type UpdateTaskOutput {
+    task: Task
+}
+
+""" Входные параметры для delete task """
+type DeleteTaskOutput {
+    """ Пусто """
+    _empty: Empty
+}
+
+""" Входные параметры для delete task """
+input DeleteTaskInput {
+    """ Индетификатор """
+    id: String!
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/query/authorization.graphql", Input: `extend type Query {
     """ Проверка авторизации """
@@ -1088,6 +1286,22 @@ type Observation {
 type RinexResults {
     header: Header!
     observations: [Observation!]!
+}`, BuiltIn: false},
+	{Name: "../../../../api/graphql/types/tasks.graphql", Input: `type Task {
+    """ Индетификатор """
+    id: String!
+    """ Id спутника """
+    satelliteId: String!
+    """ Имя спутника """
+    satelliteName: String!
+    """ Тип сигнала """
+    signalType: SignalType!
+    """ Тип группировки """
+    groupingType: GroupingType!
+    """ Время начала """
+    startAt: Time!
+    """ Время конца """
+    endAt: Time!
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/user.graphql", Input: `""" Информация о юзере """
 type User {

@@ -266,6 +266,12 @@ func (ec *executionContext) fieldContext_Mutation_gnss(_ context.Context, field 
 				return ec.fieldContext_GnssMutations_updateDevice(ctx, field)
 			case "createDevice":
 				return ec.fieldContext_GnssMutations_createDevice(ctx, field)
+			case "createTask":
+				return ec.fieldContext_GnssMutations_createTask(ctx, field)
+			case "updateTask":
+				return ec.fieldContext_GnssMutations_updateTask(ctx, field)
+			case "deleteTask":
+				return ec.fieldContext_GnssMutations_deleteTask(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GnssMutations", field.Name)
 		},

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 )
 
 // Выходные параметры для проверки авторизации
@@ -65,6 +66,39 @@ type CreateDeviceOutput struct {
 	Device *Device `json:"device"`
 }
 
+// Входные параметры для create task
+type CreateTaskInput struct {
+	//  Id спутника
+	SatelliteID string `json:"satelliteId"`
+	//  Имя спутника
+	SatelliteName string `json:"satelliteName"`
+	//  Тип сигнала
+	SignalType SignalType `json:"signalType"`
+	//  Тип группировки
+	GroupingType GroupingType `json:"groupingType"`
+	//  Время начала
+	StartAt time.Time `json:"startAt"`
+	//  Время конца
+	EndAt time.Time `json:"endAt"`
+}
+
+// Выходные параметры для create task
+type CreateTaskOutput struct {
+	Task *Task `json:"task,omitempty"`
+}
+
+// Входные параметры для delete task
+type DeleteTaskInput struct {
+	//  Индетификатор
+	ID string `json:"id"`
+}
+
+// Входные параметры для delete task
+type DeleteTaskOutput struct {
+	//  Пусто
+	Empty *string `json:"_empty,omitempty"`
+}
+
 type DeviceFilter struct {
 	//  Индетификатор
 	Ids []string `json:"Ids,omitempty"`
@@ -106,6 +140,12 @@ type GnssMutations struct {
 	UpdateDevice *UpdateDeviceOutput `json:"updateDevice"`
 	//  Создать device
 	CreateDevice *CreateDeviceOutput `json:"createDevice"`
+	//  Создать task
+	CreateTask *CreateTaskOutput `json:"createTask"`
+	//  Обновить task
+	UpdateTask *UpdateTaskOutput `json:"updateTask"`
+	//  Удалить task
+	DeleteTask *DeleteTaskOutput `json:"deleteTask"`
 }
 
 type Header struct {
@@ -212,6 +252,29 @@ type UpdateDeviceInput struct {
 // Выходные параметры для update device
 type UpdateDeviceOutput struct {
 	Device *Device `json:"device"`
+}
+
+// Входные параметры для update task
+type UpdateTaskInput struct {
+	//  Индетификатор
+	ID string `json:"id"`
+	//  Id спутника
+	SatelliteID string `json:"satelliteId"`
+	//  Имя спутника
+	SatelliteName string `json:"satelliteName"`
+	//  Тип сигнала
+	SignalType SignalType `json:"signalType"`
+	//  Тип группировки
+	GroupingType GroupingType `json:"groupingType"`
+	//  Время начала
+	StartAt time.Time `json:"startAt"`
+	//  Время конца
+	EndAt time.Time `json:"endAt"`
+}
+
+// Выходные параметры для update task
+type UpdateTaskOutput struct {
+	Task *Task `json:"task,omitempty"`
 }
 
 // Бизнес ошибки

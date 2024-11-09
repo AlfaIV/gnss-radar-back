@@ -4,9 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
-	"strconv"
-
 	"github.com/Gokert/gnss-radar/internal/store"
+	"strconv"
 )
 
 type IGnss interface {
@@ -15,6 +14,9 @@ type IGnss interface {
 	CreateDevice(ctx context.Context, params CreateDeviceParams) (*model.Device, error)
 	UpdateDevice(ctx context.Context, params UpdateDeviceParams) (*model.Device, error)
 	RinexList(ctx context.Context, req RinexRequest) ([]*model.RinexResults, error)
+	CreateTask(ctx context.Context, params store.CreateTaskParams) (*model.Task, error)
+	UpdateTask(ctx context.Context, params store.UpdateTaskParams) (*model.Task, error)
+	DeleteTask(ctx context.Context, filter store.DeleteTaskFilter) error
 }
 
 type GnssService struct {
@@ -51,7 +53,7 @@ func (g *GnssService) ListGnss(ctx context.Context, req ListGnssRequest) ([]*mod
 		Paginator: req.Paginator,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("gnssStore.List: %w", err)
+		return nil, fmt.Errorf("gnssStore.ListGnssCoords: %w", err)
 	}
 
 	return gnss, nil
@@ -91,7 +93,7 @@ func (g *GnssService) CreateDevice(ctx context.Context, params CreateDeviceParam
 		},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("gnssStore.UpsetDevice: %w", err)
+		return nil, fmt.Errorf("gnssStore.CreateDevice: %w", err)
 	}
 
 	return device, nil
@@ -167,4 +169,31 @@ func (g *GnssService) RinexList(ctx context.Context, req RinexRequest) ([]*model
 	}
 
 	return rinexlist, nil
+}
+
+func (g *GnssService) CreateTask(ctx context.Context, params store.CreateTaskParams) (*model.Task, error) {
+	task, err := g.gnssStore.CreateTask(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.CreateTask: %w", err)
+	}
+
+	return task, nil
+}
+
+func (g *GnssService) UpdateTask(ctx context.Context, params store.UpdateTaskParams) (*model.Task, error) {
+	task, err := g.gnssStore.UpdateTask(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.UpdateTask: %w", err)
+	}
+
+	return task, nil
+}
+
+func (g *GnssService) DeleteTask(ctx context.Context, filter store.DeleteTaskFilter) error {
+	err := g.gnssStore.DeleteTask(ctx, filter)
+	if err != nil {
+		return fmt.Errorf("gnssStore.DeleteTask: %w", err)
+	}
+
+	return nil
 }

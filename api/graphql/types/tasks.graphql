@@ -1,0 +1,16 @@
+type Task {
+    """ Индетификатор """
+    id: String!
+    """ Id спутника """
+    satelliteId: String!
+    """ Имя спутника """
+    satelliteName: String!
+    """ Тип сигнала """
+    signalType: SignalType!
+    """ Тип группировки """
+    groupingType: GroupingType!
+    """ Время начала """
+    startAt: Time!
+    """ Время конца """
+    endAt: Time!
+}

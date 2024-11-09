@@ -12,6 +12,7 @@ import (
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	"github.com/Gokert/gnss-radar/internal/pkg/utils"
 	"github.com/Gokert/gnss-radar/internal/service"
+	"github.com/Gokert/gnss-radar/internal/store"
 )
 
 // UpdateDevice is the resolver for the updateDevice field.
@@ -51,6 +52,53 @@ func (r *gnssMutationsResolver) CreateDevice(ctx context.Context, obj *model.Gns
 	return &model.CreateDeviceOutput{
 		Device: device,
 	}, nil
+}
+
+// CreateTask is the resolver for the createTask field.
+func (r *gnssMutationsResolver) CreateTask(ctx context.Context, obj *model.GnssMutations, input model.CreateTaskInput) (*model.CreateTaskOutput, error) {
+	task, err := r.gnssSevice.CreateTask(ctx, store.CreateTaskParams{
+		SatelliteID:   input.SatelliteID,
+		SatelliteName: input.SatelliteName,
+		SignalType:    input.SignalType,
+		GroupingType:  input.GroupingType,
+		StartAt:       input.StartAt,
+		EndAt:         input.EndAt,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gnssSevice.CreateTask %w", err)
+	}
+
+	return &model.CreateTaskOutput{Task: task}, nil
+}
+
+// UpdateTask is the resolver for the updateTask field.
+func (r *gnssMutationsResolver) UpdateTask(ctx context.Context, obj *model.GnssMutations, input model.UpdateTaskInput) (*model.UpdateTaskOutput, error) {
+	task, err := r.gnssSevice.UpdateTask(ctx, store.UpdateTaskParams{
+		Id:            input.ID,
+		SatelliteID:   input.SatelliteID,
+		SatelliteName: input.SatelliteName,
+		SignalType:    input.SignalType,
+		GroupingType:  input.GroupingType,
+		StartAt:       input.StartAt,
+		EndAt:         input.EndAt,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gnssSevice.UpdateTask %w", err)
+	}
+
+	return &model.UpdateTaskOutput{
+		Task: task,
+	}, nil
+}
+
+// DeleteTask is the resolver for the deleteTask field.
+func (r *gnssMutationsResolver) DeleteTask(ctx context.Context, obj *model.GnssMutations, input model.DeleteTaskInput) (*model.DeleteTaskOutput, error) {
+	err := r.gnssSevice.DeleteTask(ctx, store.DeleteTaskFilter{Id: input.ID})
+	if err != nil {
+		return nil, fmt.Errorf("gnssSevice.DeleteTask %w", err)
+	}
+
+	return &model.DeleteTaskOutput{}, nil
 }
 
 // Gnss is the resolver for the gnss field.
