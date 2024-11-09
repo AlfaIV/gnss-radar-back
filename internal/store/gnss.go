@@ -120,12 +120,12 @@ func (g *GnssStore) UpsetDevice(ctx context.Context, params UpsetDeviceParams) (
 		`).
 		Suffix("RETURNING id, name, token, description, x, y, z")
 
-	device := &model.Device{}
+	var device model.Device
 	if err := g.storage.db.Getx(ctx, &device, query); err != nil {
 		return nil, postgresError(err)
 	}
 
-	return device, nil
+	return &device, nil
 }
 
 type ListDeviceFilter struct {
