@@ -7,19 +7,52 @@ package graphql
 import (
 	"context"
 	"fmt"
-	"github.com/Gokert/gnss-radar/internal/pkg/utils"
 
+	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
+	"github.com/Gokert/gnss-radar/internal/pkg/utils"
 	"github.com/Gokert/gnss-radar/internal/service"
 )
 
-// Listgnss is the resolver for the listgnss field.
-func (r *queryResolver) Listgnss(ctx context.Context, filter model.GNSSFilter) (*model.GNSSPagination, error) {
+// UpsetDevice is the resolver for the upsetDevice field.
+func (r *gnssMutationsResolver) UpsetDevice(ctx context.Context, obj *model.GnssMutations, input model.UpsetDeviceInput) (*model.UpsetDeviceOutput, error) {
+	device, err := r.gnssSevice.UpsetDevice(ctx, service.UpsetDeviceParams{
+		Name:        input.Name,
+		Token:       input.Token,
+		Description: input.Description,
+		X:           input.Coords.X,
+		Y:           input.Coords.Y,
+		Z:           input.Coords.Z,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gnssSevice.UpsetDevice %w", err)
+	}
+
+	return &model.UpsetDeviceOutput{
+		Device: device,
+	}, nil
+}
+
+// Gnss is the resolver for the gnss field.
+func (r *mutationResolver) Gnss(ctx context.Context) (*model.GnssMutations, error) {
+	return &model.GnssMutations{}, nil
+}
+
+// ListGnss is the resolver for the listGnss field.
+func (r *queryResolver) ListGnss(ctx context.Context, filter model.GNSSFilter, page int, perPage int) (*model.GNSSPagination, error) {
 	if filter.Coordinates == nil {
 		return nil, nil
 	}
 
-	gnssList, err := r.gnssSevice.ListGnss(ctx, service.ListRequest{X: filter.Coordinates.X, Y: filter.Coordinates.Y, Z: filter.Coordinates.Z})
+	gnssList, err := r.gnssSevice.ListGnss(ctx, service.ListGnssRequest{
+		X: filter.Coordinates.X,
+		Y: filter.Coordinates.Y,
+		Z: filter.Coordinates.Z,
+		Paginator: model.Paginator{
+			Page:    uint64(page),
+			PerPage: uint64(perPage),
+		},
+	})
 	if err != nil {
 		return nil, fmt.Errorf("gnssSevice.ListGnss: %w", err)
 	}
@@ -28,3 +61,26 @@ func (r *queryResolver) Listgnss(ctx context.Context, filter model.GNSSFilter) (
 		Items: utils.SerializerGnssCoords(gnssList),
 	}, nil
 }
+
+// ListDevice is the resolver for the listDevice field.
+func (r *queryResolver) ListDevice(ctx context.Context, filter model.DeviceFilter, page int, perPage int) (*model.DevicePagination, error) {
+	devices, err := r.gnssSevice.ListDevice(ctx, service.ListDeviceFilter{
+		Ids:    filter.Ids,
+		Names:  filter.Names,
+		Tokens: filter.Tokens,
+		Paginator: model.Paginator{
+			Page:    uint64(page),
+			PerPage: uint64(perPage),
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gnssSevice.ListDevice: %w", err)
+	}
+
+	return &model.DevicePagination{Items: devices}, nil
+}
+
+// GnssMutations returns generated.GnssMutationsResolver implementation.
+func (r *Resolver) GnssMutations() generated.GnssMutationsResolver { return &gnssMutationsResolver{r} }
+
+type gnssMutationsResolver struct{ *Resolver }

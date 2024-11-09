@@ -17,9 +17,28 @@ import (
 
 // region    ************************** generated!.gotpl **************************
 
+type GnssMutationsResolver interface {
+	UpsetDevice(ctx context.Context, obj *model.GnssMutations, input model.UpsetDeviceInput) (*model.UpsetDeviceOutput, error)
+}
+
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_GnssMutations_upsetDevice_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpsetDeviceInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpsetDeviceInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐUpsetDeviceInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 // endregion ***************************** args.gotpl *****************************
 
@@ -156,6 +175,59 @@ func (ec *executionContext) fieldContext_CoordsResults_z(_ context.Context, fiel
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DevicePagination_items(ctx context.Context, field graphql.CollectedField, obj *model.DevicePagination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DevicePagination_items(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Items, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Device)
+	fc.Result = res
+	return ec.marshalODevice2ᚕᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDeviceᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DevicePagination_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DevicePagination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Device_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Device_name(ctx, field)
+			case "token":
+				return ec.fieldContext_Device_token(ctx, field)
+			case "description":
+				return ec.fieldContext_Device_description(ctx, field)
+			case "Coords":
+				return ec.fieldContext_Device_Coords(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Device", field.Name)
 		},
 	}
 	return fc, nil
@@ -396,6 +468,121 @@ func (ec *executionContext) fieldContext_GNSSPagination_items(_ context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _GnssMutations_upsetDevice(ctx context.Context, field graphql.CollectedField, obj *model.GnssMutations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GnssMutations_upsetDevice(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.GnssMutations().UpsetDevice(rctx, obj, fc.Args["input"].(model.UpsetDeviceInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.UpsetDeviceOutput)
+	fc.Result = res
+	return ec.marshalNUpsetDeviceOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐUpsetDeviceOutput(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GnssMutations_upsetDevice(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GnssMutations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "device":
+				return ec.fieldContext_UpsetDeviceOutput_device(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UpsetDeviceOutput", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_GnssMutations_upsetDevice_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UpsetDeviceOutput_device(ctx context.Context, field graphql.CollectedField, obj *model.UpsetDeviceOutput) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UpsetDeviceOutput_device(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Device, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Device)
+	fc.Result = res
+	return ec.marshalNDevice2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDevice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UpsetDeviceOutput_device(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UpsetDeviceOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Device_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Device_name(ctx, field)
+			case "token":
+				return ec.fieldContext_Device_token(ctx, field)
+			case "description":
+				return ec.fieldContext_Device_description(ctx, field)
+			case "Coords":
+				return ec.fieldContext_Device_Coords(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Device", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -441,6 +628,47 @@ func (ec *executionContext) unmarshalInputCoordsInput(ctx context.Context, obj i
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDeviceFilter(ctx context.Context, obj interface{}) (model.DeviceFilter, error) {
+	var it model.DeviceFilter
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"Ids", "Names", "Tokens"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "Ids":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Ids"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Ids = data
+		case "Names":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Names"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Names = data
+		case "Tokens":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Tokens"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Tokens = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputGNSSFilter(ctx context.Context, obj interface{}) (model.GNSSFilter, error) {
 	var it model.GNSSFilter
 	asMap := map[string]interface{}{}
@@ -462,6 +690,54 @@ func (ec *executionContext) unmarshalInputGNSSFilter(ctx context.Context, obj in
 				return it, err
 			}
 			it.Coordinates = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpsetDeviceInput(ctx context.Context, obj interface{}) (model.UpsetDeviceInput, error) {
+	var it model.UpsetDeviceInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"Name", "Token", "Description", "Coords"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "Name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "Token":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Token"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Token = data
+		case "Description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Description"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
+		case "Coords":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Coords"))
+			data, err := ec.unmarshalNCoordsInput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCoordsInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Coords = data
 		}
 	}
 
@@ -502,6 +778,42 @@ func (ec *executionContext) _CoordsResults(ctx context.Context, sel ast.Selectio
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var devicePaginationImplementors = []string{"DevicePagination"}
+
+func (ec *executionContext) _DevicePagination(ctx context.Context, sel ast.SelectionSet, obj *model.DevicePagination) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, devicePaginationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DevicePagination")
+		case "items":
+			out.Values[i] = ec._DevicePagination_items(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -615,6 +927,115 @@ func (ec *executionContext) _GNSSPagination(ctx context.Context, sel ast.Selecti
 	return out
 }
 
+var gnssMutationsImplementors = []string{"GnssMutations"}
+
+func (ec *executionContext) _GnssMutations(ctx context.Context, sel ast.SelectionSet, obj *model.GnssMutations) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, gnssMutationsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GnssMutations")
+		case "upsetDevice":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._GnssMutations_upsetDevice(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var upsetDeviceOutputImplementors = []string{"UpsetDeviceOutput"}
+
+func (ec *executionContext) _UpsetDeviceOutput(ctx context.Context, sel ast.SelectionSet, obj *model.UpsetDeviceOutput) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, upsetDeviceOutputImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UpsetDeviceOutput")
+		case "device":
+			out.Values[i] = ec._UpsetDeviceOutput_device(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
@@ -622,6 +1043,10 @@ func (ec *executionContext) _GNSSPagination(ctx context.Context, sel ast.Selecti
 func (ec *executionContext) unmarshalNCoordsInput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCoordsInput(ctx context.Context, v interface{}) (*model.CoordsInput, error) {
 	res, err := ec.unmarshalInputCoordsInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNCoordsResults2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCoordsResults(ctx context.Context, sel ast.SelectionSet, v model.CoordsResults) graphql.Marshaler {
+	return ec._CoordsResults(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCoordsResults2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCoordsResults(ctx context.Context, sel ast.SelectionSet, v *model.CoordsResults) graphql.Marshaler {
@@ -632,6 +1057,25 @@ func (ec *executionContext) marshalNCoordsResults2ᚖgithubᚗcomᚋGokertᚋgns
 		return graphql.Null
 	}
 	return ec._CoordsResults(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNDeviceFilter2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDeviceFilter(ctx context.Context, v interface{}) (model.DeviceFilter, error) {
+	res, err := ec.unmarshalInputDeviceFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDevicePagination2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDevicePagination(ctx context.Context, sel ast.SelectionSet, v model.DevicePagination) graphql.Marshaler {
+	return ec._DevicePagination(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDevicePagination2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDevicePagination(ctx context.Context, sel ast.SelectionSet, v *model.DevicePagination) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DevicePagination(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNGNSS2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐGnss(ctx context.Context, sel ast.SelectionSet, v *model.Gnss) graphql.Marshaler {
@@ -661,6 +1105,39 @@ func (ec *executionContext) marshalNGNSSPagination2ᚖgithubᚗcomᚋGokertᚋgn
 		return graphql.Null
 	}
 	return ec._GNSSPagination(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNGnssMutations2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐGnssMutations(ctx context.Context, sel ast.SelectionSet, v model.GnssMutations) graphql.Marshaler {
+	return ec._GnssMutations(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGnssMutations2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐGnssMutations(ctx context.Context, sel ast.SelectionSet, v *model.GnssMutations) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GnssMutations(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUpsetDeviceInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐUpsetDeviceInput(ctx context.Context, v interface{}) (model.UpsetDeviceInput, error) {
+	res, err := ec.unmarshalInputUpsetDeviceInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUpsetDeviceOutput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐUpsetDeviceOutput(ctx context.Context, sel ast.SelectionSet, v model.UpsetDeviceOutput) graphql.Marshaler {
+	return ec._UpsetDeviceOutput(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUpsetDeviceOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐUpsetDeviceOutput(ctx context.Context, sel ast.SelectionSet, v *model.UpsetDeviceOutput) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._UpsetDeviceOutput(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOGNSS2ᚕᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐGnssᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Gnss) graphql.Marshaler {

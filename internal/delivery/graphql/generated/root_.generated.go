@@ -34,6 +34,8 @@ type Config struct {
 
 type ResolverRoot interface {
 	AuthorizationMutations() AuthorizationMutationsResolver
+	Device() DeviceResolver
+	GnssMutations() GnssMutationsResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 }
@@ -58,6 +60,18 @@ type ComplexityRoot struct {
 		Z func(childComplexity int) int
 	}
 
+	Device struct {
+		Coords      func(childComplexity int) int
+		Description func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
+		Token       func(childComplexity int) int
+	}
+
+	DevicePagination struct {
+		Items func(childComplexity int) int
+	}
+
 	GNSS struct {
 		Coordinates   func(childComplexity int) int
 		ID            func(childComplexity int) int
@@ -69,18 +83,24 @@ type ComplexityRoot struct {
 		Items func(childComplexity int) int
 	}
 
+	GnssMutations struct {
+		UpsetDevice func(childComplexity int, input model.UpsetDeviceInput) int
+	}
+
 	LogoutOutput struct {
 		Empty func(childComplexity int) int
 	}
 
 	Mutation struct {
 		Authorization func(childComplexity int) int
+		Gnss          func(childComplexity int) int
 	}
 
 	Query struct {
 		Authcheck          func(childComplexity int, input *model.AuthcheckInput) int
 		Errors             func(childComplexity int) int
-		Listgnss           func(childComplexity int, filter model.GNSSFilter) int
+		ListDevice         func(childComplexity int, filter model.DeviceFilter, page int, perPage int) int
+		ListGnss           func(childComplexity int, filter model.GNSSFilter, page int, perPage int) int
 		__resolve__service func(childComplexity int) int
 	}
 
@@ -90,6 +110,10 @@ type ComplexityRoot struct {
 
 	SignupOutput struct {
 		UserInfo func(childComplexity int) int
+	}
+
+	UpsetDeviceOutput struct {
+		Device func(childComplexity int) int
 	}
 
 	User struct {
@@ -186,6 +210,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CoordsResults.Z(childComplexity), true
 
+	case "Device.Coords":
+		if e.complexity.Device.Coords == nil {
+			break
+		}
+
+		return e.complexity.Device.Coords(childComplexity), true
+
+	case "Device.description":
+		if e.complexity.Device.Description == nil {
+			break
+		}
+
+		return e.complexity.Device.Description(childComplexity), true
+
+	case "Device.id":
+		if e.complexity.Device.ID == nil {
+			break
+		}
+
+		return e.complexity.Device.ID(childComplexity), true
+
+	case "Device.name":
+		if e.complexity.Device.Name == nil {
+			break
+		}
+
+		return e.complexity.Device.Name(childComplexity), true
+
+	case "Device.token":
+		if e.complexity.Device.Token == nil {
+			break
+		}
+
+		return e.complexity.Device.Token(childComplexity), true
+
+	case "DevicePagination.items":
+		if e.complexity.DevicePagination.Items == nil {
+			break
+		}
+
+		return e.complexity.DevicePagination.Items(childComplexity), true
+
 	case "GNSS.Coordinates":
 		if e.complexity.GNSS.Coordinates == nil {
 			break
@@ -221,6 +287,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.GNSSPagination.Items(childComplexity), true
 
+	case "GnssMutations.upsetDevice":
+		if e.complexity.GnssMutations.UpsetDevice == nil {
+			break
+		}
+
+		args, err := ec.field_GnssMutations_upsetDevice_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.GnssMutations.UpsetDevice(childComplexity, args["input"].(model.UpsetDeviceInput)), true
+
 	case "LogoutOutput._empty":
 		if e.complexity.LogoutOutput.Empty == nil {
 			break
@@ -234,6 +312,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.Authorization(childComplexity), true
+
+	case "Mutation.gnss":
+		if e.complexity.Mutation.Gnss == nil {
+			break
+		}
+
+		return e.complexity.Mutation.Gnss(childComplexity), true
 
 	case "Query.authcheck":
 		if e.complexity.Query.Authcheck == nil {
@@ -254,17 +339,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Errors(childComplexity), true
 
-	case "Query.listgnss":
-		if e.complexity.Query.Listgnss == nil {
+	case "Query.listDevice":
+		if e.complexity.Query.ListDevice == nil {
 			break
 		}
 
-		args, err := ec.field_Query_listgnss_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_listDevice_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Listgnss(childComplexity, args["filter"].(model.GNSSFilter)), true
+		return e.complexity.Query.ListDevice(childComplexity, args["filter"].(model.DeviceFilter), args["page"].(int), args["perPage"].(int)), true
+
+	case "Query.listGnss":
+		if e.complexity.Query.ListGnss == nil {
+			break
+		}
+
+		args, err := ec.field_Query_listGnss_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ListGnss(childComplexity, args["filter"].(model.GNSSFilter), args["page"].(int), args["perPage"].(int)), true
 
 	case "Query._service":
 		if e.complexity.Query.__resolve__service == nil {
@@ -286,6 +383,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignupOutput.UserInfo(childComplexity), true
+
+	case "UpsetDeviceOutput.device":
+		if e.complexity.UpsetDeviceOutput.Device == nil {
+			break
+		}
+
+		return e.complexity.UpsetDeviceOutput.Device(childComplexity), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -325,10 +429,12 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAuthcheckInput,
 		ec.unmarshalInputCoordsInput,
+		ec.unmarshalInputDeviceFilter,
 		ec.unmarshalInputGNSSFilter,
 		ec.unmarshalInputLogoutInput,
 		ec.unmarshalInputSigninInput,
 		ec.unmarshalInputSignupInput,
+		ec.unmarshalInputUpsetDeviceInput,
 	)
 	first := true
 
@@ -430,6 +536,8 @@ var sources = []*ast.Source{
 GraphQL converter
 """
 directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION`, BuiltIn: false},
+	{Name: "../../../../api/graphql/directives/goModel.graphql", Input: `directive @goModel(model: String, models: [String!]) on OBJECT | UNION | INPUT_OBJECT | ENUM | INTERFACE | SCALAR
+`, BuiltIn: false},
 	{Name: "../../../../api/graphql/enums/enums.graphql", Input: `scalar Empty`, BuiltIn: false},
 	{Name: "../../../../api/graphql/enums/errors.graphql", Input: `""" Бизнес ошибки """
 enum Error {
@@ -497,6 +605,33 @@ type LogoutOutput {
     _empty: Empty
 }
 `, BuiltIn: false},
+	{Name: "../../../../api/graphql/mutation/gnss.graphql", Input: `extend type Mutation {
+    """ Мутации связанные с gnss """
+    gnss: GnssMutations!
+}
+
+""" Мутации связанные с авторизацией """
+type GnssMutations {
+    """ Регистрация """
+    upsetDevice(input: UpsetDeviceInput!): UpsetDeviceOutput! @goField(forceResolver: true)
+}
+
+""" Входные параметры для upset device"""
+input UpsetDeviceInput {
+    """ Название девайса """
+    Name: String!
+    """ Токен """
+    Token: String!
+    """ Описание """
+    Description: String
+    """ Координаты """
+    Coords: CoordsInput!
+}
+
+""" Выходные параметры для upset device """
+type UpsetDeviceOutput {
+    device: Device!
+}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/query/authorization.graphql", Input: `extend type Query {
     """ Проверка авторизации """
     authcheck(input: AuthcheckInput): AuthcheckOutput
@@ -515,7 +650,9 @@ type AuthcheckOutput {
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/query/gnss.graphql", Input: `extend type Query {
     """ Получить список GNSS """
-    listgnss(filter: GNSSFilter!): GNSSPagination!
+    listGnss(filter: GNSSFilter!, page: Int! = 1, perPage: Int! = 10): GNSSPagination!
+    """ Получить список Device """
+    listDevice(filter: DeviceFilter!, page: Int! = 1, perPage: Int! = 10): DevicePagination!
 }
 
 input GNSSFilter {
@@ -526,6 +663,20 @@ input GNSSFilter {
 type GNSSPagination {
     """ Загруженные элементы """
     items: [GNSS!]
+}
+
+input DeviceFilter {
+    """ Индетификатор """
+    Ids: [String!]
+    """ Название девайса """
+    Names: [String!]
+    """ Токен """
+    Tokens: [String!]
+}
+
+type DevicePagination {
+    """ Загруженные элементы """
+    items: [Device!]
 }
 
 input CoordsInput {
@@ -556,6 +707,19 @@ type Query
 
 type Mutation
 `, BuiltIn: false},
+	{Name: "../../../../api/graphql/types/device.graphql", Input: `""" Девайс """
+type Device {
+    """ Индетификатор """
+    id: String!
+    """ Название девайса """
+    name: String!
+    """ Токен """
+    token: String!
+    """ Описание """
+    description: String!
+    """ Координаты """
+    Coords: CoordsResults!
+}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/errors.graphql", Input: `extend type Query {
     """ Словарь ошибок """
     errors: [Error]!

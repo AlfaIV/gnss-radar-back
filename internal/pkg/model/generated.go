@@ -48,6 +48,20 @@ type CoordsResults struct {
 	Z string `json:"z"`
 }
 
+type DeviceFilter struct {
+	//  Индетификатор
+	Ids []string `json:"Ids,omitempty"`
+	//  Название девайса
+	Names []string `json:"Names,omitempty"`
+	//  Токен
+	Tokens []string `json:"Tokens,omitempty"`
+}
+
+type DevicePagination struct {
+	//  Загруженные элементы
+	Items []*Device `json:"items,omitempty"`
+}
+
 type Gnss struct {
 	ID string `json:"Id"`
 	//  id спутника
@@ -66,6 +80,12 @@ type GNSSFilter struct {
 type GNSSPagination struct {
 	//  Загруженные элементы
 	Items []*Gnss `json:"items,omitempty"`
+}
+
+// Мутации связанные с авторизацией
+type GnssMutations struct {
+	//  Регистрация
+	UpsetDevice *UpsetDeviceOutput `json:"upsetDevice"`
 }
 
 // Выходные параметры для выхода
@@ -108,6 +128,23 @@ type SignupInput struct {
 type SignupOutput struct {
 	//  Информация о юзере
 	UserInfo *User `json:"userInfo"`
+}
+
+// Входные параметры для upset device
+type UpsetDeviceInput struct {
+	//  Название девайса
+	Name string `json:"Name"`
+	//  Токен
+	Token string `json:"Token"`
+	//  Описание
+	Description *string `json:"Description,omitempty"`
+	//  Координаты
+	Coords *CoordsInput `json:"Coords"`
+}
+
+// Выходные параметры для upset device
+type UpsetDeviceOutput struct {
+	Device *Device `json:"device"`
 }
 
 // Бизнес ошибки
