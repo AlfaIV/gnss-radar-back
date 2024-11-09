@@ -7,7 +7,7 @@ type Device {
     """ Токен """
     token: String!
     """ Описание """
-    description: String!
+    description: String
     """ Координаты """
     Coords: CoordsResults!
 }
