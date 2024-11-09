@@ -116,7 +116,7 @@ func (g *GnssStore) UpsetDevice(ctx context.Context, params UpsetDeviceParams) (
 			description = EXCLUDED.description,
 			x = EXCLUDED.x,
 			y = EXCLUDED.y,
-			z = EXCLUDED.z,
+			z = EXCLUDED.z
 		`).
 		Suffix("RETURNING id, name, token, description, x, y, z")
 
