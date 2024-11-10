@@ -5,21 +5,21 @@ extend type Mutation {
 
 """ Мутации связанные с gnss """
 type GnssMutations {
-    """ Обновить device """
+    """ Обновить устройство """
     updateDevice(input: UpdateDeviceInput!): UpdateDeviceOutput! @goField(forceResolver: true)
-    """ Создать device """
+    """ Создать устройство """
     createDevice(input: CreateDeviceInput!): CreateDeviceOutput! @goField(forceResolver: true)
-    """ Создать task """
+    """ Создать задачу """
     createTask(input: CreateTaskInput!): CreateTaskOutput! @goField(forceResolver: true)
-    """ Обновить task """
+    """ Обновить задачу """
     updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true)
-    """ Удалить task """
+    """ Удалить задачу """
     deleteTask(input: DeleteTaskInput!): DeleteTaskOutput! @goField(forceResolver: true)
     """ Создать спутник """
     createSatellite(input: CreateSatelliteInput!): CreateSatelliteOutput! @goField(forceResolver: true)
 }
 
-""" Входные параметры для update device """
+""" Входные параметры для обновления устройства """
 input UpdateDeviceInput {
     """ Индетификатор """
     Id: String!
@@ -33,7 +33,7 @@ input UpdateDeviceInput {
     Coords: CoordsInput!
 }
 
-""" Входные параметры для create device """
+""" Входные параметры для создания устройства """
 input CreateDeviceInput {
     """ Название девайса """
     Name: String!
@@ -45,17 +45,19 @@ input CreateDeviceInput {
     Coords: CoordsInput!
 }
 
-""" Выходные параметры для update device """
+""" Выходные параметры для обновления устройства """
 type UpdateDeviceOutput {
+    """ Обновленное устройство """
     device: Device!
 }
 
-""" Выходные параметры для create device """
+""" Выходные параметры для обновления устройства """
 type CreateDeviceOutput {
+    """ Созданное устройство """
     device: Device!
 }
 
-""" Входные параметры для create task """
+""" Входные параметры для создания задачи """
 input CreateTaskInput {
     """ Индентификатор спутника """
     satelliteId: String!
@@ -69,12 +71,12 @@ input CreateTaskInput {
     endAt: Time!
 }
 
-""" Выходные параметры для create task """
+""" Выходные параметры для создания задачи """
 type CreateTaskOutput {
     task: Task!
 }
 
-""" Входные параметры для update task """
+""" Входные параметры для обновления задачи """
 input UpdateTaskInput {
     """ Индетификатор """
     id: String!
@@ -90,18 +92,19 @@ input UpdateTaskInput {
     endAt: Time!
 }
 
-""" Выходные параметры для update task """
+""" Выходные параметры для обновления задачи """
 type UpdateTaskOutput {
+    """ Обновленная задача """
     task: Task!
 }
 
-""" Входные параметры для delete task """
+""" Входные параметры для удаления задачи """
 input DeleteTaskInput {
     """ Индетификатор """
     id: String!
 }
 
-""" Входные параметры для delete task """
+""" Входные параметры для удаления задачи """
 type DeleteTaskOutput {
     """ Пусто """
     _empty: Empty

@@ -31,6 +31,7 @@ type AuthorizationMutations struct {
 	Logout *LogoutOutput `json:"logout,omitempty"`
 }
 
+// Координаты
 type CoordsInput struct {
 	//  Координата X
 	X string `json:"x"`
@@ -49,7 +50,7 @@ type CoordsResults struct {
 	Z string `json:"z"`
 }
 
-// Входные параметры для create device
+// Входные параметры для создания устройства
 type CreateDeviceInput struct {
 	//  Название девайса
 	Name string `json:"Name"`
@@ -61,8 +62,9 @@ type CreateDeviceInput struct {
 	Coords *CoordsInput `json:"Coords"`
 }
 
-// Выходные параметры для create device
+// Выходные параметры для обновления устройства
 type CreateDeviceOutput struct {
+	//  Созданное устройство
 	Device *Device `json:"device"`
 }
 
@@ -79,7 +81,7 @@ type CreateSatelliteOutput struct {
 	Satellite *SatelliteInfo `json:"satellite"`
 }
 
-// Входные параметры для create task
+// Входные параметры для создания задачи
 type CreateTaskInput struct {
 	//  Индентификатор спутника
 	SatelliteID string `json:"satelliteId"`
@@ -93,23 +95,24 @@ type CreateTaskInput struct {
 	EndAt time.Time `json:"endAt"`
 }
 
-// Выходные параметры для create task
+// Выходные параметры для создания задачи
 type CreateTaskOutput struct {
 	Task *Task `json:"task"`
 }
 
-// Входные параметры для delete task
+// Входные параметры для удаления задачи
 type DeleteTaskInput struct {
 	//  Индетификатор
 	ID string `json:"id"`
 }
 
-// Входные параметры для delete task
+// Входные параметры для удаления задачи
 type DeleteTaskOutput struct {
 	//  Пусто
 	Empty *string `json:"_empty,omitempty"`
 }
 
+// Фильтр устройств
 type DeviceFilter struct {
 	//  Индетификатор
 	Ids []string `json:"Ids,omitempty"`
@@ -119,6 +122,7 @@ type DeviceFilter struct {
 	Tokens []string `json:"Tokens,omitempty"`
 }
 
+// Выходные параметры для устройств
 type DevicePagination struct {
 	//  Загруженные элементы
 	Items []*Device `json:"items,omitempty"`
@@ -135,11 +139,13 @@ type Gnss struct {
 	CreatedAt time.Time `json:"CreatedAt"`
 }
 
+// Фильтр gnss координат
 type GNSSFilter struct {
 	//  Фильтр по индетификаторам
 	Coordinates *CoordsInput `json:"Coordinates"`
 }
 
+// Выходные параметры для gnss координат
 type GNSSPagination struct {
 	//  Загруженные элементы
 	Items []*Gnss `json:"items,omitempty"`
@@ -147,15 +153,15 @@ type GNSSPagination struct {
 
 // Мутации связанные с gnss
 type GnssMutations struct {
-	//  Обновить device
+	//  Обновить устройство
 	UpdateDevice *UpdateDeviceOutput `json:"updateDevice"`
-	//  Создать device
+	//  Создать устройство
 	CreateDevice *CreateDeviceOutput `json:"createDevice"`
-	//  Создать task
+	//  Создать задачу
 	CreateTask *CreateTaskOutput `json:"createTask"`
-	//  Обновить task
+	//  Обновить задачу
 	UpdateTask *UpdateTaskOutput `json:"updateTask"`
-	//  Удалить task
+	//  Удалить задачу
 	DeleteTask *DeleteTaskOutput `json:"deleteTask"`
 	//  Создать спутник
 	CreateSatellite *CreateSatelliteOutput `json:"createSatellite"`
@@ -211,6 +217,7 @@ type RinexInput struct {
 }
 
 type RinexPagination struct {
+	//  Загруженные элементы
 	Items []*RinexResults `json:"items,omitempty"`
 }
 
@@ -224,6 +231,7 @@ type Satellite struct {
 	Observations []string `json:"observations"`
 }
 
+// Фильтр спутников
 type SatellitesFilter struct {
 	//  Индетификатор
 	IDS []string `json:"IdS,omitempty"`
@@ -233,6 +241,7 @@ type SatellitesFilter struct {
 	SatelliteNames []string `json:"SatelliteNames,omitempty"`
 }
 
+// Выходные параметры для спутников
 type SatellitesPagination struct {
 	//  Загруженные элементы
 	Items []*SatelliteInfo `json:"items,omitempty"`
@@ -240,7 +249,9 @@ type SatellitesPagination struct {
 
 // Входные параметры для авторизации
 type SigninInput struct {
-	Login    string `json:"login"`
+	//  Логин
+	Login string `json:"login"`
+	//  Пароль
 	Password string `json:"password"`
 }
 
@@ -252,7 +263,9 @@ type SigninOutput struct {
 
 // Входные параметры для регистрации
 type SignupInput struct {
-	Login    string `json:"login"`
+	//  Логин
+	Login string `json:"login"`
+	//  Пароль
 	Password string `json:"password"`
 }
 
@@ -262,23 +275,31 @@ type SignupOutput struct {
 	UserInfo *User `json:"userInfo"`
 }
 
+// Фильтр задач
 type TaskFilter struct {
 	//  Фильтр по индетификаторам
-	Ids           []string       `json:"ids,omitempty"`
-	SatelliteIds  []string       `json:"satelliteIds,omitempty"`
-	SatelliteName []string       `json:"satelliteName,omitempty"`
-	SignalType    []SignalType   `json:"signalType,omitempty"`
-	GroupingType  []GroupingType `json:"groupingType,omitempty"`
-	StartAt       *time.Time     `json:"startAt,omitempty"`
-	EndAt         *time.Time     `json:"endAt,omitempty"`
+	Ids []string `json:"ids,omitempty"`
+	//  Фильтр по id спутника
+	SatelliteIds []string `json:"satelliteIds,omitempty"`
+	//  Фильтр по названию спутника
+	SatelliteName []string `json:"satelliteName,omitempty"`
+	//  Фильтр по типу сигнала
+	SignalType []SignalType `json:"signalType,omitempty"`
+	//  Фильтр по типу группировки
+	GroupingType []GroupingType `json:"groupingType,omitempty"`
+	//  Старт по времени
+	StartAt *time.Time `json:"startAt,omitempty"`
+	//  Конец по времени
+	EndAt *time.Time `json:"endAt,omitempty"`
 }
 
+// Выходные параметры для задач
 type TaskPagination struct {
 	//  Загруженные элементы
 	Items []*Task `json:"items,omitempty"`
 }
 
-// Входные параметры для update device
+// Входные параметры для обновления устройства
 type UpdateDeviceInput struct {
 	//  Индетификатор
 	ID string `json:"Id"`
@@ -292,12 +313,13 @@ type UpdateDeviceInput struct {
 	Coords *CoordsInput `json:"Coords"`
 }
 
-// Выходные параметры для update device
+// Выходные параметры для обновления устройства
 type UpdateDeviceOutput struct {
+	//  Обновленное устройство
 	Device *Device `json:"device"`
 }
 
-// Входные параметры для update task
+// Входные параметры для обновления задачи
 type UpdateTaskInput struct {
 	//  Индетификатор
 	ID string `json:"id"`
@@ -313,8 +335,9 @@ type UpdateTaskInput struct {
 	EndAt time.Time `json:"endAt"`
 }
 
-// Выходные параметры для update task
+// Выходные параметры для обновления задачи
 type UpdateTaskOutput struct {
+	//  Обновленная задача
 	Task *Task `json:"task"`
 }
 

@@ -17,19 +17,23 @@ input RinexInput {
 }
 
 type RinexPagination {
+    """ Загруженные элементы """
     items: [RinexResults!]
 }
 
+""" Фильтр gnss координат """
 input GNSSFilter {
     """ Фильтр по индетификаторам """
     Coordinates: CoordsInput!
 }
 
+""" Выходные параметры для gnss координат """
 type GNSSPagination {
     """ Загруженные элементы """
     items: [GNSS!]
 }
 
+""" Фильтр устройств """
 input DeviceFilter {
     """ Индетификатор """
     Ids: [String!]
@@ -39,27 +43,37 @@ input DeviceFilter {
     Tokens: [String!]
 }
 
+""" Выходные параметры для устройств """
 type DevicePagination {
     """ Загруженные элементы """
     items: [Device!]
 }
 
+""" Фильтр задач  """
 input TaskFilter {
     """ Фильтр по индетификаторам """
     ids: [String!]
+    """ Фильтр по id спутника """
     satelliteIds: [String!]
+    """ Фильтр по названию спутника """
     satelliteName: [String!]
+    """ Фильтр по типу сигнала """
     signalType: [SignalType!]
+    """ Фильтр по типу группировки """
     groupingType: [GroupingType!]
+    """ Старт по времени """
     startAt: Time
+    """ Конец по времени """
     endAt: Time
 }
 
+""" Выходные параметры для задач """
 type TaskPagination {
     """ Загруженные элементы """
     items: [Task!]
 }
 
+""" Фильтр спутников  """
 input SatellitesFilter {
     """ Индетификатор """
     IdS: [String!]
@@ -69,11 +83,13 @@ input SatellitesFilter {
     SatelliteNames: [String!]
 }
 
+""" Выходные параметры для спутников """
 type SatellitesPagination {
     """ Загруженные элементы """
     items: [SatelliteInfo!]
 }
 
+""" Координаты """
 input CoordsInput {
     """ Координата X """
     x: String!

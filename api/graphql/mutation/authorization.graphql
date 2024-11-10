@@ -15,7 +15,9 @@ type AuthorizationMutations {
 
 """ Входные параметры для регистрации"""
 input SignupInput {
+    """ Логин """
     login: String!
+    """ Пароль """
     password: String!
 }
 
@@ -27,7 +29,9 @@ type SignupOutput {
 
 """ Входные параметры для авторизации"""
 input SigninInput {
+    """ Логин """
     login: String!
+    """ Пароль """
     password: String!
 }
 

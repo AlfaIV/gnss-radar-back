@@ -1110,7 +1110,9 @@ type AuthorizationMutations {
 
 """ Входные параметры для регистрации"""
 input SignupInput {
+    """ Логин """
     login: String!
+    """ Пароль """
     password: String!
 }
 
@@ -1122,7 +1124,9 @@ type SignupOutput {
 
 """ Входные параметры для авторизации"""
 input SigninInput {
+    """ Логин """
     login: String!
+    """ Пароль """
     password: String!
 }
 
@@ -1151,21 +1155,21 @@ type LogoutOutput {
 
 """ Мутации связанные с gnss """
 type GnssMutations {
-    """ Обновить device """
+    """ Обновить устройство """
     updateDevice(input: UpdateDeviceInput!): UpdateDeviceOutput! @goField(forceResolver: true)
-    """ Создать device """
+    """ Создать устройство """
     createDevice(input: CreateDeviceInput!): CreateDeviceOutput! @goField(forceResolver: true)
-    """ Создать task """
+    """ Создать задачу """
     createTask(input: CreateTaskInput!): CreateTaskOutput! @goField(forceResolver: true)
-    """ Обновить task """
+    """ Обновить задачу """
     updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true)
-    """ Удалить task """
+    """ Удалить задачу """
     deleteTask(input: DeleteTaskInput!): DeleteTaskOutput! @goField(forceResolver: true)
     """ Создать спутник """
     createSatellite(input: CreateSatelliteInput!): CreateSatelliteOutput! @goField(forceResolver: true)
 }
 
-""" Входные параметры для update device """
+""" Входные параметры для обновления устройства """
 input UpdateDeviceInput {
     """ Индетификатор """
     Id: String!
@@ -1179,7 +1183,7 @@ input UpdateDeviceInput {
     Coords: CoordsInput!
 }
 
-""" Входные параметры для create device """
+""" Входные параметры для создания устройства """
 input CreateDeviceInput {
     """ Название девайса """
     Name: String!
@@ -1191,17 +1195,19 @@ input CreateDeviceInput {
     Coords: CoordsInput!
 }
 
-""" Выходные параметры для update device """
+""" Выходные параметры для обновления устройства """
 type UpdateDeviceOutput {
+    """ Обновленное устройство """
     device: Device!
 }
 
-""" Выходные параметры для create device """
+""" Выходные параметры для обновления устройства """
 type CreateDeviceOutput {
+    """ Созданное устройство """
     device: Device!
 }
 
-""" Входные параметры для create task """
+""" Входные параметры для создания задачи """
 input CreateTaskInput {
     """ Индентификатор спутника """
     satelliteId: String!
@@ -1215,12 +1221,12 @@ input CreateTaskInput {
     endAt: Time!
 }
 
-""" Выходные параметры для create task """
+""" Выходные параметры для создания задачи """
 type CreateTaskOutput {
     task: Task!
 }
 
-""" Входные параметры для update task """
+""" Входные параметры для обновления задачи """
 input UpdateTaskInput {
     """ Индетификатор """
     id: String!
@@ -1236,18 +1242,19 @@ input UpdateTaskInput {
     endAt: Time!
 }
 
-""" Выходные параметры для update task """
+""" Выходные параметры для обновления задачи """
 type UpdateTaskOutput {
+    """ Обновленная задача """
     task: Task!
 }
 
-""" Входные параметры для delete task """
+""" Входные параметры для удаления задачи """
 input DeleteTaskInput {
     """ Индетификатор """
     id: String!
 }
 
-""" Входные параметры для delete task """
+""" Входные параметры для удаления задачи """
 type DeleteTaskOutput {
     """ Пусто """
     _empty: Empty
@@ -1300,19 +1307,23 @@ input RinexInput {
 }
 
 type RinexPagination {
+    """ Загруженные элементы """
     items: [RinexResults!]
 }
 
+""" Фильтр gnss координат """
 input GNSSFilter {
     """ Фильтр по индетификаторам """
     Coordinates: CoordsInput!
 }
 
+""" Выходные параметры для gnss координат """
 type GNSSPagination {
     """ Загруженные элементы """
     items: [GNSS!]
 }
 
+""" Фильтр устройств """
 input DeviceFilter {
     """ Индетификатор """
     Ids: [String!]
@@ -1322,27 +1333,37 @@ input DeviceFilter {
     Tokens: [String!]
 }
 
+""" Выходные параметры для устройств """
 type DevicePagination {
     """ Загруженные элементы """
     items: [Device!]
 }
 
+""" Фильтр задач  """
 input TaskFilter {
     """ Фильтр по индетификаторам """
     ids: [String!]
+    """ Фильтр по id спутника """
     satelliteIds: [String!]
+    """ Фильтр по названию спутника """
     satelliteName: [String!]
+    """ Фильтр по типу сигнала """
     signalType: [SignalType!]
+    """ Фильтр по типу группировки """
     groupingType: [GroupingType!]
+    """ Старт по времени """
     startAt: Time
+    """ Конец по времени """
     endAt: Time
 }
 
+""" Выходные параметры для задач """
 type TaskPagination {
     """ Загруженные элементы """
     items: [Task!]
 }
 
+""" Фильтр спутников  """
 input SatellitesFilter {
     """ Индетификатор """
     IdS: [String!]
@@ -1352,11 +1373,13 @@ input SatellitesFilter {
     SatelliteNames: [String!]
 }
 
+""" Выходные параметры для спутников """
 type SatellitesPagination {
     """ Загруженные элементы """
     items: [SatelliteInfo!]
 }
 
+""" Координаты """
 input CoordsInput {
     """ Координата X """
     x: String!
