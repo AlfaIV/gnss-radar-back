@@ -36,7 +36,7 @@ func (a *AuthorizationStore) Signup(ctx context.Context, params SignupParams) (*
 			"login":    params.Login,
 			"password": params.Password,
 		}).
-		Suffix("RETURNING id, login, role")
+		Suffix("RETURNING id, login, role, created_at")
 
 	var response model.User
 	if err := a.storage.db.Getx(ctx, &response, query); err != nil {
@@ -54,7 +54,7 @@ type UserFilter struct {
 
 func (a *AuthorizationStore) ListUsers(ctx context.Context, filter UserFilter) ([]*model.User, error) {
 	query := a.storage.Builder().
-		Select("id, login, role").
+		Select("id, login, role, created_at").
 		From(profileTable)
 
 	if len(filter.IDs) > 0 {
@@ -82,7 +82,7 @@ type SigninParams struct {
 
 func (a *AuthorizationStore) Signin(ctx context.Context, params SigninParams) (*model.User, error) {
 	query := a.storage.Builder().
-		Select("id, login, role").
+		Select("id, login, role, created_at").
 		From(profileTable).
 		Where(map[string]any{
 			"login":    params.Login,

@@ -27,6 +27,7 @@ func SerializerGnssCoords(list []*model.GnssCoords) []*model.Gnss {
 				Y: strconv.FormatFloat(item.Y, 'f', -1, 64),
 				Z: strconv.FormatFloat(item.Z, 'f', -1, 64),
 			},
+			CreatedAt: item.CreatedAt,
 		}
 	})
 }

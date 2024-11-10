@@ -33,8 +33,8 @@ func NewAuthorizationService(authorization store.IAuthorizationStore, session st
 }
 
 type SigninRequest struct {
-	Login    string `json:"login"`
-	Password string `json:"password"`
+	Login    string
+	Password string
 }
 
 func (a *AuthorizationService) Signin(ctx context.Context, req SigninRequest) (*model.Session, *model.User, error) {
@@ -62,11 +62,7 @@ func (a *AuthorizationService) Signin(ctx context.Context, req SigninRequest) (*
 		return nil, nil, store.ErrEntityAlreadyExist
 	}
 
-	return &newSession, &model.User{
-		ID:    users[0].ID,
-		Login: users[0].Login,
-		Role:  users[0].Role,
-	}, nil
+	return &newSession, users[0], nil
 }
 
 func (a *AuthorizationService) Authcheck(ctx context.Context, value string) (bool, *model.User, error) {
@@ -110,8 +106,8 @@ func (a *AuthorizationService) Logout(ctx context.Context, value string) (bool, 
 }
 
 type SignupRequest struct {
-	Login    string `json:"login"`
-	Password string `json:"password"`
+	Login    string
+	Password string
 }
 
 func (a *AuthorizationService) Signup(ctx context.Context, req SignupRequest) (*model.User, error) {
@@ -124,9 +120,9 @@ func (a *AuthorizationService) Signup(ctx context.Context, req SignupRequest) (*
 }
 
 type ListUsersFilter struct {
-	IDs    []string `json:"id"`
-	Logins []string `json:"login"`
-	Role   []string `json:"role"`
+	IDs    []string
+	Logins []string
+	Role   []string
 }
 
 func (a *AuthorizationService) ListUsers(ctx context.Context, filter ListUsersFilter) ([]*model.User, error) {

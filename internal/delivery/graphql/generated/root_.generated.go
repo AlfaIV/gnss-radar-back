@@ -1283,15 +1283,15 @@ type AuthcheckOutput {
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/query/gnss.graphql", Input: `extend type Query {
     """ Получить список GNSS """
-    listGnss(filter: GNSSFilter!, page: Int! = 1, perPage: Int! = 10): GNSSPagination!
+    listGnss(filter: GNSSFilter!, page: Int! = 0, perPage: Int! = 10): GNSSPagination!
     """ Получить список Device """
-    listDevice(filter: DeviceFilter!, page: Int! = 1, perPage: Int! = 10): DevicePagination!
+    listDevice(filter: DeviceFilter!, page: Int! = 0, perPage: Int! = 10): DevicePagination!
     """ Получить список задач"""
-    listTask(filter: TaskFilter!, page: Int! = 1, perPage: Int! = 10): TaskPagination!
+    listTask(filter: TaskFilter!, page: Int! = 0, perPage: Int! = 10): TaskPagination!
     """ Получить список Rinex """
-    Rinexlist(input: RinexInput, , page: Int! = 1, perPage: Int! = 10): RinexPagination!
+    Rinexlist(input: RinexInput, , page: Int! = 0, perPage: Int! = 10): RinexPagination!
     """ Получить список спутников """
-    listSatellites(filter: SatellitesFilter!, page: Int! = 1, perPage: Int! = 10): SatellitesPagination!
+    listSatellites(filter: SatellitesFilter!, page: Int! = 0, perPage: Int! = 10): SatellitesPagination!
 }
 
 input RinexInput {
