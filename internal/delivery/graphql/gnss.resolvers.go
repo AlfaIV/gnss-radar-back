@@ -36,7 +36,7 @@ func (r *gnssMutationsResolver) UpdateDevice(ctx context.Context, obj *model.Gns
 }
 
 // CreateDevice is the resolver for the createDevice field.
-func (r *gnssMutationsResolver) CreateDevice(ctx context.Context, obj *model.GnssMutations, input model.UpdateDeviceInput) (*model.CreateDeviceOutput, error) {
+func (r *gnssMutationsResolver) CreateDevice(ctx context.Context, obj *model.GnssMutations, input model.CreateDeviceInput) (*model.CreateDeviceOutput, error) {
 	device, err := r.gnssSevice.CreateDevice(ctx, service.CreateDeviceParams{
 		Name:        input.Name,
 		Token:       input.Token,
@@ -57,12 +57,11 @@ func (r *gnssMutationsResolver) CreateDevice(ctx context.Context, obj *model.Gns
 // CreateTask is the resolver for the createTask field.
 func (r *gnssMutationsResolver) CreateTask(ctx context.Context, obj *model.GnssMutations, input model.CreateTaskInput) (*model.CreateTaskOutput, error) {
 	task, err := r.gnssSevice.CreateTask(ctx, store.CreateTaskParams{
-		SatelliteID:   input.SatelliteID,
-		SatelliteName: input.SatelliteName,
-		SignalType:    input.SignalType,
-		GroupingType:  input.GroupingType,
-		StartAt:       input.StartAt,
-		EndAt:         input.EndAt,
+		SatelliteID:  input.SatelliteID,
+		SignalType:   input.SignalType,
+		GroupingType: input.GroupingType,
+		StartAt:      input.StartAt,
+		EndAt:        input.EndAt,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("gnssSevice.CreateTask %w", err)
@@ -74,13 +73,12 @@ func (r *gnssMutationsResolver) CreateTask(ctx context.Context, obj *model.GnssM
 // UpdateTask is the resolver for the updateTask field.
 func (r *gnssMutationsResolver) UpdateTask(ctx context.Context, obj *model.GnssMutations, input model.UpdateTaskInput) (*model.UpdateTaskOutput, error) {
 	task, err := r.gnssSevice.UpdateTask(ctx, store.UpdateTaskParams{
-		Id:            input.ID,
-		SatelliteID:   input.SatelliteID,
-		SatelliteName: input.SatelliteName,
-		SignalType:    input.SignalType,
-		GroupingType:  input.GroupingType,
-		StartAt:       input.StartAt,
-		EndAt:         input.EndAt,
+		Id:           input.ID,
+		SatelliteID:  input.SatelliteID,
+		SignalType:   input.SignalType,
+		GroupingType: input.GroupingType,
+		StartAt:      input.StartAt,
+		EndAt:        input.EndAt,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("gnssSevice.UpdateTask %w", err)
@@ -99,6 +97,19 @@ func (r *gnssMutationsResolver) DeleteTask(ctx context.Context, obj *model.GnssM
 	}
 
 	return &model.DeleteTaskOutput{}, nil
+}
+
+// CreateSatellite is the resolver for the createSatellite field.
+func (r *gnssMutationsResolver) CreateSatellite(ctx context.Context, obj *model.GnssMutations, input model.CreateSatelliteInput) (*model.CreateSatelliteOutput, error) {
+	satellite, err := r.gnssSevice.CreateSatellite(ctx, store.CreateSatelliteParams{
+		ExternalSatelliteId: input.ExternalSatelliteID,
+		SatelliteName:       input.SatelliteName,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gnssSevice.CreateSatellite %w", err)
+	}
+
+	return &model.CreateSatelliteOutput{Satellite: satellite}, nil
 }
 
 // Gnss is the resolver for the gnss field.
@@ -151,13 +162,12 @@ func (r *queryResolver) ListDevice(ctx context.Context, filter model.DeviceFilte
 // ListTask is the resolver for the listTask field.
 func (r *queryResolver) ListTask(ctx context.Context, filter model.TaskFilter, page int, perPage int) (*model.TaskPagination, error) {
 	tasks, err := r.gnssSevice.ListTasks(ctx, store.ListTasksFilter{
-		Ids:           filter.Ids,
-		SatelliteIds:  filter.SatelliteIds,
-		SatelliteName: filter.SatelliteName,
-		SignalType:    filter.SignalType,
-		GroupingType:  filter.GroupingType,
-		StartAt:       filter.StartAt,
-		EndAt:         filter.EndAt,
+		Ids:          filter.Ids,
+		SatelliteIds: filter.SatelliteIds,
+		SignalType:   filter.SignalType,
+		GroupingType: filter.GroupingType,
+		StartAt:      filter.StartAt,
+		EndAt:        filter.EndAt,
 		Paginator: model.Paginator{
 			Page:    uint64(page),
 			PerPage: uint64(perPage),
@@ -179,6 +189,21 @@ func (r *queryResolver) Rinexlist(ctx context.Context, input *model.RinexInput, 
 	return &model.RinexPagination{
 		Items: gnssRinex,
 	}, nil
+}
+
+// ListSatellites is the resolver for the listSatellites field.
+func (r *queryResolver) ListSatellites(ctx context.Context, filter model.SatellitesFilter, page int, perPage int) (*model.SatellitesPagination, error) {
+	satellites, err := r.gnssSevice.ListSatellites(ctx, store.ListSatellitesFilter{
+		Ids:                  filter.IDS,
+		ExternalSatelliteIds: filter.ExternalSatelliteIds,
+		SatelliteName:        filter.SatelliteNames,
+		Paginator:            model.Paginator{Page: uint64(page), PerPage: uint64(perPage)},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gnssSevice.ListSatellites: %w", err)
+	}
+
+	return &model.SatellitesPagination{Items: satellites}, nil
 }
 
 // GnssMutations returns generated.GnssMutationsResolver implementation.

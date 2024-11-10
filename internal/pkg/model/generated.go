@@ -66,12 +66,23 @@ type CreateDeviceOutput struct {
 	Device *Device `json:"device"`
 }
 
+// Входные параметры для создания спутника
+type CreateSatelliteInput struct {
+	//  Внешний индетификатор спутника
+	ExternalSatelliteID string `json:"ExternalSatelliteId"`
+	//  Название спутника
+	SatelliteName string `json:"SatelliteName"`
+}
+
+// Выходные параметры для создания спутника
+type CreateSatelliteOutput struct {
+	Satellite *SatelliteInfo `json:"satellite"`
+}
+
 // Входные параметры для create task
 type CreateTaskInput struct {
-	//  Id спутника
+	//  Индентификатор спутника
 	SatelliteID string `json:"satelliteId"`
-	//  Имя спутника
-	SatelliteName string `json:"satelliteName"`
 	//  Тип сигнала
 	SignalType SignalType `json:"signalType"`
 	//  Тип группировки
@@ -84,7 +95,7 @@ type CreateTaskInput struct {
 
 // Выходные параметры для create task
 type CreateTaskOutput struct {
-	Task *Task `json:"task,omitempty"`
+	Task *Task `json:"task"`
 }
 
 // Входные параметры для delete task
@@ -118,10 +129,10 @@ type Gnss struct {
 	ID string `json:"Id"`
 	//  id спутника
 	SatelliteID string `json:"SatelliteId"`
-	//  Имя спутника
-	SatelliteName string `json:"SatelliteName"`
 	//  Координаты спутника
 	Coordinates *CoordsResults `json:"Coordinates"`
+	//  Время создания
+	CreatedAt time.Time `json:"CreatedAt"`
 }
 
 type GNSSFilter struct {
@@ -146,6 +157,8 @@ type GnssMutations struct {
 	UpdateTask *UpdateTaskOutput `json:"updateTask"`
 	//  Удалить task
 	DeleteTask *DeleteTaskOutput `json:"deleteTask"`
+	//  Создать спутник
+	CreateSatellite *CreateSatelliteOutput `json:"createSatellite"`
 }
 
 type Header struct {
@@ -211,6 +224,20 @@ type Satellite struct {
 	Observations []string `json:"observations"`
 }
 
+type SatellitesFilter struct {
+	//  Индетификатор
+	IDS []string `json:"IdS,omitempty"`
+	//  Внешний индетификатор спутника
+	ExternalSatelliteIds []string `json:"ExternalSatelliteIds,omitempty"`
+	//  Название спутника
+	SatelliteNames []string `json:"SatelliteNames,omitempty"`
+}
+
+type SatellitesPagination struct {
+	//  Загруженные элементы
+	Items []*SatelliteInfo `json:"items,omitempty"`
+}
+
 // Входные параметры для авторизации
 type SigninInput struct {
 	Login    string `json:"login"`
@@ -274,10 +301,8 @@ type UpdateDeviceOutput struct {
 type UpdateTaskInput struct {
 	//  Индетификатор
 	ID string `json:"id"`
-	//  Id спутника
+	//  Индетификатор спутника
 	SatelliteID string `json:"satelliteId"`
-	//  Имя спутника
-	SatelliteName string `json:"satelliteName"`
 	//  Тип сигнала
 	SignalType SignalType `json:"signalType"`
 	//  Тип группировки
@@ -290,7 +315,7 @@ type UpdateTaskInput struct {
 
 // Выходные параметры для update task
 type UpdateTaskOutput struct {
-	Task *Task `json:"task,omitempty"`
+	Task *Task `json:"task"`
 }
 
 // Бизнес ошибки

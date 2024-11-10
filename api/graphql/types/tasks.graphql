@@ -3,8 +3,6 @@ type Task {
     id: String!
     """ Id спутника """
     satelliteId: String!
-    """ Имя спутника """
-    satelliteName: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
@@ -13,4 +11,6 @@ type Task {
     startAt: Time!
     """ Время конца """
     endAt: Time!
+    """ Время создания """
+    CreatedAt: Time!
 }

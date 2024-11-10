@@ -124,6 +124,8 @@ func (ec *executionContext) fieldContext_AuthcheckOutput_userInfo(_ context.Cont
 				return ec.fieldContext_User_login(ctx, field)
 			case "role":
 				return ec.fieldContext_User_role(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_User_CreatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -391,6 +393,8 @@ func (ec *executionContext) fieldContext_SigninOutput_userInfo(_ context.Context
 				return ec.fieldContext_User_login(ctx, field)
 			case "role":
 				return ec.fieldContext_User_role(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_User_CreatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -443,6 +447,8 @@ func (ec *executionContext) fieldContext_SignupOutput_userInfo(_ context.Context
 				return ec.fieldContext_User_login(ctx, field)
 			case "role":
 				return ec.fieldContext_User_role(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_User_CreatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},

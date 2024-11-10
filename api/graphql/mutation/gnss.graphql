@@ -8,13 +8,15 @@ type GnssMutations {
     """ Обновить device """
     updateDevice(input: UpdateDeviceInput!): UpdateDeviceOutput! @goField(forceResolver: true)
     """ Создать device """
-    createDevice(input: UpdateDeviceInput!): CreateDeviceOutput! @goField(forceResolver: true)
+    createDevice(input: CreateDeviceInput!): CreateDeviceOutput! @goField(forceResolver: true)
     """ Создать task """
     createTask(input: CreateTaskInput!): CreateTaskOutput! @goField(forceResolver: true)
     """ Обновить task """
     updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true)
     """ Удалить task """
     deleteTask(input: DeleteTaskInput!): DeleteTaskOutput! @goField(forceResolver: true)
+    """ Создать спутник """
+    createSatellite(input: CreateSatelliteInput!): CreateSatelliteOutput! @goField(forceResolver: true)
 }
 
 """ Входные параметры для update device """
@@ -55,10 +57,8 @@ type CreateDeviceOutput {
 
 """ Входные параметры для create task """
 input CreateTaskInput {
-    """ Id спутника """
+    """ Индентификатор спутника """
     satelliteId: String!
-    """ Имя спутника """
-    satelliteName: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
@@ -71,17 +71,15 @@ input CreateTaskInput {
 
 """ Выходные параметры для create task """
 type CreateTaskOutput {
-    task: Task
+    task: Task!
 }
 
 """ Входные параметры для update task """
 input UpdateTaskInput {
     """ Индетификатор """
     id: String!
-    """ Id спутника """
+    """ Индетификатор спутника """
     satelliteId: String!
-    """ Имя спутника """
-    satelliteName: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
@@ -94,7 +92,13 @@ input UpdateTaskInput {
 
 """ Выходные параметры для update task """
 type UpdateTaskOutput {
-    task: Task
+    task: Task!
+}
+
+""" Входные параметры для delete task """
+input DeleteTaskInput {
+    """ Индетификатор """
+    id: String!
 }
 
 """ Входные параметры для delete task """
@@ -103,8 +107,15 @@ type DeleteTaskOutput {
     _empty: Empty
 }
 
-""" Входные параметры для delete task """
-input DeleteTaskInput {
-    """ Индетификатор """
-    id: String!
+""" Входные параметры для создания спутника """
+input  CreateSatelliteInput {
+    """ Внешний индетификатор спутника """
+    ExternalSatelliteId: String!
+    """ Название спутника """
+    SatelliteName: String!
+}
+
+""" Выходные параметры для создания спутника """
+type CreateSatelliteOutput {
+    satellite: SatelliteInfo!
 }

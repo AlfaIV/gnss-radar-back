@@ -1,6 +1,11 @@
 """ Информация о юзере """
 type User {
+    """ Индетификатор """
     id: String!
+    """ Логин """
     login: String!
+    """ Роль """
     role: String!
+    """ Время создания """
+    CreatedAt: Time!
 }

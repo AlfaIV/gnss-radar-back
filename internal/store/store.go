@@ -21,6 +21,13 @@ type Store struct {
 	gnss          *GnssStore
 }
 
+const (
+	gnssTable      = "gnss_coords"
+	deviceTable    = "devices"
+	taskTable      = "tasks"
+	satelliteTable = "satellites"
+)
+
 func NewStore(storage *Storage, cacheStorage *CacheStorage) *Store {
 	return &Store{
 		authorization: NewAuthorizationStore(storage),

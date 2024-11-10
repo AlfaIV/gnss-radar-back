@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
@@ -19,10 +20,11 @@ import (
 
 type GnssMutationsResolver interface {
 	UpdateDevice(ctx context.Context, obj *model.GnssMutations, input model.UpdateDeviceInput) (*model.UpdateDeviceOutput, error)
-	CreateDevice(ctx context.Context, obj *model.GnssMutations, input model.UpdateDeviceInput) (*model.CreateDeviceOutput, error)
+	CreateDevice(ctx context.Context, obj *model.GnssMutations, input model.CreateDeviceInput) (*model.CreateDeviceOutput, error)
 	CreateTask(ctx context.Context, obj *model.GnssMutations, input model.CreateTaskInput) (*model.CreateTaskOutput, error)
 	UpdateTask(ctx context.Context, obj *model.GnssMutations, input model.UpdateTaskInput) (*model.UpdateTaskOutput, error)
 	DeleteTask(ctx context.Context, obj *model.GnssMutations, input model.DeleteTaskInput) (*model.DeleteTaskOutput, error)
+	CreateSatellite(ctx context.Context, obj *model.GnssMutations, input model.CreateSatelliteInput) (*model.CreateSatelliteOutput, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -32,10 +34,25 @@ type GnssMutationsResolver interface {
 func (ec *executionContext) field_GnssMutations_createDevice_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.UpdateDeviceInput
+	var arg0 model.CreateDeviceInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateDeviceInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐUpdateDeviceInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateDeviceInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCreateDeviceInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_GnssMutations_createSatellite_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreateSatelliteInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateSatelliteInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCreateSatelliteInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -293,8 +310,64 @@ func (ec *executionContext) fieldContext_CreateDeviceOutput_device(_ context.Con
 				return ec.fieldContext_Device_description(ctx, field)
 			case "Coords":
 				return ec.fieldContext_Device_Coords(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_Device_CreatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Device", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateSatelliteOutput_satellite(ctx context.Context, field graphql.CollectedField, obj *model.CreateSatelliteOutput) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateSatelliteOutput_satellite(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Satellite, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.SatelliteInfo)
+	fc.Result = res
+	return ec.marshalNSatelliteInfo2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSatelliteInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateSatelliteOutput_satellite(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateSatelliteOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "Id":
+				return ec.fieldContext_SatelliteInfo_Id(ctx, field)
+			case "ExternalSatelliteId":
+				return ec.fieldContext_SatelliteInfo_ExternalSatelliteId(ctx, field)
+			case "SatelliteName":
+				return ec.fieldContext_SatelliteInfo_SatelliteName(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_SatelliteInfo_CreatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SatelliteInfo", field.Name)
 		},
 	}
 	return fc, nil
@@ -321,11 +394,14 @@ func (ec *executionContext) _CreateTaskOutput_task(ctx context.Context, field gr
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(*model.Task)
 	fc.Result = res
-	return ec.marshalOTask2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTask(ctx, field.Selections, res)
+	return ec.marshalNTask2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CreateTaskOutput_task(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -340,8 +416,6 @@ func (ec *executionContext) fieldContext_CreateTaskOutput_task(_ context.Context
 				return ec.fieldContext_Task_id(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
-			case "satelliteName":
-				return ec.fieldContext_Task_satelliteName(ctx, field)
 			case "signalType":
 				return ec.fieldContext_Task_signalType(ctx, field)
 			case "groupingType":
@@ -350,6 +424,8 @@ func (ec *executionContext) fieldContext_CreateTaskOutput_task(_ context.Context
 				return ec.fieldContext_Task_startAt(ctx, field)
 			case "endAt":
 				return ec.fieldContext_Task_endAt(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_Task_CreatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
 		},
@@ -444,6 +520,8 @@ func (ec *executionContext) fieldContext_DevicePagination_items(_ context.Contex
 				return ec.fieldContext_Device_description(ctx, field)
 			case "Coords":
 				return ec.fieldContext_Device_Coords(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_Device_CreatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Device", field.Name)
 		},
@@ -539,50 +617,6 @@ func (ec *executionContext) fieldContext_GNSS_SatelliteId(_ context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _GNSS_SatelliteName(ctx context.Context, field graphql.CollectedField, obj *model.Gnss) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_GNSS_SatelliteName(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SatelliteName, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_GNSS_SatelliteName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "GNSS",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _GNSS_Coordinates(ctx context.Context, field graphql.CollectedField, obj *model.Gnss) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_GNSS_Coordinates(ctx, field)
 	if err != nil {
@@ -635,6 +669,50 @@ func (ec *executionContext) fieldContext_GNSS_Coordinates(_ context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _GNSS_CreatedAt(ctx context.Context, field graphql.CollectedField, obj *model.Gnss) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GNSS_CreatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GNSS_CreatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GNSS",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _GNSSPagination_items(ctx context.Context, field graphql.CollectedField, obj *model.GNSSPagination) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_GNSSPagination_items(ctx, field)
 	if err != nil {
@@ -675,10 +753,10 @@ func (ec *executionContext) fieldContext_GNSSPagination_items(_ context.Context,
 				return ec.fieldContext_GNSS_Id(ctx, field)
 			case "SatelliteId":
 				return ec.fieldContext_GNSS_SatelliteId(ctx, field)
-			case "SatelliteName":
-				return ec.fieldContext_GNSS_SatelliteName(ctx, field)
 			case "Coordinates":
 				return ec.fieldContext_GNSS_Coordinates(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_GNSS_CreatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GNSS", field.Name)
 		},
@@ -759,7 +837,7 @@ func (ec *executionContext) _GnssMutations_createDevice(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.GnssMutations().CreateDevice(rctx, obj, fc.Args["input"].(model.UpdateDeviceInput))
+		return ec.resolvers.GnssMutations().CreateDevice(rctx, obj, fc.Args["input"].(model.CreateDeviceInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -975,6 +1053,65 @@ func (ec *executionContext) fieldContext_GnssMutations_deleteTask(ctx context.Co
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_GnssMutations_deleteTask_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GnssMutations_createSatellite(ctx context.Context, field graphql.CollectedField, obj *model.GnssMutations) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GnssMutations_createSatellite(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.GnssMutations().CreateSatellite(rctx, obj, fc.Args["input"].(model.CreateSatelliteInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.CreateSatelliteOutput)
+	fc.Result = res
+	return ec.marshalNCreateSatelliteOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCreateSatelliteOutput(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GnssMutations_createSatellite(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GnssMutations",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "satellite":
+				return ec.fieldContext_CreateSatelliteOutput_satellite(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CreateSatelliteOutput", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_GnssMutations_createSatellite_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2134,6 +2271,57 @@ func (ec *executionContext) fieldContext_Satellite_observations(_ context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _SatellitesPagination_items(ctx context.Context, field graphql.CollectedField, obj *model.SatellitesPagination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SatellitesPagination_items(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Items, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.SatelliteInfo)
+	fc.Result = res
+	return ec.marshalOSatelliteInfo2ᚕᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSatelliteInfoᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SatellitesPagination_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SatellitesPagination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "Id":
+				return ec.fieldContext_SatelliteInfo_Id(ctx, field)
+			case "ExternalSatelliteId":
+				return ec.fieldContext_SatelliteInfo_ExternalSatelliteId(ctx, field)
+			case "SatelliteName":
+				return ec.fieldContext_SatelliteInfo_SatelliteName(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_SatelliteInfo_CreatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SatelliteInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _TaskPagination_items(ctx context.Context, field graphql.CollectedField, obj *model.TaskPagination) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_TaskPagination_items(ctx, field)
 	if err != nil {
@@ -2174,8 +2362,6 @@ func (ec *executionContext) fieldContext_TaskPagination_items(_ context.Context,
 				return ec.fieldContext_Task_id(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
-			case "satelliteName":
-				return ec.fieldContext_Task_satelliteName(ctx, field)
 			case "signalType":
 				return ec.fieldContext_Task_signalType(ctx, field)
 			case "groupingType":
@@ -2184,6 +2370,8 @@ func (ec *executionContext) fieldContext_TaskPagination_items(_ context.Context,
 				return ec.fieldContext_Task_startAt(ctx, field)
 			case "endAt":
 				return ec.fieldContext_Task_endAt(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_Task_CreatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
 		},
@@ -2240,6 +2428,8 @@ func (ec *executionContext) fieldContext_UpdateDeviceOutput_device(_ context.Con
 				return ec.fieldContext_Device_description(ctx, field)
 			case "Coords":
 				return ec.fieldContext_Device_Coords(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_Device_CreatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Device", field.Name)
 		},
@@ -2268,11 +2458,14 @@ func (ec *executionContext) _UpdateTaskOutput_task(ctx context.Context, field gr
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(*model.Task)
 	fc.Result = res
-	return ec.marshalOTask2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTask(ctx, field.Selections, res)
+	return ec.marshalNTask2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_UpdateTaskOutput_task(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2287,8 +2480,6 @@ func (ec *executionContext) fieldContext_UpdateTaskOutput_task(_ context.Context
 				return ec.fieldContext_Task_id(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
-			case "satelliteName":
-				return ec.fieldContext_Task_satelliteName(ctx, field)
 			case "signalType":
 				return ec.fieldContext_Task_signalType(ctx, field)
 			case "groupingType":
@@ -2297,6 +2488,8 @@ func (ec *executionContext) fieldContext_UpdateTaskOutput_task(_ context.Context
 				return ec.fieldContext_Task_startAt(ctx, field)
 			case "endAt":
 				return ec.fieldContext_Task_endAt(ctx, field)
+			case "CreatedAt":
+				return ec.fieldContext_Task_CreatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
 		},
@@ -2397,6 +2590,40 @@ func (ec *executionContext) unmarshalInputCreateDeviceInput(ctx context.Context,
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateSatelliteInput(ctx context.Context, obj interface{}) (model.CreateSatelliteInput, error) {
+	var it model.CreateSatelliteInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"ExternalSatelliteId", "SatelliteName"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "ExternalSatelliteId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ExternalSatelliteId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ExternalSatelliteID = data
+		case "SatelliteName":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("SatelliteName"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SatelliteName = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, obj interface{}) (model.CreateTaskInput, error) {
 	var it model.CreateTaskInput
 	asMap := map[string]interface{}{}
@@ -2404,7 +2631,7 @@ func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"satelliteId", "satelliteName", "signalType", "groupingType", "startAt", "endAt"}
+	fieldsInOrder := [...]string{"satelliteId", "signalType", "groupingType", "startAt", "endAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2418,13 +2645,6 @@ func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, o
 				return it, err
 			}
 			it.SatelliteID = data
-		case "satelliteName":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("satelliteName"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.SatelliteName = data
 		case "signalType":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("signalType"))
 			data, err := ec.unmarshalNSignalType2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSignalType(ctx, v)
@@ -2581,6 +2801,47 @@ func (ec *executionContext) unmarshalInputRinexInput(ctx context.Context, obj in
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSatellitesFilter(ctx context.Context, obj interface{}) (model.SatellitesFilter, error) {
+	var it model.SatellitesFilter
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"IdS", "ExternalSatelliteIds", "SatelliteNames"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "IdS":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("IdS"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDS = data
+		case "ExternalSatelliteIds":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ExternalSatelliteIds"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ExternalSatelliteIds = data
+		case "SatelliteNames":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("SatelliteNames"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SatelliteNames = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputTaskFilter(ctx context.Context, obj interface{}) (model.TaskFilter, error) {
 	var it model.TaskFilter
 	asMap := map[string]interface{}{}
@@ -2712,7 +2973,7 @@ func (ec *executionContext) unmarshalInputUpdateTaskInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "satelliteId", "satelliteName", "signalType", "groupingType", "startAt", "endAt"}
+	fieldsInOrder := [...]string{"id", "satelliteId", "signalType", "groupingType", "startAt", "endAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2733,13 +2994,6 @@ func (ec *executionContext) unmarshalInputUpdateTaskInput(ctx context.Context, o
 				return it, err
 			}
 			it.SatelliteID = data
-		case "satelliteName":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("satelliteName"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.SatelliteName = data
 		case "signalType":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("signalType"))
 			data, err := ec.unmarshalNSignalType2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSignalType(ctx, v)
@@ -2870,6 +3124,45 @@ func (ec *executionContext) _CreateDeviceOutput(ctx context.Context, sel ast.Sel
 	return out
 }
 
+var createSatelliteOutputImplementors = []string{"CreateSatelliteOutput"}
+
+func (ec *executionContext) _CreateSatelliteOutput(ctx context.Context, sel ast.SelectionSet, obj *model.CreateSatelliteOutput) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createSatelliteOutputImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreateSatelliteOutput")
+		case "satellite":
+			out.Values[i] = ec._CreateSatelliteOutput_satellite(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var createTaskOutputImplementors = []string{"CreateTaskOutput"}
 
 func (ec *executionContext) _CreateTaskOutput(ctx context.Context, sel ast.SelectionSet, obj *model.CreateTaskOutput) graphql.Marshaler {
@@ -2883,6 +3176,9 @@ func (ec *executionContext) _CreateTaskOutput(ctx context.Context, sel ast.Selec
 			out.Values[i] = graphql.MarshalString("CreateTaskOutput")
 		case "task":
 			out.Values[i] = ec._CreateTaskOutput_task(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2999,13 +3295,13 @@ func (ec *executionContext) _GNSS(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "SatelliteName":
-			out.Values[i] = ec._GNSS_SatelliteName(ctx, field, obj)
+		case "Coordinates":
+			out.Values[i] = ec._GNSS_Coordinates(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "Coordinates":
-			out.Values[i] = ec._GNSS_Coordinates(ctx, field, obj)
+		case "CreatedAt":
+			out.Values[i] = ec._GNSS_CreatedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -3233,6 +3529,42 @@ func (ec *executionContext) _GnssMutations(ctx context.Context, sel ast.Selectio
 					}
 				}()
 				res = ec._GnssMutations_deleteTask(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "createSatellite":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._GnssMutations_createSatellite(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -3574,6 +3906,42 @@ func (ec *executionContext) _Satellite(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
+var satellitesPaginationImplementors = []string{"SatellitesPagination"}
+
+func (ec *executionContext) _SatellitesPagination(ctx context.Context, sel ast.SelectionSet, obj *model.SatellitesPagination) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, satellitesPaginationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SatellitesPagination")
+		case "items":
+			out.Values[i] = ec._SatellitesPagination_items(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var taskPaginationImplementors = []string{"TaskPagination"}
 
 func (ec *executionContext) _TaskPagination(ctx context.Context, sel ast.SelectionSet, obj *model.TaskPagination) graphql.Marshaler {
@@ -3662,6 +4030,9 @@ func (ec *executionContext) _UpdateTaskOutput(ctx context.Context, sel ast.Selec
 			out.Values[i] = graphql.MarshalString("UpdateTaskOutput")
 		case "task":
 			out.Values[i] = ec._UpdateTaskOutput_task(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3708,6 +4079,11 @@ func (ec *executionContext) marshalNCoordsResults2ᚖgithubᚗcomᚋGokertᚋgns
 	return ec._CoordsResults(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNCreateDeviceInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCreateDeviceInput(ctx context.Context, v interface{}) (model.CreateDeviceInput, error) {
+	res, err := ec.unmarshalInputCreateDeviceInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNCreateDeviceOutput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCreateDeviceOutput(ctx context.Context, sel ast.SelectionSet, v model.CreateDeviceOutput) graphql.Marshaler {
 	return ec._CreateDeviceOutput(ctx, sel, &v)
 }
@@ -3720,6 +4096,25 @@ func (ec *executionContext) marshalNCreateDeviceOutput2ᚖgithubᚗcomᚋGokert�
 		return graphql.Null
 	}
 	return ec._CreateDeviceOutput(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNCreateSatelliteInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCreateSatelliteInput(ctx context.Context, v interface{}) (model.CreateSatelliteInput, error) {
+	res, err := ec.unmarshalInputCreateSatelliteInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNCreateSatelliteOutput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCreateSatelliteOutput(ctx context.Context, sel ast.SelectionSet, v model.CreateSatelliteOutput) graphql.Marshaler {
+	return ec._CreateSatelliteOutput(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCreateSatelliteOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCreateSatelliteOutput(ctx context.Context, sel ast.SelectionSet, v *model.CreateSatelliteOutput) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CreateSatelliteOutput(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNCreateTaskInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCreateTaskInput(ctx context.Context, v interface{}) (model.CreateTaskInput, error) {
@@ -3962,6 +4357,25 @@ func (ec *executionContext) marshalNSatellite2ᚖgithubᚗcomᚋGokertᚋgnssᚑ
 		return graphql.Null
 	}
 	return ec._Satellite(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSatellitesFilter2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSatellitesFilter(ctx context.Context, v interface{}) (model.SatellitesFilter, error) {
+	res, err := ec.unmarshalInputSatellitesFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSatellitesPagination2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSatellitesPagination(ctx context.Context, sel ast.SelectionSet, v model.SatellitesPagination) graphql.Marshaler {
+	return ec._SatellitesPagination(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSatellitesPagination2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSatellitesPagination(ctx context.Context, sel ast.SelectionSet, v *model.SatellitesPagination) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SatellitesPagination(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNTaskFilter2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐTaskFilter(ctx context.Context, v interface{}) (model.TaskFilter, error) {

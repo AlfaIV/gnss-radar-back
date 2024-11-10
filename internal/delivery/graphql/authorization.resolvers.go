@@ -22,7 +22,7 @@ func (r *authorizationMutationsResolver) Signup(ctx context.Context, obj *model.
 		return nil, fmt.Errorf("validation.ValidateStruct %w", err)
 	}
 
-	result, err := r.authService.Signup(ctx, service.SignupRequest{Login: input.Login, Password: input.Password})
+	user, err := r.authService.Signup(ctx, service.SignupRequest{Login: input.Login, Password: input.Password})
 	if err != nil {
 		switch {
 		case errors.Is(err, store.ErrEntityAlreadyExist):
@@ -32,13 +32,7 @@ func (r *authorizationMutationsResolver) Signup(ctx context.Context, obj *model.
 		}
 	}
 
-	return &model.SignupOutput{
-		UserInfo: &model.User{
-			ID:    result.ID,
-			Login: result.Login,
-			Role:  result.Role,
-		},
-	}, nil
+	return &model.SignupOutput{UserInfo: user}, nil
 }
 
 // Signin is the resolver for the signin field.
@@ -47,7 +41,7 @@ func (r *authorizationMutationsResolver) Signin(ctx context.Context, obj *model.
 		return nil, fmt.Errorf("validation.ValidateStruct %w", err)
 	}
 
-	result, user, err := r.authService.Signin(ctx, service.SigninRequest{Login: input.Login, Password: input.Password})
+	session, user, err := r.authService.Signin(ctx, service.SigninRequest{Login: input.Login, Password: input.Password})
 	if err != nil {
 		switch {
 		case errors.Is(err, store.ErrNotFound):
@@ -57,15 +51,9 @@ func (r *authorizationMutationsResolver) Signin(ctx context.Context, obj *model.
 		}
 	}
 
-	utils.SetCookie(ctx, result.SID)
+	utils.SetCookie(ctx, session.SID)
 
-	return &model.SigninOutput{
-		UserInfo: &model.User{
-			ID:    user.ID,
-			Login: user.Login,
-			Role:  user.Role,
-		},
-	}, nil
+	return &model.SigninOutput{UserInfo: user}, nil
 }
 
 // Logout is the resolver for the logout field.
@@ -118,13 +106,7 @@ func (r *queryResolver) Authcheck(ctx context.Context, input *model.AuthcheckInp
 		return nil, model.ErrorNotAuthorized
 	}
 
-	return &model.AuthcheckOutput{
-		UserInfo: &model.User{
-			ID:    user.ID,
-			Login: user.Login,
-			Role:  user.Role,
-		},
-	}, nil
+	return &model.AuthcheckOutput{UserInfo: user}, nil
 }
 
 // AuthorizationMutations returns generated.AuthorizationMutationsResolver implementation.

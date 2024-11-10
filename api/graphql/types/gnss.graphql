@@ -3,10 +3,10 @@ type GNSS {
     Id: String!
     """ id спутника """
     SatelliteId: String!
-    """ Имя спутника """
-    SatelliteName: String!
     """ Координаты спутника """
     Coordinates: CoordsResults!
+    """ Время создания """
+    CreatedAt: Time!
 }
 
 type CoordsResults {

@@ -7,6 +7,8 @@ extend type Query {
     listTask(filter: TaskFilter!, page: Int! = 1, perPage: Int! = 10): TaskPagination!
     """ Получить список Rinex """
     Rinexlist(input: RinexInput, , page: Int! = 1, perPage: Int! = 10): RinexPagination!
+    """ Получить список спутников """
+    listSatellites(filter: SatellitesFilter!, page: Int! = 1, perPage: Int! = 10): SatellitesPagination!
 }
 
 input RinexInput {
@@ -56,6 +58,20 @@ input TaskFilter {
 type TaskPagination {
     """ Загруженные элементы """
     items: [Task!]
+}
+
+input SatellitesFilter {
+    """ Индетификатор """
+    IdS: [String!]
+    """ Внешний индетификатор спутника """
+    ExternalSatelliteIds: [String!]
+    """ Название спутника """
+    SatelliteNames: [String!]
+}
+
+type SatellitesPagination {
+    """ Загруженные элементы """
+    items: [SatelliteInfo!]
 }
 
 input CoordsInput {

@@ -10,4 +10,6 @@ type Device {
     description: String
     """ Координаты """
     Coords: CoordsResults!
+    """ Время создания """
+    CreatedAt: Time!
 }

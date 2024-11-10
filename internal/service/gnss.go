@@ -18,6 +18,8 @@ type IGnss interface {
 	UpdateTask(ctx context.Context, params store.UpdateTaskParams) (*model.Task, error)
 	DeleteTask(ctx context.Context, filter store.DeleteTaskFilter) error
 	ListTasks(ctx context.Context, filter store.ListTasksFilter) ([]*model.Task, error)
+	ListSatellites(ctx context.Context, filter store.ListSatellitesFilter) ([]*model.SatelliteInfo, error)
+	CreateSatellite(ctx context.Context, params store.CreateSatelliteParams) (*model.SatelliteInfo, error)
 }
 
 type GnssService struct {
@@ -173,6 +175,14 @@ func (g *GnssService) RinexList(ctx context.Context, req RinexRequest) ([]*model
 }
 
 func (g *GnssService) CreateTask(ctx context.Context, params store.CreateTaskParams) (*model.Task, error) {
+	satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{Ids: []string{params.SatelliteID}})
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.ListSatellites: %w", err)
+	}
+	if len(satellites) == 0 {
+		return nil, fmt.Errorf("satellites with id = %s not found", params.SatelliteID)
+	}
+
 	task, err := g.gnssStore.CreateTask(ctx, params)
 	if err != nil {
 		return nil, fmt.Errorf("gnssStore.CreateTask: %w", err)
@@ -182,6 +192,14 @@ func (g *GnssService) CreateTask(ctx context.Context, params store.CreateTaskPar
 }
 
 func (g *GnssService) UpdateTask(ctx context.Context, params store.UpdateTaskParams) (*model.Task, error) {
+	satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{Ids: []string{params.SatelliteID}})
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.ListSatellites: %w", err)
+	}
+	if len(satellites) == 0 {
+		return nil, fmt.Errorf("satellites with id = %s not found", params.SatelliteID)
+	}
+
 	task, err := g.gnssStore.UpdateTask(ctx, params)
 	if err != nil {
 		return nil, fmt.Errorf("gnssStore.UpdateTask: %w", err)
@@ -206,4 +224,22 @@ func (g *GnssService) ListTasks(ctx context.Context, filter store.ListTasksFilte
 	}
 
 	return tasks, nil
+}
+
+func (g *GnssService) ListSatellites(ctx context.Context, filter store.ListSatellitesFilter) ([]*model.SatelliteInfo, error) {
+	satellites, err := g.gnssStore.ListSatellites(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.ListSatellites: %w", err)
+	}
+
+	return satellites, nil
+}
+
+func (g *GnssService) CreateSatellite(ctx context.Context, params store.CreateSatelliteParams) (*model.SatelliteInfo, error) {
+	satellite, err := g.gnssStore.CreateSatellite(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.CreateSatellite: %w", err)
+	}
+
+	return satellite, nil
 }

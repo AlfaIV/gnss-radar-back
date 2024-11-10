@@ -6,17 +6,26 @@ CREATE TABLE IF NOT EXISTS profile (
    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
    login TEXT NOT NULL UNIQUE DEFAULT '',
    password bytea NOT NULL DEFAULT '',
-   role TEXT NOT NULL DEFAULT 'user'
+   role TEXT NOT NULL DEFAULT 'user',
+   created_at timestamptz NOT NULL DEFAULT now(),
+);
+
+DROP TABLE IF EXISTS satellites CASCADE;
+CREATE TABLE IF NOT EXISTS satellites (
+   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+   external_satellite_id TEXT UNIQUE NOT NULL,
+   satellite_name TEXT UNIQUE NOT NULL,
+   created_at timestamptz NOT NULL DEFAULT now(),
 );
 
 DROP TABLE IF EXISTS gnss_coords CASCADE;
 CREATE TABLE IF NOT EXISTS gnss_coords (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     satellite_id TEXT NOT NULL,
-    satellite_name TEXT NOT NULL,
     x DOUBLE PRECISION NOT NULL,
     y DOUBLE PRECISION NOT NULL,
     z DOUBLE PRECISION NOT NULL
+    created_at timestamptz NOT NULL DEFAULT now(),
 );
 
 DROP TABLE IF EXISTS devices CASCADE;
@@ -27,30 +36,45 @@ CREATE TABLE IF NOT EXISTS devices (
     description TEXT,
     x DOUBLE PRECISION NOT NULL,
     y DOUBLE PRECISION NOT NULL,
-    z DOUBLE PRECISION NOT NULL
+    z DOUBLE PRECISION NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now(),
 );
 
 DROP TABLE IF EXISTS tasks CASCADE;
 CREATE TABLE IF NOT EXISTS tasks (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     satellite_id TEXT NOT NULL,
-    satellite_name TEXT NOT NULL,
     signal_type TEXT NOT NULL,
     grouping_type TEXT NOT NULL,
     start_at timestamptz NOT NULL,
-    end_at timestamptz NOT NULL
+    end_at timestamptz NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now(),
 );
 
 INSERT INTO profile(login, password, role) VALUES ('admin', '\xc7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', 'admin');
 
-INSERT INTO gnss_coords (satellite_id, satellite_name, x, y, z) VALUES
-                                                                    ('PC06', 'PC06', -16806.320344, 29291.120310, -25355.710938),
-                                                                    ('PC07', 'PC07', -6959.418476, 39332.954409, -13000.851001),
-                                                                    ('PC08', 'PC08', -1908.204600, 21553.224987, 36203.881809),
-                                                                    ('PC09', 'PC09', -11202.586298, 28046.331947, -29182.143554),
-                                                                    ('PC10', 'PC10', -917.431406, 41238.966109, -6711.991412),
-                                                                    ('PC11', 'PC11', -16138.177056, -3913.891460, -22348.411693),
-                                                                    ('PC12', 'PC12', -997.099233, -19759.345910, -19638.934483),
-                                                                    ('PC13', 'PC13', 5858.392549, 25505.986419, 33308.911170),
-                                                                    ('PC14', 'PC14', -17706.605729, -14691.268566, 15829.680477),
-                                                                    ('PC16', 'PC16', -22387.055407, 28560.640995, -21454.026667);
+INSERT INTO satellites (external_satellite_id, satellite_name) VALUES
+    ('PC06', 'PC06'),
+    ('PC07', 'PC07'),
+    ('PC08', 'PC08');
+    ('PC09', 'PC09'),
+    ('PC10', 'PC10'),
+    ('PC11', 'PC11');
+
+INSERT INTO gnss_coords (satellite_id, x, y, z) VALUES
+    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC06'), -16806.320344, 29291.120310, -25355.710938),
+    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC07'), -6959.418476, 39332.954409, -13000.851001),
+    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC08'), -1908.204600, 21553.224987, 36203.881809),
+    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC09'), -11202.586298, 28046.331947, -29182.143554),
+    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC10'), -917.431406, 41238.966109, -6711.991412),
+    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC11'), -16138.177056, -3913.891460, -22348.411693);
+
+INSERT INTO devices (name, token, description, x, y, z) VALUES
+    ('device1', 'token-001', 'desc1', 10.0, 20.0, 30.0),
+    ('device2', 'token-002', 'desc2', 15.0, 25.0, 35.0),
+    ('device3', 'token-003', 'desc3', 20.0, 30.0, 40.0);
+
+INSERT INTO tasks (satellite_id, signal_type, grouping_type, start_at, end_at) VALUES
+   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC06'), 'SIGNAL_TYPE_L1', 'GROUPING_TYPE_GPS', now(), now() + interval '2 days'),
+   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC07'), 'SIGNAL_TYPE_L2', 'GROUPING_TYPE_GLONASS', now(), now() + interval '3 days'),
+   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC08'), 'SIGNAL_TYPE_L1', 'GROUPING_TYPE_GLONASS', now(), now() + interval '4 days');

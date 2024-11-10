@@ -64,6 +64,10 @@ type ComplexityRoot struct {
 		Device func(childComplexity int) int
 	}
 
+	CreateSatelliteOutput struct {
+		Satellite func(childComplexity int) int
+	}
+
 	CreateTaskOutput struct {
 		Task func(childComplexity int) int
 	}
@@ -74,6 +78,7 @@ type ComplexityRoot struct {
 
 	Device struct {
 		Coords      func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
 		Description func(childComplexity int) int
 		ID          func(childComplexity int) int
 		Name        func(childComplexity int) int
@@ -85,10 +90,10 @@ type ComplexityRoot struct {
 	}
 
 	GNSS struct {
-		Coordinates   func(childComplexity int) int
-		ID            func(childComplexity int) int
-		SatelliteID   func(childComplexity int) int
-		SatelliteName func(childComplexity int) int
+		Coordinates func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		ID          func(childComplexity int) int
+		SatelliteID func(childComplexity int) int
 	}
 
 	GNSSPagination struct {
@@ -96,11 +101,12 @@ type ComplexityRoot struct {
 	}
 
 	GnssMutations struct {
-		CreateDevice func(childComplexity int, input model.UpdateDeviceInput) int
-		CreateTask   func(childComplexity int, input model.CreateTaskInput) int
-		DeleteTask   func(childComplexity int, input model.DeleteTaskInput) int
-		UpdateDevice func(childComplexity int, input model.UpdateDeviceInput) int
-		UpdateTask   func(childComplexity int, input model.UpdateTaskInput) int
+		CreateDevice    func(childComplexity int, input model.CreateDeviceInput) int
+		CreateSatellite func(childComplexity int, input model.CreateSatelliteInput) int
+		CreateTask      func(childComplexity int, input model.CreateTaskInput) int
+		DeleteTask      func(childComplexity int, input model.DeleteTaskInput) int
+		UpdateDevice    func(childComplexity int, input model.UpdateDeviceInput) int
+		UpdateTask      func(childComplexity int, input model.UpdateTaskInput) int
 	}
 
 	Header struct {
@@ -143,6 +149,7 @@ type ComplexityRoot struct {
 		Errors             func(childComplexity int) int
 		ListDevice         func(childComplexity int, filter model.DeviceFilter, page int, perPage int) int
 		ListGnss           func(childComplexity int, filter model.GNSSFilter, page int, perPage int) int
+		ListSatellites     func(childComplexity int, filter model.SatellitesFilter, page int, perPage int) int
 		ListTask           func(childComplexity int, filter model.TaskFilter, page int, perPage int) int
 		Rinexlist          func(childComplexity int, input *model.RinexInput, page int, perPage int) int
 		__resolve__service func(childComplexity int) int
@@ -162,6 +169,17 @@ type ComplexityRoot struct {
 		SatelliteID  func(childComplexity int) int
 	}
 
+	SatelliteInfo struct {
+		CreatedAt           func(childComplexity int) int
+		ExternalSatelliteId func(childComplexity int) int
+		ID                  func(childComplexity int) int
+		SatelliteName       func(childComplexity int) int
+	}
+
+	SatellitesPagination struct {
+		Items func(childComplexity int) int
+	}
+
 	SigninOutput struct {
 		UserInfo func(childComplexity int) int
 	}
@@ -171,13 +189,13 @@ type ComplexityRoot struct {
 	}
 
 	Task struct {
-		EndAt         func(childComplexity int) int
-		GroupingType  func(childComplexity int) int
-		ID            func(childComplexity int) int
-		SatelliteID   func(childComplexity int) int
-		SatelliteName func(childComplexity int) int
-		SignalType    func(childComplexity int) int
-		StartAt       func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		EndAt        func(childComplexity int) int
+		GroupingType func(childComplexity int) int
+		ID           func(childComplexity int) int
+		SatelliteID  func(childComplexity int) int
+		SignalType   func(childComplexity int) int
+		StartAt      func(childComplexity int) int
 	}
 
 	TaskPagination struct {
@@ -193,9 +211,10 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
-		ID    func(childComplexity int) int
-		Login func(childComplexity int) int
-		Role  func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Login     func(childComplexity int) int
+		Role      func(childComplexity int) int
 	}
 
 	_Service struct {
@@ -293,6 +312,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CreateDeviceOutput.Device(childComplexity), true
 
+	case "CreateSatelliteOutput.satellite":
+		if e.complexity.CreateSatelliteOutput.Satellite == nil {
+			break
+		}
+
+		return e.complexity.CreateSatelliteOutput.Satellite(childComplexity), true
+
 	case "CreateTaskOutput.task":
 		if e.complexity.CreateTaskOutput.Task == nil {
 			break
@@ -313,6 +339,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Device.Coords(childComplexity), true
+
+	case "Device.CreatedAt":
+		if e.complexity.Device.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Device.CreatedAt(childComplexity), true
 
 	case "Device.description":
 		if e.complexity.Device.Description == nil {
@@ -356,6 +389,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.GNSS.Coordinates(childComplexity), true
 
+	case "GNSS.CreatedAt":
+		if e.complexity.GNSS.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.GNSS.CreatedAt(childComplexity), true
+
 	case "GNSS.Id":
 		if e.complexity.GNSS.ID == nil {
 			break
@@ -369,13 +409,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GNSS.SatelliteID(childComplexity), true
-
-	case "GNSS.SatelliteName":
-		if e.complexity.GNSS.SatelliteName == nil {
-			break
-		}
-
-		return e.complexity.GNSS.SatelliteName(childComplexity), true
 
 	case "GNSSPagination.items":
 		if e.complexity.GNSSPagination.Items == nil {
@@ -394,7 +427,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.GnssMutations.CreateDevice(childComplexity, args["input"].(model.UpdateDeviceInput)), true
+		return e.complexity.GnssMutations.CreateDevice(childComplexity, args["input"].(model.CreateDeviceInput)), true
+
+	case "GnssMutations.createSatellite":
+		if e.complexity.GnssMutations.CreateSatellite == nil {
+			break
+		}
+
+		args, err := ec.field_GnssMutations_createSatellite_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.GnssMutations.CreateSatellite(childComplexity, args["input"].(model.CreateSatelliteInput)), true
 
 	case "GnssMutations.createTask":
 		if e.complexity.GnssMutations.CreateTask == nil {
@@ -648,6 +693,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ListGnss(childComplexity, args["filter"].(model.GNSSFilter), args["page"].(int), args["perPage"].(int)), true
 
+	case "Query.listSatellites":
+		if e.complexity.Query.ListSatellites == nil {
+			break
+		}
+
+		args, err := ec.field_Query_listSatellites_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ListSatellites(childComplexity, args["filter"].(model.SatellitesFilter), args["page"].(int), args["perPage"].(int)), true
+
 	case "Query.listTask":
 		if e.complexity.Query.ListTask == nil {
 			break
@@ -714,6 +771,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Satellite.SatelliteID(childComplexity), true
 
+	case "SatelliteInfo.CreatedAt":
+		if e.complexity.SatelliteInfo.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.SatelliteInfo.CreatedAt(childComplexity), true
+
+	case "SatelliteInfo.ExternalSatelliteId":
+		if e.complexity.SatelliteInfo.ExternalSatelliteId == nil {
+			break
+		}
+
+		return e.complexity.SatelliteInfo.ExternalSatelliteId(childComplexity), true
+
+	case "SatelliteInfo.Id":
+		if e.complexity.SatelliteInfo.ID == nil {
+			break
+		}
+
+		return e.complexity.SatelliteInfo.ID(childComplexity), true
+
+	case "SatelliteInfo.SatelliteName":
+		if e.complexity.SatelliteInfo.SatelliteName == nil {
+			break
+		}
+
+		return e.complexity.SatelliteInfo.SatelliteName(childComplexity), true
+
+	case "SatellitesPagination.items":
+		if e.complexity.SatellitesPagination.Items == nil {
+			break
+		}
+
+		return e.complexity.SatellitesPagination.Items(childComplexity), true
+
 	case "SigninOutput.userInfo":
 		if e.complexity.SigninOutput.UserInfo == nil {
 			break
@@ -727,6 +819,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SignupOutput.UserInfo(childComplexity), true
+
+	case "Task.CreatedAt":
+		if e.complexity.Task.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Task.CreatedAt(childComplexity), true
 
 	case "Task.endAt":
 		if e.complexity.Task.EndAt == nil {
@@ -755,13 +854,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Task.SatelliteID(childComplexity), true
-
-	case "Task.satelliteName":
-		if e.complexity.Task.SatelliteName == nil {
-			break
-		}
-
-		return e.complexity.Task.SatelliteName(childComplexity), true
 
 	case "Task.signalType":
 		if e.complexity.Task.SignalType == nil {
@@ -797,6 +889,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.UpdateTaskOutput.Task(childComplexity), true
+
+	case "User.CreatedAt":
+		if e.complexity.User.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.User.CreatedAt(childComplexity), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -837,12 +936,14 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputAuthcheckInput,
 		ec.unmarshalInputCoordsInput,
 		ec.unmarshalInputCreateDeviceInput,
+		ec.unmarshalInputCreateSatelliteInput,
 		ec.unmarshalInputCreateTaskInput,
 		ec.unmarshalInputDeleteTaskInput,
 		ec.unmarshalInputDeviceFilter,
 		ec.unmarshalInputGNSSFilter,
 		ec.unmarshalInputLogoutInput,
 		ec.unmarshalInputRinexInput,
+		ec.unmarshalInputSatellitesFilter,
 		ec.unmarshalInputSigninInput,
 		ec.unmarshalInputSignupInput,
 		ec.unmarshalInputTaskFilter,
@@ -1053,13 +1154,15 @@ type GnssMutations {
     """ Обновить device """
     updateDevice(input: UpdateDeviceInput!): UpdateDeviceOutput! @goField(forceResolver: true)
     """ Создать device """
-    createDevice(input: UpdateDeviceInput!): CreateDeviceOutput! @goField(forceResolver: true)
+    createDevice(input: CreateDeviceInput!): CreateDeviceOutput! @goField(forceResolver: true)
     """ Создать task """
     createTask(input: CreateTaskInput!): CreateTaskOutput! @goField(forceResolver: true)
     """ Обновить task """
     updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true)
     """ Удалить task """
     deleteTask(input: DeleteTaskInput!): DeleteTaskOutput! @goField(forceResolver: true)
+    """ Создать спутник """
+    createSatellite(input: CreateSatelliteInput!): CreateSatelliteOutput! @goField(forceResolver: true)
 }
 
 """ Входные параметры для update device """
@@ -1100,10 +1203,8 @@ type CreateDeviceOutput {
 
 """ Входные параметры для create task """
 input CreateTaskInput {
-    """ Id спутника """
+    """ Индентификатор спутника """
     satelliteId: String!
-    """ Имя спутника """
-    satelliteName: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
@@ -1116,17 +1217,15 @@ input CreateTaskInput {
 
 """ Выходные параметры для create task """
 type CreateTaskOutput {
-    task: Task
+    task: Task!
 }
 
 """ Входные параметры для update task """
 input UpdateTaskInput {
     """ Индетификатор """
     id: String!
-    """ Id спутника """
+    """ Индетификатор спутника """
     satelliteId: String!
-    """ Имя спутника """
-    satelliteName: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
@@ -1139,7 +1238,13 @@ input UpdateTaskInput {
 
 """ Выходные параметры для update task """
 type UpdateTaskOutput {
-    task: Task
+    task: Task!
+}
+
+""" Входные параметры для delete task """
+input DeleteTaskInput {
+    """ Индетификатор """
+    id: String!
 }
 
 """ Входные параметры для delete task """
@@ -1148,10 +1253,17 @@ type DeleteTaskOutput {
     _empty: Empty
 }
 
-""" Входные параметры для delete task """
-input DeleteTaskInput {
-    """ Индетификатор """
-    id: String!
+""" Входные параметры для создания спутника """
+input  CreateSatelliteInput {
+    """ Внешний индетификатор спутника """
+    ExternalSatelliteId: String!
+    """ Название спутника """
+    SatelliteName: String!
+}
+
+""" Выходные параметры для создания спутника """
+type CreateSatelliteOutput {
+    satellite: SatelliteInfo!
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/query/authorization.graphql", Input: `extend type Query {
     """ Проверка авторизации """
@@ -1178,6 +1290,8 @@ type AuthcheckOutput {
     listTask(filter: TaskFilter!, page: Int! = 1, perPage: Int! = 10): TaskPagination!
     """ Получить список Rinex """
     Rinexlist(input: RinexInput, , page: Int! = 1, perPage: Int! = 10): RinexPagination!
+    """ Получить список спутников """
+    listSatellites(filter: SatellitesFilter!, page: Int! = 1, perPage: Int! = 10): SatellitesPagination!
 }
 
 input RinexInput {
@@ -1229,6 +1343,20 @@ type TaskPagination {
     items: [Task!]
 }
 
+input SatellitesFilter {
+    """ Индетификатор """
+    IdS: [String!]
+    """ Внешний индетификатор спутника """
+    ExternalSatelliteIds: [String!]
+    """ Название спутника """
+    SatelliteNames: [String!]
+}
+
+type SatellitesPagination {
+    """ Загруженные элементы """
+    items: [SatelliteInfo!]
+}
+
 input CoordsInput {
     """ Координата X """
     x: String!
@@ -1269,6 +1397,8 @@ type Device {
     description: String
     """ Координаты """
     Coords: CoordsResults!
+    """ Время создания """
+    CreatedAt: Time!
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/errors.graphql", Input: `extend type Query {
     """ Словарь ошибок """
@@ -1279,10 +1409,10 @@ type Device {
     Id: String!
     """ id спутника """
     SatelliteId: String!
-    """ Имя спутника """
-    SatelliteName: String!
     """ Координаты спутника """
     Coordinates: CoordsResults!
+    """ Время создания """
+    CreatedAt: Time!
 }
 
 type CoordsResults {
@@ -1330,13 +1460,21 @@ type RinexResults {
     header: Header!
     observations: [Observation!]!
 }`, BuiltIn: false},
+	{Name: "../../../../api/graphql/types/satellite.graphql", Input: `type SatelliteInfo {
+    """ Индетификатор """
+    Id: String!
+    """ Внешний индетификатор спутника """
+    ExternalSatelliteId: String!
+    """ Название спутника """
+    SatelliteName: String!
+    """ Время создания """
+    CreatedAt: Time!
+}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/tasks.graphql", Input: `type Task {
     """ Индетификатор """
     id: String!
     """ Id спутника """
     satelliteId: String!
-    """ Имя спутника """
-    satelliteName: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
@@ -1345,12 +1483,19 @@ type RinexResults {
     startAt: Time!
     """ Время конца """
     endAt: Time!
+    """ Время создания """
+    CreatedAt: Time!
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/user.graphql", Input: `""" Информация о юзере """
 type User {
+    """ Индетификатор """
     id: String!
+    """ Логин """
     login: String!
+    """ Роль """
     role: String!
+    """ Время создания """
+    CreatedAt: Time!
 }`, BuiltIn: false},
 	{Name: "../../../../federation/directives.graphql", Input: `
 	directive @authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM

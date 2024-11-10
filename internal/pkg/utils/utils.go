@@ -20,9 +20,8 @@ func RandStringRunes(seed int) string {
 func SerializerGnssCoords(list []*model.GnssCoords) []*model.Gnss {
 	return lo.Map(list, func(item *model.GnssCoords, _ int) *model.Gnss {
 		return &model.Gnss{
-			ID:            item.ID,
-			SatelliteID:   item.SatelliteID,
-			SatelliteName: item.SatelliteName,
+			ID:          item.ID,
+			SatelliteID: item.SatelliteID,
 			Coordinates: &model.CoordsResults{
 				X: strconv.FormatFloat(item.X, 'f', -1, 64),
 				Y: strconv.FormatFloat(item.Y, 'f', -1, 64),
