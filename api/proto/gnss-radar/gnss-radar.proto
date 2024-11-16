@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package gnss_radar;
-option go_package = "/gnss-radar/grpc";
+option go_package = "github.com/Gokert/gnss-radar/tree/main/pb/gnss-radar/grpc;gnss_radar";
 
 service GnssService {
   rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
