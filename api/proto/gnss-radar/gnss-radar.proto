@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package gnss_radar;
+option go_package = "/gnss-radar/grpc";
+
+service GnssService {
+  rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+}
+
+message GetStatusRequest {
+  bool isActual = 10;
+}
+
+message GetStatusResponse {
+  bool result = 10;
+}

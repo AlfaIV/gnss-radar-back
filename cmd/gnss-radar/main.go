@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"sync"
 
 	"github.com/Gokert/gnss-radar/configurations"
 	"github.com/Gokert/gnss-radar/internal/delivery"
@@ -46,12 +47,39 @@ func main() {
 	storageManager := store.NewStore(storage, cacheStorage)
 
 	newService := service.NewService(storageManager.GetAuthorizationStore(), storageManager.GetSessionStore(), storageManager.GetGnssStore())
-	app := delivery.NewApp(newService)
+
+	graphqlApp := delivery.NewApp(newService)
+
+	grpcListenerServer, err := delivery.NewServer()
+	if err != nil {
+		log.Fatalf("delivery.NewServer: %v", err)
+		return
+	}
+
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
 
 	//
-	// Run app
+	// Graphql app run
 	//
-	if err = app.Run(serviceConfig.Port); err != nil {
-		log.Fatalf("delivery.Run: %v", err)
-	}
+	go func() {
+		defer wg.Done()
+		if err = graphqlApp.Run(serviceConfig.GraphqlPort); err != nil {
+			log.Fatalf("graphqlApp.Run: %v", err)
+			return
+		}
+	}()
+
+	//
+	// Grpc listener run
+	//
+	go func() {
+		defer wg.Done()
+		if err = grpcListenerServer.ListenAndServeGrpc(serviceConfig.ConnectionType, serviceConfig.GrpcListenerPort); err != nil {
+			log.Fatalf("grpcListenerServer.ListenAndServeGrpc: %v", err)
+			return
+		}
+	}()
+
+	wg.Wait()
 }

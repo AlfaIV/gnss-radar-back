@@ -25,7 +25,10 @@ type DbRedisCfg struct {
 }
 
 type DbService struct {
-	Port string `yaml:"port"`
+	Address          string `yaml:"address"`
+	GraphqlPort      string `yaml:"graphql_port"`
+	GrpcListenerPort string `yaml:"grpc_listener_port"`
+	ConnectionType   string `yaml:"connection_type"`
 }
 
 func ParseRedisConfig(path string) (*DbRedisCfg, error) {
@@ -41,10 +44,6 @@ func ParseRedisConfig(path string) (*DbRedisCfg, error) {
 	}
 
 	return &config, nil
-}
-
-func Llere() {
-
 }
 
 func ParsePostgresConfig(path string) (*DbPsxConfig, error) {

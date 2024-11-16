@@ -1,1 +1,4 @@
-port: 5000
+address: app
+graphql_port: 5000
+connection_type: tcp
+grpc_listener_port: 6001

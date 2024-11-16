@@ -21,6 +21,11 @@ run-main:
 init:
 	go mod init github.com/Gokert/gnss-radar
 
+generate:
+	# go generate ./api/proto/gnss-radar/gnss-radar.proto
+	protoc --go_out=./pb --go-grpc_out=./pb ./api/proto/gnss-radar/gnss-radar.proto
+	go generate ./api/proto/gnss-radar/gnss-radar.proto
+
 docker-drop:
 	docker-compose down
 
