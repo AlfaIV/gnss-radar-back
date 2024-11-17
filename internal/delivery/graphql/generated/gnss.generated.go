@@ -2549,7 +2549,7 @@ func (ec *executionContext) unmarshalInputCreateDeviceInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"Name", "Token", "Description", "Coords"}
+	fieldsInOrder := [...]string{"Name", "Description", "Coords"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2563,13 +2563,6 @@ func (ec *executionContext) unmarshalInputCreateDeviceInput(ctx context.Context,
 				return it, err
 			}
 			it.Name = data
-		case "Token":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Token"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Token = data
 		case "Description":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Description"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -2918,7 +2911,7 @@ func (ec *executionContext) unmarshalInputUpdateDeviceInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"Id", "Name", "Token", "Description", "Coords"}
+	fieldsInOrder := [...]string{"Id", "Name", "Description", "Coords"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2939,13 +2932,6 @@ func (ec *executionContext) unmarshalInputUpdateDeviceInput(ctx context.Context,
 				return it, err
 			}
 			it.Name = data
-		case "Token":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Token"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Token = data
 		case "Description":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Description"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)

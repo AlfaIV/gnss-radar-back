@@ -1175,8 +1175,6 @@ input UpdateDeviceInput {
     Id: String!
     """ Название девайса """
     Name: String!
-    """ Токен """
-    Token: String!
     """ Описание """
     Description: String
     """ Координаты """
@@ -1187,8 +1185,6 @@ input UpdateDeviceInput {
 input CreateDeviceInput {
     """ Название девайса """
     Name: String!
-    """ Токен """
-    Token: String!
     """ Описание """
     Description: String
     """ Координаты """

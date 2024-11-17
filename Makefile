@@ -23,8 +23,10 @@ init:
 
 generate:
 	# go generate ./api/proto/gnss-radar/gnss-radar.proto
-	protoc --go_out=./pb --go-grpc_out=./pb ./api/proto/gnss-radar/gnss-radar.proto
-	go generate ./api/proto/gnss-radar/gnss-radar.proto
+	#protoc --go_out=./pb --go-grpc_out=./pb ./api/proto/gnss-radar/gnss-radar.proto
+	#go generate ./api/proto/gnss-radar/gnss-radar.proto
+	rm -rf gen
+	buf generate
 
 docker-drop:
 	docker-compose down

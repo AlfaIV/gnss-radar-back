@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	gnss_radar "github.com/Gokert/gnss-radar/gen/go/api/proto/gnss-radar"
 	graph "github.com/Gokert/gnss-radar/internal/delivery/graphql"
 	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
 	"github.com/Gokert/gnss-radar/internal/pkg/utils"
 	"github.com/Gokert/gnss-radar/internal/service"
-	"github.com/Gokert/gnss-radar/pb/gnss-radar/grpc"
 	grpc_go "google.golang.org/grpc"
 	"log"
 	"net"
@@ -31,12 +31,12 @@ type GnssGrpc struct {
 }
 
 type server struct {
-	grpc.UnimplementedGnssServiceServer
+	gnss_radar.UnimplementedGnssServiceServer
 }
 
 func NewServer() (*GnssGrpc, error) {
 	s := grpc_go.NewServer()
-	grpc.RegisterGnssServiceServer(s, &server{})
+	gnss_radar.RegisterGnssServiceServer(s, &server{})
 
 	return &GnssGrpc{grpcServ: s}, nil
 }
@@ -74,6 +74,6 @@ func (s *GnssGrpc) ListenAndServeGrpc(network, port string) error {
 	return nil
 }
 
-func (s *server) GetStatus(ctx context.Context, req *grpc.GetStatusRequest) (*grpc.GetStatusResponse, error) {
-	return &grpc.GetStatusResponse{Result: req.GetIsActual()}, nil
+func (s *server) GetStatus(ctx context.Context, req *gnss_radar.GetStatusRequest) (*gnss_radar.GetStatusResponse, error) {
+	return &gnss_radar.GetStatusResponse{Result: req.GetIsActual()}, nil
 }

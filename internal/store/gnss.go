@@ -134,7 +134,6 @@ func (g *GnssStore) CreateDevice(ctx context.Context, params CreateDeviceParams)
 type UpdateDeviceParams struct {
 	Id          string  `db:"id"`
 	Name        string  `db:"name"`
-	Token       string  `db:"token"`
 	Description *string `db:"description"`
 	Coords      model.Coords
 }
@@ -145,7 +144,6 @@ func (g *GnssStore) UpdateDevice(ctx context.Context, params UpdateDeviceParams)
 		Where(sq.Eq{"id": params.Id}).
 		SetMap(map[string]any{
 			"name":        params.Name,
-			"token":       params.Token,
 			"description": params.Description,
 			"x":           params.Coords.X,
 			"y":           params.Coords.Y,

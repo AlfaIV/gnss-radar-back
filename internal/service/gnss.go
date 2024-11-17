@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	"github.com/Gokert/gnss-radar/internal/store"
+	"github.com/google/uuid"
 	"strconv"
 )
 
@@ -64,7 +65,6 @@ func (g *GnssService) ListGnss(ctx context.Context, req ListGnssRequest) ([]*mod
 
 type CreateDeviceParams struct {
 	Name        string
-	Token       string
 	Description *string
 	X           string
 	Y           string
@@ -85,9 +85,11 @@ func (g *GnssService) CreateDevice(ctx context.Context, params CreateDeviceParam
 		return nil, fmt.Errorf("strconv.ParseFloat: %w", err)
 	}
 
+	token := uuid.NewString()
+
 	device, err := g.gnssStore.CreateDevice(ctx, store.CreateDeviceParams{
 		Name:        params.Name,
-		Token:       params.Token,
+		Token:       token,
 		Description: params.Description,
 		Coords: model.Coords{
 			X: xf,
@@ -105,7 +107,6 @@ func (g *GnssService) CreateDevice(ctx context.Context, params CreateDeviceParam
 type UpdateDeviceParams struct {
 	ID          string
 	Name        string
-	Token       string
 	Description *string
 	X           string
 	Y           string
@@ -129,7 +130,6 @@ func (g *GnssService) UpdateDevice(ctx context.Context, params UpdateDeviceParam
 	device, err := g.gnssStore.UpdateDevice(ctx, store.UpdateDeviceParams{
 		Id:          params.ID,
 		Name:        params.Name,
-		Token:       params.Token,
 		Description: params.Description,
 		Coords: model.Coords{
 			X: xf,

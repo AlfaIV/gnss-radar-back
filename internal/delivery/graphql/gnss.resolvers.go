@@ -20,7 +20,6 @@ func (r *gnssMutationsResolver) UpdateDevice(ctx context.Context, obj *model.Gns
 	device, err := r.gnssSevice.UpdateDevice(ctx, service.UpdateDeviceParams{
 		ID:          input.ID,
 		Name:        input.Name,
-		Token:       input.Token,
 		Description: input.Description,
 		X:           input.Coords.X,
 		Y:           input.Coords.Y,
@@ -39,7 +38,6 @@ func (r *gnssMutationsResolver) UpdateDevice(ctx context.Context, obj *model.Gns
 func (r *gnssMutationsResolver) CreateDevice(ctx context.Context, obj *model.GnssMutations, input model.CreateDeviceInput) (*model.CreateDeviceOutput, error) {
 	device, err := r.gnssSevice.CreateDevice(ctx, service.CreateDeviceParams{
 		Name:        input.Name,
-		Token:       input.Token,
 		Description: input.Description,
 		X:           input.Coords.X,
 		Y:           input.Coords.Y,

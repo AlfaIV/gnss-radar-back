@@ -54,8 +54,6 @@ type CoordsResults struct {
 type CreateDeviceInput struct {
 	//  Название девайса
 	Name string `json:"Name"`
-	//  Токен
-	Token string `json:"Token"`
 	//  Описание
 	Description *string `json:"Description,omitempty"`
 	//  Координаты
@@ -305,8 +303,6 @@ type UpdateDeviceInput struct {
 	ID string `json:"Id"`
 	//  Название девайса
 	Name string `json:"Name"`
-	//  Токен
-	Token string `json:"Token"`
 	//  Описание
 	Description *string `json:"Description,omitempty"`
 	//  Координаты
