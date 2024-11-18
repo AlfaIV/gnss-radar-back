@@ -1,6 +1,10 @@
 type Task {
     """ Индетификатор """
     id: String!
+    """ Название задачи """
+    title: String!
+    """ Описание """
+    description: String
     """ Id спутника """
     satelliteId: String!
     """ Тип сигнала """

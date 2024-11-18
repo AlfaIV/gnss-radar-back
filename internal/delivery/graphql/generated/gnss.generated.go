@@ -414,6 +414,10 @@ func (ec *executionContext) fieldContext_CreateTaskOutput_task(_ context.Context
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Task_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Task_title(ctx, field)
+			case "description":
+				return ec.fieldContext_Task_description(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
 			case "signalType":
@@ -2360,6 +2364,10 @@ func (ec *executionContext) fieldContext_TaskPagination_items(_ context.Context,
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Task_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Task_title(ctx, field)
+			case "description":
+				return ec.fieldContext_Task_description(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
 			case "signalType":
@@ -2478,6 +2486,10 @@ func (ec *executionContext) fieldContext_UpdateTaskOutput_task(_ context.Context
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Task_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Task_title(ctx, field)
+			case "description":
+				return ec.fieldContext_Task_description(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
 			case "signalType":
@@ -2624,13 +2636,27 @@ func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"satelliteId", "signalType", "groupingType", "startAt", "endAt"}
+	fieldsInOrder := [...]string{"title", "description", "satelliteId", "signalType", "groupingType", "startAt", "endAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
 		case "satelliteId":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("satelliteId"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -2959,7 +2985,7 @@ func (ec *executionContext) unmarshalInputUpdateTaskInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "satelliteId", "signalType", "groupingType", "startAt", "endAt"}
+	fieldsInOrder := [...]string{"id", "title", "description", "satelliteId", "signalType", "groupingType", "startAt", "endAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2973,6 +2999,20 @@ func (ec *executionContext) unmarshalInputUpdateTaskInput(ctx context.Context, o
 				return it, err
 			}
 			it.ID = data
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
 		case "satelliteId":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("satelliteId"))
 			data, err := ec.unmarshalNString2string(ctx, v)

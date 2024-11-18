@@ -56,6 +56,8 @@ func (r *gnssMutationsResolver) CreateDevice(ctx context.Context, obj *model.Gns
 func (r *gnssMutationsResolver) CreateTask(ctx context.Context, obj *model.GnssMutations, input model.CreateTaskInput) (*model.CreateTaskOutput, error) {
 	task, err := r.gnssSevice.CreateTask(ctx, store.CreateTaskParams{
 		SatelliteID:  input.SatelliteID,
+		Title:        input.Title,
+		Description:  input.Description,
 		SignalType:   input.SignalType,
 		GroupingType: input.GroupingType,
 		StartAt:      input.StartAt,
@@ -72,6 +74,8 @@ func (r *gnssMutationsResolver) CreateTask(ctx context.Context, obj *model.GnssM
 func (r *gnssMutationsResolver) UpdateTask(ctx context.Context, obj *model.GnssMutations, input model.UpdateTaskInput) (*model.UpdateTaskOutput, error) {
 	task, err := r.gnssSevice.UpdateTask(ctx, store.UpdateTaskParams{
 		Id:           input.ID,
+		Title:        input.Title,
+		Description:  input.Description,
 		SatelliteID:  input.SatelliteID,
 		SignalType:   input.SignalType,
 		GroupingType: input.GroupingType,

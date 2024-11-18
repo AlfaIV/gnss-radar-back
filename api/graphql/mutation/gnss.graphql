@@ -55,6 +55,10 @@ type CreateDeviceOutput {
 
 """ Входные параметры для создания задачи """
 input CreateTaskInput {
+    """ Название задачи """
+    title: String!
+    """ Описание """
+    description: String
     """ Индентификатор спутника """
     satelliteId: String!
     """ Тип сигнала """
@@ -76,6 +80,10 @@ type CreateTaskOutput {
 input UpdateTaskInput {
     """ Индетификатор """
     id: String!
+    """ Название задачи """
+    title: String!
+    """ Описание """
+    description: String
     """ Индетификатор спутника """
     satelliteId: String!
     """ Тип сигнала """

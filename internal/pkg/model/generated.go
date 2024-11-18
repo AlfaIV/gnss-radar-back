@@ -81,6 +81,10 @@ type CreateSatelliteOutput struct {
 
 // Входные параметры для создания задачи
 type CreateTaskInput struct {
+	//  Название задачи
+	Title string `json:"title"`
+	//  Описание
+	Description *string `json:"description,omitempty"`
 	//  Индентификатор спутника
 	SatelliteID string `json:"satelliteId"`
 	//  Тип сигнала
@@ -319,6 +323,10 @@ type UpdateDeviceOutput struct {
 type UpdateTaskInput struct {
 	//  Индетификатор
 	ID string `json:"id"`
+	//  Название задачи
+	Title string `json:"title"`
+	//  Описание
+	Description *string `json:"description,omitempty"`
 	//  Индетификатор спутника
 	SatelliteID string `json:"satelliteId"`
 	//  Тип сигнала

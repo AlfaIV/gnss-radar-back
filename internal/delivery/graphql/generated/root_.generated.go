@@ -190,12 +190,14 @@ type ComplexityRoot struct {
 
 	Task struct {
 		CreatedAt    func(childComplexity int) int
+		Description  func(childComplexity int) int
 		EndAt        func(childComplexity int) int
 		GroupingType func(childComplexity int) int
 		ID           func(childComplexity int) int
 		SatelliteID  func(childComplexity int) int
 		SignalType   func(childComplexity int) int
 		StartAt      func(childComplexity int) int
+		Title        func(childComplexity int) int
 	}
 
 	TaskPagination struct {
@@ -827,6 +829,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Task.CreatedAt(childComplexity), true
 
+	case "Task.description":
+		if e.complexity.Task.Description == nil {
+			break
+		}
+
+		return e.complexity.Task.Description(childComplexity), true
+
 	case "Task.endAt":
 		if e.complexity.Task.EndAt == nil {
 			break
@@ -868,6 +877,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Task.StartAt(childComplexity), true
+
+	case "Task.title":
+		if e.complexity.Task.Title == nil {
+			break
+		}
+
+		return e.complexity.Task.Title(childComplexity), true
 
 	case "TaskPagination.items":
 		if e.complexity.TaskPagination.Items == nil {
@@ -1205,6 +1221,10 @@ type CreateDeviceOutput {
 
 """ Входные параметры для создания задачи """
 input CreateTaskInput {
+    """ Название задачи """
+    title: String!
+    """ Описание """
+    description: String
     """ Индентификатор спутника """
     satelliteId: String!
     """ Тип сигнала """
@@ -1226,6 +1246,10 @@ type CreateTaskOutput {
 input UpdateTaskInput {
     """ Индетификатор """
     id: String!
+    """ Название задачи """
+    title: String!
+    """ Описание """
+    description: String
     """ Индетификатор спутника """
     satelliteId: String!
     """ Тип сигнала """
@@ -1492,6 +1516,10 @@ type RinexResults {
 	{Name: "../../../../api/graphql/types/tasks.graphql", Input: `type Task {
     """ Индетификатор """
     id: String!
+    """ Название задачи """
+    title: String!
+    """ Описание """
+    description: String
     """ Id спутника """
     satelliteId: String!
     """ Тип сигнала """

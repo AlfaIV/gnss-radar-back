@@ -161,6 +161,8 @@ func (g *GnssStore) UpdateDevice(ctx context.Context, params UpdateDeviceParams)
 
 type CreateTaskParams struct {
 	SatelliteID  string
+	Title        string
+	Description  *string
 	SignalType   model.SignalType
 	GroupingType model.GroupingType
 	StartAt      time.Time
@@ -172,12 +174,14 @@ func (g *GnssStore) CreateTask(ctx context.Context, params CreateTaskParams) (*m
 		Insert(taskTable).
 		SetMap(map[string]any{
 			"satellite_id":  params.SatelliteID,
+			"title":         params.Title,
+			"description":   params.Description,
 			"signal_type":   params.SignalType,
 			"grouping_type": params.GroupingType,
 			"start_at":      params.StartAt,
 			"end_at":        params.EndAt,
 		}).
-		Suffix("RETURNING id, satellite_id, signal_type, grouping_type, start_at, end_at, created_at")
+		Suffix("RETURNING id, title, description, satellite_id, signal_type, grouping_type, start_at, end_at, created_at")
 
 	var task model.Task
 	if err := g.storage.db.Getx(ctx, &task, query); err != nil {
@@ -209,6 +213,8 @@ func (g *GnssStore) DeleteTask(ctx context.Context, filter DeleteTaskFilter) err
 
 type UpdateTaskParams struct {
 	Id           string
+	Title        string
+	Description  *string
 	SatelliteID  string
 	SignalType   model.SignalType
 	GroupingType model.GroupingType
@@ -222,12 +228,14 @@ func (g *GnssStore) UpdateTask(ctx context.Context, params UpdateTaskParams) (*m
 		Where(sq.Eq{"id": params.Id}).
 		SetMap(map[string]any{
 			"satellite_id":  params.SatelliteID,
+			"title":         params.Title,
+			"description":   params.Description,
 			"signal_type":   params.SignalType,
 			"grouping_type": params.GroupingType,
 			"start_at":      params.StartAt,
 			"end_at":        params.EndAt,
 		}).
-		Suffix("RETURNING id, satellite_id, signal_type, grouping_type, start_at, end_at, created_at")
+		Suffix("RETURNING id, title, description, satellite_id, signal_type, grouping_type, start_at, end_at, created_at")
 
 	var task model.Task
 	if err := g.storage.db.Getx(ctx, &task, query); err != nil {

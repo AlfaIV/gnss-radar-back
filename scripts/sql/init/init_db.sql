@@ -42,7 +42,9 @@ CREATE TABLE IF NOT EXISTS devices (
 
 DROP TABLE IF EXISTS tasks CASCADE;
 CREATE TABLE IF NOT EXISTS tasks (
-                                     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
     satellite_id TEXT NOT NULL,
     signal_type TEXT NOT NULL,
     grouping_type TEXT NOT NULL,
@@ -70,9 +72,9 @@ INSERT INTO gnss_coords (satellite_id, x, y, z) VALUES
                                                     ((SELECT id FROM satellites WHERE external_satellite_id = 'PC11'), -16138.177056, -3913.891460, -22348.411693);
 
 INSERT INTO devices (name, token, description, x, y, z) VALUES
-                                                            ('device1', 'token-001', 'desc1', 10.0, 20.0, 30.0),
-                                                            ('device2', 'token-002', 'desc2', 15.0, 25.0, 35.0),
-                                                            ('device3', 'token-003', 'desc3', 20.0, 30.0, 40.0);
+                                                            ('device1', uuid_generate_v4(), 'desc1', 10.0, 20.0, 30.0),
+                                                            ('device2', uuid_generate_v4(), 'desc2', 15.0, 25.0, 35.0),
+                                                            ('device3', uuid_generate_v4(), 'desc3', 20.0, 30.0, 40.0);
 
 INSERT INTO tasks (satellite_id, signal_type, grouping_type, start_at, end_at) VALUES
                                                    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC06'), 'SIGNAL_TYPE_L1', 'GROUPING_TYPE_GPS', now(), now() + interval '2 days'),

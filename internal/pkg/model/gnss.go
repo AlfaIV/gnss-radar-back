@@ -30,6 +30,8 @@ type Device struct {
 
 type Task struct {
 	ID           string       `db:"id"`
+	Title        string       `db:"title"`
+	Description  *string      `db:"description"`
 	SatelliteID  string       `db:"satellite_id"`
 	SignalType   SignalType   `db:"signal_type"`
 	GroupingType GroupingType `db:"grouping_type"`
