@@ -79,4 +79,4 @@ INSERT INTO devices (name, token, description, x, y, z) VALUES
 INSERT INTO tasks (satellite_id, title, description, signal_type, grouping_type, start_at, end_at) VALUES
                                                    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC06'), 'Задание 1', 'Описание 1', 'SIGNAL_TYPE_L1', 'GROUPING_TYPE_GPS', now(), now() + interval '2 days'),
                                                    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC07'), 'Задание 2', 'Описание 2', 'SIGNAL_TYPE_L2', 'GROUPING_TYPE_GLONASS', now(), now() + interval '3 days'),
-                                                   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC08'), 'Задание 3', 'SIGNAL_TYPE_L3', 'GROUPING_TYPE_GLONASS', now(), now() + interval '4 days');
+                                                   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC08'), 'Задание 3', '', 'SIGNAL_TYPE_L3', 'GROUPING_TYPE_GLONASS', now(), now() + interval '4 days');
