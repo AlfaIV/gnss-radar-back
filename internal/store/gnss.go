@@ -257,7 +257,7 @@ type ListTasksFilter struct {
 
 func (g *GnssStore) ListTask(ctx context.Context, filter ListTasksFilter) ([]*model.Task, error) {
 	query := g.storage.Builder().
-		Select("id, satellite_id, signal_type, grouping_type, start_at, end_at, created_at").
+		Select("id, title, description, satellite_id, signal_type, grouping_type, start_at, end_at, created_at").
 		From(taskTable)
 
 	if len(filter.Ids) > 0 {
