@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	"github.com/Gokert/gnss-radar/internal/pkg/utils"
@@ -40,11 +41,12 @@ type SigninRequest struct {
 func (a *AuthorizationService) Signin(ctx context.Context, req SigninRequest) (*model.Session, *model.User, error) {
 	user, err := a.authorization.Signin(ctx, store.SigninParams{Login: req.Login, Password: []byte(req.Password)})
 	if err != nil {
-		return nil, nil, fmt.Errorf("authorization.Signin: %w", err)
-	}
-
-	if user == nil {
-		return nil, nil, model.ErrorNotFound
+		switch {
+		case errors.Is(err, store.ErrNotFound):
+			return nil, nil, store.ErrNotFound
+		default:
+			return nil, nil, fmt.Errorf("authorization.Signin: %w", err)
+		}
 	}
 
 	newSession := model.Session{
