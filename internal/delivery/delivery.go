@@ -3,6 +3,10 @@ package delivery
 import (
 	"context"
 	"fmt"
+	"log"
+	"net"
+	"net/http"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	gnss_radar "github.com/Gokert/gnss-radar/gen/go/api/proto/gnss-radar"
@@ -11,9 +15,6 @@ import (
 	"github.com/Gokert/gnss-radar/internal/pkg/utils"
 	"github.com/Gokert/gnss-radar/internal/service"
 	grpc_go "google.golang.org/grpc"
-	"log"
-	"net"
-	"net/http"
 )
 
 type App struct {
@@ -49,6 +50,9 @@ func (a *App) Run(port string) error {
 		ctx := context.WithValue(r.Context(), utils.ResponseWriterKey, w)
 		ctx = context.WithValue(ctx, utils.RequestKey, r)
 		srv.ServeHTTP(w, r.WithContext(ctx))
+	}))
+	http.Handle("/hardware/spectrum", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		srv.ServeHTTP(w, r)
 	}))
 
 	log.Printf("The graphql application is running on %s", port)
