@@ -3,10 +3,10 @@ extend type Query {
     listGnss(filter: GNSSFilter!, page: Int! = 0, perPage: Int! = 10): GNSSPagination!
     """ Получить список Device """
     listDevice(filter: DeviceFilter!, page: Int! = 0, perPage: Int! = 10): DevicePagination!
-    """ Получить список задач"""
+    """ Получить список задач """
     listTask(filter: TaskFilter!, page: Int! = 0, perPage: Int! = 10): TaskPagination!
     """ Получить список Rinex """
-    Rinexlist(input: RinexInput, , page: Int! = 0, perPage: Int! = 10): RinexPagination!
+    Rinexlist(input: RinexInput,  page: Int! = 0, perPage: Int! = 10): RinexPagination!
     """ Получить список спутников """
     listSatellites(filter: SatellitesFilter!, page: Int! = 0, perPage: Int! = 10): SatellitesPagination!
 }

@@ -38,13 +38,13 @@ type SigninRequest struct {
 }
 
 func (a *AuthorizationService) Signin(ctx context.Context, req SigninRequest) (*model.Session, *model.User, error) {
-	users, err := a.authorization.ListUsers(ctx, store.UserFilter{Logins: []string{req.Login}})
+	user, err := a.authorization.Signin(ctx, store.SigninParams{Login: req.Login, Password: []byte(req.Password)})
 	if err != nil {
-		return nil, nil, fmt.Errorf("authorization.ListUsers: %w", err)
+		return nil, nil, fmt.Errorf("authorization.Signin: %w", err)
 	}
 
-	if len(users) == 0 {
-		return nil, nil, store.ErrNotFound
+	if user == nil {
+		return nil, nil, model.ErrorNotFound
 	}
 
 	newSession := model.Session{
@@ -62,7 +62,7 @@ func (a *AuthorizationService) Signin(ctx context.Context, req SigninRequest) (*
 		return nil, nil, store.ErrEntityAlreadyExist
 	}
 
-	return &newSession, users[0], nil
+	return &newSession, user, nil
 }
 
 func (a *AuthorizationService) Authcheck(ctx context.Context, value string) (bool, *model.User, error) {
