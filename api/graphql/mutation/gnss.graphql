@@ -9,6 +9,8 @@ type GnssMutations {
     updateDevice(input: UpdateDeviceInput!): UpdateDeviceOutput! @goField(forceResolver: true)
     """ Создать устройство """
     createDevice(input: CreateDeviceInput!): CreateDeviceOutput! @goField(forceResolver: true)
+    """ Удалить устройство """
+    deleteDevice(input: DeleteDeviceInput!): DeleteDeviceOutput! @goField(forceResolver: true)
     """ Создать задачу """
     createTask(input: CreateTaskInput!): CreateTaskOutput! @goField(forceResolver: true)
     """ Обновить задачу """
@@ -125,4 +127,16 @@ input  CreateSatelliteInput {
 """ Выходные параметры для создания спутника """
 type CreateSatelliteOutput {
     satellite: SatelliteInfo!
+}
+
+""" Входные параметры для удаления задачи """
+input DeleteDeviceInput {
+    """ Индетификатор """
+    id: String!
+}
+
+""" Входные параметры для удаления задачи """
+type DeleteDeviceOutput {
+    """ Пусто """
+    _empty: Empty
 }

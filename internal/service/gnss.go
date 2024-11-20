@@ -14,6 +14,7 @@ type IGnss interface {
 	ListDevice(ctx context.Context, filter ListDeviceFilter) ([]*model.Device, error)
 	CreateDevice(ctx context.Context, params CreateDeviceParams) (*model.Device, error)
 	UpdateDevice(ctx context.Context, params UpdateDeviceParams) (*model.Device, error)
+	DeleteDevice(ctx context.Context, filter store.DeleteDeviceFilter) error
 	RinexList(ctx context.Context, req RinexRequest) ([]*model.RinexResults, error)
 	CreateTask(ctx context.Context, params store.CreateTaskParams) (*model.Task, error)
 	UpdateTask(ctx context.Context, params store.UpdateTaskParams) (*model.Task, error)
@@ -242,4 +243,13 @@ func (g *GnssService) CreateSatellite(ctx context.Context, params store.CreateSa
 	}
 
 	return satellite, nil
+}
+
+func (g *GnssService) DeleteDevice(ctx context.Context, filter store.DeleteDeviceFilter) error {
+	err := g.gnssStore.DeleteDevice(ctx, filter)
+	if err != nil {
+		return fmt.Errorf("gnssStore.DeleteDevice: %w", err)
+	}
+
+	return nil
 }

@@ -12,6 +12,7 @@ type IGnssStore interface {
 	CreateDevice(ctx context.Context, params CreateDeviceParams) (*model.Device, error)
 	UpdateDevice(ctx context.Context, params UpdateDeviceParams) (*model.Device, error)
 	ListDevice(ctx context.Context, filter ListDeviceFilter) ([]*model.Device, error)
+	DeleteDevice(ctx context.Context, filter DeleteDeviceFilter) error
 	CreateTask(ctx context.Context, params CreateTaskParams) (*model.Task, error)
 	UpdateTask(ctx context.Context, params UpdateTaskParams) (*model.Task, error)
 	DeleteTask(ctx context.Context, filter DeleteTaskFilter) error
@@ -350,6 +351,26 @@ func (g *GnssStore) CreateSatellite(ctx context.Context, params CreateSatelliteP
 	}
 
 	return &satelliteInfo, nil
+}
+
+type DeleteDeviceFilter struct {
+	Id string
+}
+
+func (g *GnssStore) DeleteDevice(ctx context.Context, filter DeleteDeviceFilter) error {
+	query := g.storage.Builder().
+		Delete(deviceTable).
+		Where(sq.Eq{"id": filter.Id})
+
+	if filter.Id != "" {
+		query = query.Where(sq.Eq{"id": filter.Id})
+	}
+
+	if _, err := g.storage.db.Execx(ctx, query); err != nil {
+		return postgresError(err)
+	}
+
+	return nil
 }
 
 func (g *GnssStore) RinexList(ctx context.Context) ([]*model.RinexResults, error) {
