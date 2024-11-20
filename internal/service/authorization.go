@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	"github.com/Gokert/gnss-radar/internal/pkg/utils"
@@ -39,14 +38,13 @@ type SigninRequest struct {
 }
 
 func (a *AuthorizationService) Signin(ctx context.Context, req SigninRequest) (*model.Session, *model.User, error) {
-	user, err := a.authorization.Signin(ctx, store.SigninParams{Login: req.Login, Password: []byte(req.Password)})
+	user, err := a.authorization.Signin(ctx, store.SigninParams{Login: req.Login, Password: utils.HashPassword(req.Password)})
 	if err != nil {
-		switch {
-		case errors.Is(err, store.ErrNotFound):
-			return nil, nil, store.ErrNotFound
-		default:
-			return nil, nil, fmt.Errorf("authorization.Signin: %w", err)
-		}
+		return nil, nil, fmt.Errorf("authorization.Signin: %w", err)
+	}
+
+	if user == nil {
+		return nil, nil, store.ErrNotFound
 	}
 
 	newSession := model.Session{
@@ -113,7 +111,7 @@ type SignupRequest struct {
 }
 
 func (a *AuthorizationService) Signup(ctx context.Context, req SignupRequest) (*model.User, error) {
-	result, err := a.authorization.Signup(ctx, store.SignupParams{Login: req.Login, Password: []byte(req.Password)})
+	result, err := a.authorization.Signup(ctx, store.SignupParams{Login: req.Login, Password: utils.HashPassword(req.Password)})
 	if err != nil {
 		return nil, fmt.Errorf("authorization.Signup: %w", err)
 	}
