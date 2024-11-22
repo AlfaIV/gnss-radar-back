@@ -53,6 +53,37 @@ CREATE TABLE IF NOT EXISTS tasks (
     created_at timestamptz NOT NULL DEFAULT now()
     );
 
+DROP TABLE IF EXISTS hardware_measurements CASCADE;
+CREATE TABLE IF NOT EXISTS hardware_measurements (
+                                                       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    token TEXT NOT NULL,
+    start_at timestamptz NOT NULL,
+    end_at timestamptz NOT NULL,
+    group_type TEXT NOT NULL, 
+    signal TEXT NOT NULL,
+    satellite_name TEXT NOT NULL,
+    measurement_id UUID NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+
+DROP TABLE IF EXISTS measurements_power CASCADE;
+CREATE TABLE IF NOT EXISTS measurements_power (
+                                                    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    power FLOAT[] NOT NULL,
+    started_at timestamptz NOT NULL,
+    time_step timestamptz NOT NULL
+);
+
+DROP TABLE IF EXISTS measurements_spectrum CASCADE;
+CREATE TABLE IF NOT EXISTS measurements_spectrum (
+                                                      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    spectrum FLOAT[] NOT NULL,
+    start_freq FLOAT NOT NULL,
+    freq_step FLOAT NOT NULL,
+    started_at timestamptz NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+);                                        
+
 INSERT INTO profile(login, password, role) VALUES ('admin', '\xc7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', 'admin');
 
 INSERT INTO satellites (external_satellite_id, satellite_name) VALUES
