@@ -35,6 +35,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000"
+      - "5001"
     depends_on:
       - redis
       - postgres

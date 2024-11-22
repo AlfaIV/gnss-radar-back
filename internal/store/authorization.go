@@ -89,12 +89,12 @@ func (a *AuthorizationStore) Signin(ctx context.Context, params SigninParams) (*
 			"password": params.Password,
 		})
 
-	var user *model.User
+	var user model.User
 	if err := a.storage.db.Getx(ctx, &user, query); err != nil {
 		return nil, postgresError(err)
 	}
 
-	return user, nil
+	return &user, nil
 }
 
 func NewAuthorizationStore(storage *Storage) *AuthorizationStore {

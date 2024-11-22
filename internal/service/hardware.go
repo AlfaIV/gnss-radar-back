@@ -23,6 +23,7 @@ func NewHardwareService(store store.IGnssStore) *Hardware {
 
 func (h *Hardware) AddSpectrum(ctx context.Context, spectrumReq model.SpectrumRequest) error {
 	err := h.store.AddSpectrum(ctx, spectrumReq)
+	fmt.Println(spectrumReq, err)
 	if err != nil {
 		return fmt.Errorf("h.store.AddSpectrum: %w", err)
 	}
@@ -31,6 +32,7 @@ func (h *Hardware) AddSpectrum(ctx context.Context, spectrumReq model.SpectrumRe
 
 func (h *Hardware) AddPower(ctx context.Context, powerReq model.PowerRequest) error {
 	err := h.store.AddPower(ctx, powerReq)
+	fmt.Println(powerReq, err)
 	if err != nil {
 		return fmt.Errorf("h.store.AddPower: %w", err)
 	}
