@@ -430,7 +430,7 @@ func (g *GnssStore) addHardwareMeasurement(ctx context.Context, desc model.Descr
 		SetMap(map[string]any{
 			"start_at":       desc.StartTime,
 			"end_at":         desc.EndTime,
-			"group":          desc.Group,
+			"group_type":     desc.Group,
 			"signal":         desc.Signal,
 			"satellite_name": desc.Target,
 			"measurement_id": measurementID,

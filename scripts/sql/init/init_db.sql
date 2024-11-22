@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS hardware_measurements (
                                                        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     start_at timestamptz NOT NULL,
     end_at timestamptz NOT NULL,
-    group TEXT NOT NULL, 
+    group_type TEXT NOT NULL, 
     signal TEXT NOT NULL,
     satellite_name TEXT NOT NULL,
     measurement_id UUID NOT NULL,
