@@ -2,12 +2,9 @@ package store
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"time"
-
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	sq "github.com/Masterminds/squirrel"
+	"time"
 )
 
 type IGnssStore interface {
@@ -15,7 +12,6 @@ type IGnssStore interface {
 	CreateDevice(ctx context.Context, params CreateDeviceParams) (*model.Device, error)
 	UpdateDevice(ctx context.Context, params UpdateDeviceParams) (*model.Device, error)
 	ListDevice(ctx context.Context, filter ListDeviceFilter) ([]*model.Device, error)
-	DeleteDevice(ctx context.Context, filter DeleteDeviceFilter) error
 	CreateTask(ctx context.Context, params CreateTaskParams) (*model.Task, error)
 	UpdateTask(ctx context.Context, params UpdateTaskParams) (*model.Task, error)
 	DeleteTask(ctx context.Context, filter DeleteTaskFilter) error
@@ -23,8 +19,6 @@ type IGnssStore interface {
 	ListSatellites(ctx context.Context, filter ListSatellitesFilter) ([]*model.SatelliteInfo, error)
 	CreateSatellite(ctx context.Context, params CreateSatelliteParams) (*model.SatelliteInfo, error)
 	RinexList(ctx context.Context) ([]*model.RinexResults, error)
-	AddSpectrum(ctx context.Context, spectrumReq model.SpectrumRequest) error
-	AddPower(ctx context.Context, powerReq model.PowerRequest) error
 }
 
 type GnssStore struct {
@@ -356,89 +350,6 @@ func (g *GnssStore) CreateSatellite(ctx context.Context, params CreateSatelliteP
 	}
 
 	return &satelliteInfo, nil
-}
-
-type DeleteDeviceFilter struct {
-	Id string
-}
-
-func (g *GnssStore) DeleteDevice(ctx context.Context, filter DeleteDeviceFilter) error {
-	query := g.storage.Builder().
-		Delete(deviceTable).
-		Where(sq.Eq{"id": filter.Id})
-
-	if filter.Id != "" {
-		query = query.Where(sq.Eq{"id": filter.Id})
-	}
-
-	if _, err := g.storage.db.Execx(ctx, query); err != nil {
-		return postgresError(err)
-	}
-
-	return nil
-}
-
-func (g *GnssStore) AddSpectrum(ctx context.Context, req model.SpectrumRequest) error {
-	query := g.storage.Builder().
-		Insert("measurements_spectrum").
-		SetMap(map[string]any{
-			"spectrum":   req.Data.Spectrum,
-			"start_freq": req.Data.StartFreq,
-			"freq_step":  req.Data.FreqStep,
-			"started_at": req.Data.StartTime,
-		}).Suffix("RETURNING id")
-
-	var id string
-	var measurementID sql.NullString
-	if err := g.storage.db.Getx(ctx, &id, query); err != nil {
-		return postgresError(err)
-	}
-
-	err := g.addHardwareMeasurement(ctx, req.Description, measurementID.String)
-	if err != nil {
-		return fmt.Errorf("failed to add hardware measurement: %w", err)
-	}
-
-	return nil
-}
-
-func (g *GnssStore) AddPower(ctx context.Context, req model.PowerRequest) error {
-	query := g.storage.Builder().
-		Insert("measurements_power").
-		SetMap(map[string]any{
-			"power":        req.Data.Power,
-			"started_freq": req.Data.StartTime,
-			"time_step":    req.Data.TimeStep,
-		}).Suffix("RETURNING id")
-
-	var id string
-	var measurementID sql.NullString
-	if err := g.storage.db.Getx(ctx, &id, query); err != nil {
-		return postgresError(err)
-	}
-
-	err := g.addHardwareMeasurement(ctx, req.Description, measurementID.String)
-	if err != nil {
-		return fmt.Errorf("failed to add hardware measurement: %w", err)
-	}
-	return nil
-}
-
-func (g *GnssStore) addHardwareMeasurement(ctx context.Context, desc model.Description, measurementID string) error {
-	query := g.storage.Builder().
-		Insert("hardware_measurements").
-		SetMap(map[string]any{
-			"start_at":       desc.StartTime,
-			"end_at":         desc.EndTime,
-			"group_type":     desc.Group,
-			"signal":         desc.Signal,
-			"satellite_name": desc.Target,
-			"measurement_id": measurementID,
-		}).Suffix("")
-	if _, err := g.storage.db.Execx(ctx, query); err != nil {
-		return postgresError(err)
-	}
-	return nil
 }
 
 func (g *GnssStore) RinexList(ctx context.Context) ([]*model.RinexResults, error) {

@@ -103,18 +103,6 @@ type CreateTaskOutput struct {
 }
 
 // Входные параметры для удаления задачи
-type DeleteDeviceInput struct {
-	//  Индетификатор
-	ID string `json:"id"`
-}
-
-// Входные параметры для удаления задачи
-type DeleteDeviceOutput struct {
-	//  Пусто
-	Empty *string `json:"_empty,omitempty"`
-}
-
-// Входные параметры для удаления задачи
 type DeleteTaskInput struct {
 	//  Индетификатор
 	ID string `json:"id"`
@@ -171,8 +159,6 @@ type GnssMutations struct {
 	UpdateDevice *UpdateDeviceOutput `json:"updateDevice"`
 	//  Создать устройство
 	CreateDevice *CreateDeviceOutput `json:"createDevice"`
-	//  Удалить устройство
-	DeleteDevice *DeleteDeviceOutput `json:"deleteDevice"`
 	//  Создать задачу
 	CreateTask *CreateTaskOutput `json:"createTask"`
 	//  Обновить задачу

@@ -38,12 +38,12 @@ type SigninRequest struct {
 }
 
 func (a *AuthorizationService) Signin(ctx context.Context, req SigninRequest) (*model.Session, *model.User, error) {
-	user, err := a.authorization.Signin(ctx, store.SigninParams{Login: req.Login, Password: utils.HashPassword(req.Password)})
+	users, err := a.authorization.ListUsers(ctx, store.UserFilter{Logins: []string{req.Login}})
 	if err != nil {
-		return nil, nil, fmt.Errorf("authorization.Signin: %w", err)
+		return nil, nil, fmt.Errorf("authorization.ListUsers: %w", err)
 	}
 
-	if user == nil {
+	if len(users) == 0 {
 		return nil, nil, store.ErrNotFound
 	}
 
@@ -62,7 +62,7 @@ func (a *AuthorizationService) Signin(ctx context.Context, req SigninRequest) (*
 		return nil, nil, store.ErrEntityAlreadyExist
 	}
 
-	return &newSession, user, nil
+	return &newSession, users[0], nil
 }
 
 func (a *AuthorizationService) Authcheck(ctx context.Context, value string) (bool, *model.User, error) {
@@ -111,7 +111,7 @@ type SignupRequest struct {
 }
 
 func (a *AuthorizationService) Signup(ctx context.Context, req SignupRequest) (*model.User, error) {
-	result, err := a.authorization.Signup(ctx, store.SignupParams{Login: req.Login, Password: utils.HashPassword(req.Password)})
+	result, err := a.authorization.Signup(ctx, store.SignupParams{Login: req.Login, Password: []byte(req.Password)})
 	if err != nil {
 		return nil, fmt.Errorf("authorization.Signup: %w", err)
 	}

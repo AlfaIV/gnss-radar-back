@@ -48,8 +48,7 @@ func main() {
 
 	newService := service.NewService(storageManager.GetAuthorizationStore(), storageManager.GetSessionStore(), storageManager.GetGnssStore())
 
-	hardwareService := service.NewHardwareService(storageManager.GetGnssStore())
-	graphqlApp := delivery.NewApp(newService, hardwareService)
+	graphqlApp := delivery.NewApp(newService)
 
 	grpcListenerServer, err := delivery.NewServer()
 	if err != nil {
@@ -58,7 +57,7 @@ func main() {
 	}
 
 	wg := &sync.WaitGroup{}
-	wg.Add(3)
+	wg.Add(2)
 
 	//
 	// Graphql app run
@@ -78,17 +77,6 @@ func main() {
 		defer wg.Done()
 		if err = grpcListenerServer.ListenAndServeGrpc(serviceConfig.ConnectionType, serviceConfig.GrpcListenerPort); err != nil {
 			log.Fatalf("grpcListenerServer.ListenAndServeGrpc: %v", err)
-			return
-		}
-	}()
-
-	//
-	// Hardware rest app run
-	//
-	go func() {
-		defer wg.Done()
-		if err := graphqlApp.HardwareHandlers(serviceConfig.GraphqlPort); err != nil {
-			log.Fatalf("graphqlApp.HardwareHandlers: %v", err)
 			return
 		}
 	}()
