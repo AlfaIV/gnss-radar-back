@@ -375,6 +375,10 @@ const (
 	ErrorInternalError Error = "INTERNAL_ERROR"
 	//  Ошибка запроса
 	ErrorBadRequest Error = "BAD_REQUEST"
+	//  Cookie отсутствует
+	ErrorCookieNotFound Error = "COOKIE_NOT_FOUND"
+	//  User отсутствует
+	ErrorUserNotFound Error = "USER_NOT_FOUND"
 )
 
 var AllError = []Error{
@@ -384,11 +388,13 @@ var AllError = []Error{
 	ErrorPermissionDenied,
 	ErrorInternalError,
 	ErrorBadRequest,
+	ErrorCookieNotFound,
+	ErrorUserNotFound,
 }
 
 func (e Error) IsValid() bool {
 	switch e {
-	case ErrorAlreadyExists, ErrorNotAuthorized, ErrorNotFound, ErrorPermissionDenied, ErrorInternalError, ErrorBadRequest:
+	case ErrorAlreadyExists, ErrorNotAuthorized, ErrorNotFound, ErrorPermissionDenied, ErrorInternalError, ErrorBadRequest, ErrorCookieNotFound, ErrorUserNotFound:
 		return true
 	}
 	return false

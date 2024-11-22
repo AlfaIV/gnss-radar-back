@@ -60,7 +60,7 @@ func (s *SessionStore) GetUserLogin(ctx context.Context, sid string) (string, er
 
 func (s *SessionStore) DeleteSession(ctx context.Context, sid string) (bool, error) {
 	if _, err := s.sessionStorage.db.Del(ctx, sid).Result(); err != nil {
-		return false, fmt.Errorf(".sessionStorage.db.Del: %w", err)
+		return false, fmt.Errorf("s.sessionStorage.db.Del: %w", err)
 	}
 
 	return true, nil

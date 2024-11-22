@@ -45,7 +45,7 @@ func (r *authorizationMutationsResolver) Signin(ctx context.Context, obj *model.
 	if err != nil {
 		switch {
 		case errors.Is(err, store.ErrNotFound):
-			return nil, model.ErrorNotFound
+			return nil, model.ErrorUserNotFound
 		default:
 			return nil, fmt.Errorf("authService.Signin %w", err)
 		}
@@ -60,14 +60,14 @@ func (r *authorizationMutationsResolver) Signin(ctx context.Context, obj *model.
 func (r *authorizationMutationsResolver) Logout(ctx context.Context, obj *model.AuthorizationMutations, input *model.LogoutInput) (*model.LogoutOutput, error) {
 	cookie, err := utils.GetRequest(ctx).Cookie("session_id")
 	if err != nil {
-		return nil, model.ErrorBadRequest
+		return nil, model.ErrorCookieNotFound
 	}
 
 	result, err := r.authService.Logout(ctx, cookie.Value)
 	if err != nil {
 		switch {
 		case errors.Is(err, model.ErrorNotAuthorized):
-			return nil, model.ErrorNotAuthorized
+			return nil, model.ErrorUserNotFound
 		default:
 			return nil, fmt.Errorf("authService.Logout: %w", err)
 		}
@@ -91,14 +91,14 @@ func (r *mutationResolver) Authorization(ctx context.Context) (*model.Authorizat
 func (r *queryResolver) Authcheck(ctx context.Context, input *model.AuthcheckInput) (*model.AuthcheckOutput, error) {
 	cookie, err := utils.GetRequest(ctx).Cookie("session_id")
 	if err != nil {
-		return nil, model.ErrorNotAuthorized
+		return nil, model.ErrorCookieNotFound
 	}
 
 	result, user, err := r.authService.Authcheck(ctx, cookie.Value)
 	if err != nil {
 		switch {
 		case errors.Is(err, store.ErrNotFound):
-			return nil, model.ErrorNotFound
+			return nil, model.ErrorUserNotFound
 		default:
 			return nil, fmt.Errorf("authService.Authcheck: %w", err)
 		}

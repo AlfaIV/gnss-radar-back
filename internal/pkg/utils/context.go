@@ -24,7 +24,7 @@ func SetCookie(ctx context.Context, value string) {
 }
 
 func RemoveCookie(ctx context.Context) {
-	req := ctx.Value(RequestKey).(http.Request)
+	req := GetRequest(ctx)
 	cookie, err := req.Cookie("session_id")
 	if err != nil {
 		log.Printf("cookie %v not found", req)

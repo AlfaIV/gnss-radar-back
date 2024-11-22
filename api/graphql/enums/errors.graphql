@@ -12,4 +12,8 @@ enum Error {
     INTERNAL_ERROR
     """ Ошибка запроса """
     BAD_REQUEST
+    """ Cookie отсутствует """
+    COOKIE_NOT_FOUND
+    """ User отсутствует """
+    USER_NOT_FOUND
 }

@@ -1133,6 +1133,10 @@ enum Error {
     INTERNAL_ERROR
     """ Ошибка запроса """
     BAD_REQUEST
+    """ Cookie отсутствует """
+    COOKIE_NOT_FOUND
+    """ User отсутствует """
+    USER_NOT_FOUND
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/mutation/authorization.graphql", Input: `extend type Mutation {
     """ Мутации связанные с авторизацией """
