@@ -77,6 +77,8 @@ func (r *authorizationMutationsResolver) Logout(ctx context.Context, obj *model.
 		return nil, model.ErrorInternalError
 	}
 
+	utils.RemoveCookie(ctx)
+
 	return &model.LogoutOutput{}, nil
 }
 
