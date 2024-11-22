@@ -72,10 +72,6 @@ type ComplexityRoot struct {
 		Task func(childComplexity int) int
 	}
 
-	DeleteDeviceOutput struct {
-		Empty func(childComplexity int) int
-	}
-
 	DeleteTaskOutput struct {
 		Empty func(childComplexity int) int
 	}
@@ -108,7 +104,6 @@ type ComplexityRoot struct {
 		CreateDevice    func(childComplexity int, input model.CreateDeviceInput) int
 		CreateSatellite func(childComplexity int, input model.CreateSatelliteInput) int
 		CreateTask      func(childComplexity int, input model.CreateTaskInput) int
-		DeleteDevice    func(childComplexity int, input model.DeleteDeviceInput) int
 		DeleteTask      func(childComplexity int, input model.DeleteTaskInput) int
 		UpdateDevice    func(childComplexity int, input model.UpdateDeviceInput) int
 		UpdateTask      func(childComplexity int, input model.UpdateTaskInput) int
@@ -333,13 +328,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CreateTaskOutput.Task(childComplexity), true
 
-	case "DeleteDeviceOutput._empty":
-		if e.complexity.DeleteDeviceOutput.Empty == nil {
-			break
-		}
-
-		return e.complexity.DeleteDeviceOutput.Empty(childComplexity), true
-
 	case "DeleteTaskOutput._empty":
 		if e.complexity.DeleteTaskOutput.Empty == nil {
 			break
@@ -466,18 +454,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GnssMutations.CreateTask(childComplexity, args["input"].(model.CreateTaskInput)), true
-
-	case "GnssMutations.deleteDevice":
-		if e.complexity.GnssMutations.DeleteDevice == nil {
-			break
-		}
-
-		args, err := ec.field_GnssMutations_deleteDevice_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.GnssMutations.DeleteDevice(childComplexity, args["input"].(model.DeleteDeviceInput)), true
 
 	case "GnssMutations.deleteTask":
 		if e.complexity.GnssMutations.DeleteTask == nil {
@@ -978,7 +954,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateDeviceInput,
 		ec.unmarshalInputCreateSatelliteInput,
 		ec.unmarshalInputCreateTaskInput,
-		ec.unmarshalInputDeleteDeviceInput,
 		ec.unmarshalInputDeleteTaskInput,
 		ec.unmarshalInputDeviceFilter,
 		ec.unmarshalInputGNSSFilter,
@@ -1200,8 +1175,6 @@ type GnssMutations {
     updateDevice(input: UpdateDeviceInput!): UpdateDeviceOutput! @goField(forceResolver: true)
     """ Создать устройство """
     createDevice(input: CreateDeviceInput!): CreateDeviceOutput! @goField(forceResolver: true)
-    """ Удалить устройство """
-    deleteDevice(input: DeleteDeviceInput!): DeleteDeviceOutput! @goField(forceResolver: true)
     """ Создать задачу """
     createTask(input: CreateTaskInput!): CreateTaskOutput! @goField(forceResolver: true)
     """ Обновить задачу """
@@ -1318,18 +1291,6 @@ input  CreateSatelliteInput {
 """ Выходные параметры для создания спутника """
 type CreateSatelliteOutput {
     satellite: SatelliteInfo!
-}
-
-""" Входные параметры для удаления задачи """
-input DeleteDeviceInput {
-    """ Индетификатор """
-    id: String!
-}
-
-""" Входные параметры для удаления задачи """
-type DeleteDeviceOutput {
-    """ Пусто """
-    _empty: Empty
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/query/authorization.graphql", Input: `extend type Query {
     """ Проверка авторизации """
@@ -1352,10 +1313,10 @@ type AuthcheckOutput {
     listGnss(filter: GNSSFilter!, page: Int! = 0, perPage: Int! = 10): GNSSPagination!
     """ Получить список Device """
     listDevice(filter: DeviceFilter!, page: Int! = 0, perPage: Int! = 10): DevicePagination!
-    """ Получить список задач """
+    """ Получить список задач"""
     listTask(filter: TaskFilter!, page: Int! = 0, perPage: Int! = 10): TaskPagination!
     """ Получить список Rinex """
-    Rinexlist(input: RinexInput,  page: Int! = 0, perPage: Int! = 10): RinexPagination!
+    Rinexlist(input: RinexInput, , page: Int! = 0, perPage: Int! = 10): RinexPagination!
     """ Получить список спутников """
     listSatellites(filter: SatellitesFilter!, page: Int! = 0, perPage: Int! = 10): SatellitesPagination!
 }

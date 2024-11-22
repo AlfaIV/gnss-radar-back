@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"crypto/sha512"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	"github.com/samber/lo"
 	"math/rand"
@@ -16,12 +15,6 @@ func RandStringRunes(seed int) string {
 		symbols[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
 	return string(symbols)
-}
-
-func HashPassword(password string) []byte {
-	hashPassword := sha512.Sum512([]byte(password))
-	passwordByteSlice := hashPassword[:]
-	return passwordByteSlice
 }
 
 func SerializerGnssCoords(list []*model.GnssCoords) []*model.Gnss {

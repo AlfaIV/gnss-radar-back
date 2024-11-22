@@ -334,8 +334,6 @@ func (ec *executionContext) fieldContext_Mutation_gnss(_ context.Context, field 
 				return ec.fieldContext_GnssMutations_updateDevice(ctx, field)
 			case "createDevice":
 				return ec.fieldContext_GnssMutations_createDevice(ctx, field)
-			case "deleteDevice":
-				return ec.fieldContext_GnssMutations_deleteDevice(ctx, field)
 			case "createTask":
 				return ec.fieldContext_GnssMutations_createTask(ctx, field)
 			case "updateTask":

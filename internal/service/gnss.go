@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	"github.com/Gokert/gnss-radar/internal/store"
 	"github.com/google/uuid"
-	"strconv"
 )
 
 type IGnss interface {
@@ -14,7 +15,6 @@ type IGnss interface {
 	ListDevice(ctx context.Context, filter ListDeviceFilter) ([]*model.Device, error)
 	CreateDevice(ctx context.Context, params CreateDeviceParams) (*model.Device, error)
 	UpdateDevice(ctx context.Context, params UpdateDeviceParams) (*model.Device, error)
-	DeleteDevice(ctx context.Context, filter store.DeleteDeviceFilter) error
 	RinexList(ctx context.Context, req RinexRequest) ([]*model.RinexResults, error)
 	CreateTask(ctx context.Context, params store.CreateTaskParams) (*model.Task, error)
 	UpdateTask(ctx context.Context, params store.UpdateTaskParams) (*model.Task, error)
@@ -22,6 +22,7 @@ type IGnss interface {
 	ListTasks(ctx context.Context, filter store.ListTasksFilter) ([]*model.Task, error)
 	ListSatellites(ctx context.Context, filter store.ListSatellitesFilter) ([]*model.SatelliteInfo, error)
 	CreateSatellite(ctx context.Context, params store.CreateSatelliteParams) (*model.SatelliteInfo, error)
+	AddSpectrum()
 }
 
 type GnssService struct {
@@ -243,13 +244,4 @@ func (g *GnssService) CreateSatellite(ctx context.Context, params store.CreateSa
 	}
 
 	return satellite, nil
-}
-
-func (g *GnssService) DeleteDevice(ctx context.Context, filter store.DeleteDeviceFilter) error {
-	err := g.gnssStore.DeleteDevice(ctx, filter)
-	if err != nil {
-		return fmt.Errorf("gnssStore.DeleteDevice: %w", err)
-	}
-
-	return nil
 }

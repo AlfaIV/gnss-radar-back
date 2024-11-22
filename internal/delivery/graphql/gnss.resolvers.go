@@ -52,16 +52,6 @@ func (r *gnssMutationsResolver) CreateDevice(ctx context.Context, obj *model.Gns
 	}, nil
 }
 
-// DeleteDevice is the resolver for the deleteDevice field.
-func (r *gnssMutationsResolver) DeleteDevice(ctx context.Context, obj *model.GnssMutations, input model.DeleteDeviceInput) (*model.DeleteDeviceOutput, error) {
-	err := r.gnssSevice.DeleteDevice(ctx, store.DeleteDeviceFilter{Id: input.ID})
-	if err != nil {
-		return nil, fmt.Errorf("gnssSevice.DeleteDevice %w", err)
-	}
-
-	return &model.DeleteDeviceOutput{}, nil
-}
-
 // CreateTask is the resolver for the createTask field.
 func (r *gnssMutationsResolver) CreateTask(ctx context.Context, obj *model.GnssMutations, input model.CreateTaskInput) (*model.CreateTaskOutput, error) {
 	task, err := r.gnssSevice.CreateTask(ctx, store.CreateTaskParams{

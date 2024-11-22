@@ -21,7 +21,6 @@ import (
 type GnssMutationsResolver interface {
 	UpdateDevice(ctx context.Context, obj *model.GnssMutations, input model.UpdateDeviceInput) (*model.UpdateDeviceOutput, error)
 	CreateDevice(ctx context.Context, obj *model.GnssMutations, input model.CreateDeviceInput) (*model.CreateDeviceOutput, error)
-	DeleteDevice(ctx context.Context, obj *model.GnssMutations, input model.DeleteDeviceInput) (*model.DeleteDeviceOutput, error)
 	CreateTask(ctx context.Context, obj *model.GnssMutations, input model.CreateTaskInput) (*model.CreateTaskOutput, error)
 	UpdateTask(ctx context.Context, obj *model.GnssMutations, input model.UpdateTaskInput) (*model.UpdateTaskOutput, error)
 	DeleteTask(ctx context.Context, obj *model.GnssMutations, input model.DeleteTaskInput) (*model.DeleteTaskOutput, error)
@@ -69,21 +68,6 @@ func (ec *executionContext) field_GnssMutations_createTask_args(ctx context.Cont
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNCreateTaskInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCreateTaskInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_GnssMutations_deleteDevice_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.DeleteDeviceInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeleteDeviceInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDeleteDeviceInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -448,47 +432,6 @@ func (ec *executionContext) fieldContext_CreateTaskOutput_task(_ context.Context
 				return ec.fieldContext_Task_CreatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _DeleteDeviceOutput__empty(ctx context.Context, field graphql.CollectedField, obj *model.DeleteDeviceOutput) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_DeleteDeviceOutput__empty(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Empty, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOEmpty2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_DeleteDeviceOutput__empty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "DeleteDeviceOutput",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Empty does not have child fields")
 		},
 	}
 	return fc, nil
@@ -937,65 +880,6 @@ func (ec *executionContext) fieldContext_GnssMutations_createDevice(ctx context.
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_GnssMutations_createDevice_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _GnssMutations_deleteDevice(ctx context.Context, field graphql.CollectedField, obj *model.GnssMutations) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_GnssMutations_deleteDevice(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.GnssMutations().DeleteDevice(rctx, obj, fc.Args["input"].(model.DeleteDeviceInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.DeleteDeviceOutput)
-	fc.Result = res
-	return ec.marshalNDeleteDeviceOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDeleteDeviceOutput(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_GnssMutations_deleteDevice(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "GnssMutations",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "_empty":
-				return ec.fieldContext_DeleteDeviceOutput__empty(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type DeleteDeviceOutput", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_GnssMutations_deleteDevice_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2814,33 +2698,6 @@ func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, o
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputDeleteDeviceInput(ctx context.Context, obj interface{}) (model.DeleteDeviceInput, error) {
-	var it model.DeleteDeviceInput
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"id"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "id":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ID = data
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputDeleteTaskInput(ctx context.Context, obj interface{}) (model.DeleteTaskInput, error) {
 	var it model.DeleteTaskInput
 	asMap := map[string]interface{}{}
@@ -3371,42 +3228,6 @@ func (ec *executionContext) _CreateTaskOutput(ctx context.Context, sel ast.Selec
 	return out
 }
 
-var deleteDeviceOutputImplementors = []string{"DeleteDeviceOutput"}
-
-func (ec *executionContext) _DeleteDeviceOutput(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteDeviceOutput) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, deleteDeviceOutputImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("DeleteDeviceOutput")
-		case "_empty":
-			out.Values[i] = ec._DeleteDeviceOutput__empty(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 var deleteTaskOutputImplementors = []string{"DeleteTaskOutput"}
 
 func (ec *executionContext) _DeleteTaskOutput(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteTaskOutput) graphql.Marshaler {
@@ -3626,42 +3447,6 @@ func (ec *executionContext) _GnssMutations(ctx context.Context, sel ast.Selectio
 					}
 				}()
 				res = ec._GnssMutations_createDevice(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "deleteDevice":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._GnssMutations_deleteDevice(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -4375,25 +4160,6 @@ func (ec *executionContext) marshalNCreateTaskOutput2ᚖgithubᚗcomᚋGokertᚋ
 		return graphql.Null
 	}
 	return ec._CreateTaskOutput(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNDeleteDeviceInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDeleteDeviceInput(ctx context.Context, v interface{}) (model.DeleteDeviceInput, error) {
-	res, err := ec.unmarshalInputDeleteDeviceInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNDeleteDeviceOutput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDeleteDeviceOutput(ctx context.Context, sel ast.SelectionSet, v model.DeleteDeviceOutput) graphql.Marshaler {
-	return ec._DeleteDeviceOutput(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNDeleteDeviceOutput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDeleteDeviceOutput(ctx context.Context, sel ast.SelectionSet, v *model.DeleteDeviceOutput) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._DeleteDeviceOutput(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNDeleteTaskInput2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐDeleteTaskInput(ctx context.Context, v interface{}) (model.DeleteTaskInput, error) {
