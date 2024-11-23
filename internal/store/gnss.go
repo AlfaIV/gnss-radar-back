@@ -28,6 +28,7 @@ type IGnssStore interface {
 	AddSpectrum(ctx context.Context, spectrumReq model.SpectrumRequest) error
 	AddPower(ctx context.Context, powerReq model.PowerRequest) error
 	ListMeasurements(ctx context.Context, measurementReq model.MeasurementsFilter) ([]*model.Measurement, error)
+	CompareDeviceToken(ctx context.Context, deviceTokenReq string) error
 }
 
 type GnssStore struct {
@@ -440,6 +441,10 @@ func (g *GnssStore) addHardwareMeasurement(ctx context.Context, desc model.Descr
 	if _, err := g.storage.db.Execx(ctx, query); err != nil {
 		return postgresError(err)
 	}
+	return nil
+}
+
+func (g *GnssStore) CompareDeviceTokens(ctx context.Context, token string) error {
 	return nil
 }
 
