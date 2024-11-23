@@ -1774,7 +1774,7 @@ type DataSpectrum {
     """ Начальная частота спектра """
     StartFreq: Float!
     """ Шаг частоты спектра """
-    FreqStep: Time!
+    FreqStep: Float!
     """ Время начала спектра """
     startTime: Time!
 }

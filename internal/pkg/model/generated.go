@@ -117,7 +117,7 @@ type DataSpectrum struct {
 	//  Начальная частота спектра
 	StartFreq float64 `json:"StartFreq"`
 	//  Шаг частоты спектра
-	FreqStep time.Time `json:"FreqStep"`
+	FreqStep float64 `json:"FreqStep"`
 	//  Время начала спектра
 	StartTime time.Time `json:"startTime"`
 }
