@@ -18,3 +18,42 @@ type Task {
     """ Время создания """
     CreatedAt: Time!
 }
+
+type Measurement {
+    """ Уникальный идентификатор измерения """
+    token: String!
+    """ Время начала измерения """
+    startTime: Time!
+    """ Время окончания измерения """
+    endTime: Time!
+    """ Группа, к которой относится измерение """
+    group: String!
+    """ Тип сигнала, измеряемый в данном измерении """
+    signalType: String!
+    """ Цель измерения """
+    target: String!
+    """ Данные спектра измерения """
+    dataSpectrum: DataSpectrum
+    """ Данные мощности измерения """
+    dataPower: DataPower
+}
+
+type DataSpectrum {
+    """ Массив значений спектра """
+    spectrum: [Float!]!
+    """ Начальная частота спектра """
+    StartFreq: Float!
+    """ Шаг частоты спектра """
+    FreqStep: Time!
+    """ Время начала спектра """
+    startTime: Time!
+}
+
+type DataPower {
+    """ Массив значений мощности """
+    power: [Float!]!
+    """ Время начала измерения мощности """
+    startTime: Time!
+    """ Шаг времени между измерениями мощности """
+    timeStep: Time!
+}

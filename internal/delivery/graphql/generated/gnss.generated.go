@@ -1986,6 +1986,65 @@ func (ec *executionContext) fieldContext_Header_end_of_header(_ context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _MeasurementsPagination_items(ctx context.Context, field graphql.CollectedField, obj *model.MeasurementsPagination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeasurementsPagination_items(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Items, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Measurement)
+	fc.Result = res
+	return ec.marshalOMeasurement2ᚕᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐMeasurementᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MeasurementsPagination_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MeasurementsPagination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "token":
+				return ec.fieldContext_Measurement_token(ctx, field)
+			case "startTime":
+				return ec.fieldContext_Measurement_startTime(ctx, field)
+			case "endTime":
+				return ec.fieldContext_Measurement_endTime(ctx, field)
+			case "group":
+				return ec.fieldContext_Measurement_group(ctx, field)
+			case "signalType":
+				return ec.fieldContext_Measurement_signalType(ctx, field)
+			case "target":
+				return ec.fieldContext_Measurement_target(ctx, field)
+			case "dataSpectrum":
+				return ec.fieldContext_Measurement_dataSpectrum(ctx, field)
+			case "dataPower":
+				return ec.fieldContext_Measurement_dataPower(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Measurement", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Observation_time(ctx context.Context, field graphql.CollectedField, obj *model.Observation) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Observation_time(ctx, field)
 	if err != nil {
@@ -2930,6 +2989,61 @@ func (ec *executionContext) unmarshalInputGNSSFilter(ctx context.Context, obj in
 				return it, err
 			}
 			it.Coordinates = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputMeasurementsFilter(ctx context.Context, obj interface{}) (model.MeasurementsFilter, error) {
+	var it model.MeasurementsFilter
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"signal", "group", "target", "startAt", "endAt"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "signal":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("signal"))
+			data, err := ec.unmarshalOSignalType2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSignalType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Signal = data
+		case "group":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("group"))
+			data, err := ec.unmarshalOGroupingType2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐGroupingType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Group = data
+		case "target":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("target"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Target = data
+		case "startAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StartAt = data
+		case "endAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("endAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.EndAt = data
 		}
 	}
 
@@ -3974,6 +4088,42 @@ func (ec *executionContext) _Header(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
+var measurementsPaginationImplementors = []string{"MeasurementsPagination"}
+
+func (ec *executionContext) _MeasurementsPagination(ctx context.Context, sel ast.SelectionSet, obj *model.MeasurementsPagination) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, measurementsPaginationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MeasurementsPagination")
+		case "items":
+			out.Values[i] = ec._MeasurementsPagination_items(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var observationImplementors = []string{"Observation"}
 
 func (ec *executionContext) _Observation(ctx context.Context, sel ast.SelectionSet, obj *model.Observation) graphql.Marshaler {
@@ -4485,6 +4635,25 @@ func (ec *executionContext) marshalNHeader2ᚖgithubᚗcomᚋGokertᚋgnssᚑrad
 		return graphql.Null
 	}
 	return ec._Header(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNMeasurementsFilter2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐMeasurementsFilter(ctx context.Context, v interface{}) (model.MeasurementsFilter, error) {
+	res, err := ec.unmarshalInputMeasurementsFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMeasurementsPagination2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐMeasurementsPagination(ctx context.Context, sel ast.SelectionSet, v model.MeasurementsPagination) graphql.Marshaler {
+	return ec._MeasurementsPagination(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMeasurementsPagination2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐMeasurementsPagination(ctx context.Context, sel ast.SelectionSet, v *model.MeasurementsPagination) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._MeasurementsPagination(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNObservation2ᚕᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐObservationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Observation) graphql.Marshaler {

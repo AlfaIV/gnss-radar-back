@@ -9,6 +9,20 @@ extend type Query {
     Rinexlist(input: RinexInput,  page: Int! = 0, perPage: Int! = 10): RinexPagination!
     """ Получить список спутников """
     listSatellites(filter: SatellitesFilter!, page: Int! = 0, perPage: Int! = 10): SatellitesPagination!
+    listMeasurements(filter: MeasurementsFilter!, page: Int! = 0, perPage: Int! = 10): MeasurementsPagination!
+}
+
+input MeasurementsFilter {
+    """ Фильтр по сигналу """
+    signal: SignalType
+    """ Фильтр по группе """
+    group: GroupingType
+    """ Фильтр по таргету """
+    target: String
+    """ Старт по времени """
+    startAt: Time
+    """ Конец по времени """
+    endAt: Time
 }
 
 input RinexInput {
@@ -31,6 +45,11 @@ input GNSSFilter {
 type GNSSPagination {
     """ Загруженные элементы """
     items: [GNSS!]
+}
+
+type MeasurementsPagination {
+    """ Загруженные элементы """
+    items: [Measurement!]
 }
 
 """ Фильтр устройств """

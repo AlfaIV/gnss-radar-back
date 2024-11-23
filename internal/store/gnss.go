@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -24,6 +25,7 @@ type IGnssStore interface {
 	RinexList(ctx context.Context) ([]*model.RinexResults, error)
 	AddSpectrum(ctx context.Context, spectrumReq model.SpectrumRequest) error
 	AddPower(ctx context.Context, powerReq model.PowerRequest) error
+	ListMeasurements(ctx context.Context, measurementReq model.MeasurementsFilter) ([]*model.Measurement, error)
 }
 
 type GnssStore struct {
@@ -437,6 +439,80 @@ func (g *GnssStore) addHardwareMeasurement(ctx context.Context, desc model.Descr
 		return postgresError(err)
 	}
 	return nil
+}
+
+func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.MeasurementsFilter) ([]*model.Measurement, error) {
+	// Build the base query for hardware_measurements
+	query := g.storage.Builder().
+		Select("hm.token, hm.start_at, hm.end_at, hm.group_type, hm.signal, hm.satellite_name, hm.measurement_id").
+		From("hardware_measurements hm")
+
+	if measurementReq.Signal != nil {
+		query = query.Where(sq.Eq{"hm.signal": *measurementReq.Signal})
+	}
+	if measurementReq.Group != nil {
+		query = query.Where(sq.Eq{"hm.group_type": *measurementReq.Group})
+	}
+	if measurementReq.Target != nil {
+		query = query.Where(sq.Eq{"hm.satellite_name": *measurementReq.Target})
+	}
+	if measurementReq.StartAt != nil {
+		query = query.Where(sq.GtOrEq{"hm.start_at": *measurementReq.StartAt})
+	}
+	if measurementReq.EndAt != nil {
+		query = query.Where(sq.LtOrEq{"hm.end_at": *measurementReq.EndAt})
+	}
+
+	var hardwareMeasurements []struct {
+		Token         string    `db:"token"`
+		StartAt       time.Time `db:"start_at"`
+		EndAt         time.Time `db:"end_at"`
+		GroupType     string    `db:"group_type"`
+		Signal        string    `db:"signal"`
+		SatelliteName string    `db:"satellite_name"`
+		MeasurementID string    `db:"measurement_id"`
+	}
+	if err := g.storage.db.Selectx(ctx, &hardwareMeasurements, query); err != nil {
+		return nil, postgresError(err)
+	}
+
+	var measurements []*model.Measurement
+
+	for _, hm := range hardwareMeasurements {
+		var measurement model.Measurement
+		measurement.Token = hm.Token
+		measurement.StartTime = hm.StartAt
+		measurement.EndTime = hm.EndAt
+		measurement.Group = hm.GroupType
+		measurement.SignalType = hm.Signal
+		measurement.Target = hm.SatelliteName
+
+		var powerData model.DataPower
+		err := g.storage.db.Getx(ctx, &powerData, g.storage.Builder().
+			Select("power, started_at, time_step").
+			From("measurements_power").
+			Where(sq.Eq{"id": hm.MeasurementID}))
+		if err == nil {
+			measurement.DataPower = &powerData
+		} else if err != sql.ErrNoRows {
+			return nil, postgresError(err)
+		}
+
+		var spectrumData model.DataSpectrum
+		err = g.storage.db.Getx(ctx, &spectrumData, g.storage.Builder().
+			Select("spectrum, start_freq, freq_step, started_at").
+			From("measurements_spectrum").
+			Where(sq.Eq{"id": hm.MeasurementID}))
+		if err == nil {
+			measurement.DataSpectrum = &spectrumData
+		} else if err != sql.ErrNoRows {
+			return nil, postgresError(err)
+		}
+
+		measurements = append(measurements, &measurement)
+	}
+
+	return measurements, nil
 }
 
 func (g *GnssStore) RinexList(ctx context.Context) ([]*model.RinexResults, error) {

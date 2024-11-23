@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	"github.com/Gokert/gnss-radar/internal/store"
 	"github.com/google/uuid"
-	"strconv"
 )
 
 type IGnss interface {
@@ -22,6 +23,7 @@ type IGnss interface {
 	ListTasks(ctx context.Context, filter store.ListTasksFilter) ([]*model.Task, error)
 	ListSatellites(ctx context.Context, filter store.ListSatellitesFilter) ([]*model.SatelliteInfo, error)
 	CreateSatellite(ctx context.Context, params store.CreateSatelliteParams) (*model.SatelliteInfo, error)
+	ListMeasurements(ctx context.Context, measurementReq model.MeasurementsFilter) ([]*model.Measurement, error)
 }
 
 type GnssService struct {
@@ -252,4 +254,13 @@ func (g *GnssService) DeleteDevice(ctx context.Context, filter store.DeleteDevic
 	}
 
 	return nil
+}
+
+func (g *GnssService) ListMeasurements(ctx context.Context, measurementReq model.MeasurementsFilter) ([]*model.Measurement, error) {
+	measurements, err := g.gnssStore.ListMeasurements(ctx, measurementReq)
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.ListMeasurements: %w", err)
+	}
+
+	return measurements, nil
 }

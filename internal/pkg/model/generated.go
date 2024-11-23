@@ -102,6 +102,26 @@ type CreateTaskOutput struct {
 	Task *Task `json:"task"`
 }
 
+type DataPower struct {
+	//  Массив значений мощности
+	Power []float64 `json:"power"`
+	//  Время начала измерения мощности
+	StartTime time.Time `json:"startTime"`
+	//  Шаг времени между измерениями мощности
+	TimeStep time.Time `json:"timeStep"`
+}
+
+type DataSpectrum struct {
+	//  Массив значений спектра
+	Spectrum []float64 `json:"spectrum"`
+	//  Начальная частота спектра
+	StartFreq float64 `json:"StartFreq"`
+	//  Шаг частоты спектра
+	FreqStep time.Time `json:"FreqStep"`
+	//  Время начала спектра
+	StartTime time.Time `json:"startTime"`
+}
+
 // Входные параметры для удаления задачи
 type DeleteDeviceInput struct {
 	//  Индетификатор
@@ -213,6 +233,43 @@ type LogoutInput struct {
 type LogoutOutput struct {
 	//  Пусто
 	Empty *string `json:"_empty,omitempty"`
+}
+
+type Measurement struct {
+	//  Уникальный идентификатор измерения
+	Token string `json:"token"`
+	//  Время начала измерения
+	StartTime time.Time `json:"startTime"`
+	//  Время окончания измерения
+	EndTime time.Time `json:"endTime"`
+	//  Группа, к которой относится измерение
+	Group string `json:"group"`
+	//  Тип сигнала, измеряемый в данном измерении
+	SignalType string `json:"signalType"`
+	//  Цель измерения
+	Target string `json:"target"`
+	//  Данные спектра измерения
+	DataSpectrum *DataSpectrum `json:"dataSpectrum,omitempty"`
+	//  Данные мощности измерения
+	DataPower *DataPower `json:"dataPower,omitempty"`
+}
+
+type MeasurementsFilter struct {
+	//  Фильтр по сигналу
+	Signal *SignalType `json:"signal,omitempty"`
+	//  Фильтр по группе
+	Group *GroupingType `json:"group,omitempty"`
+	//  Фильтр по таргету
+	Target *string `json:"target,omitempty"`
+	//  Старт по времени
+	StartAt *time.Time `json:"startAt,omitempty"`
+	//  Конец по времени
+	EndAt *time.Time `json:"endAt,omitempty"`
+}
+
+type MeasurementsPagination struct {
+	//  Загруженные элементы
+	Items []*Measurement `json:"items,omitempty"`
 }
 
 type Mutation struct {
