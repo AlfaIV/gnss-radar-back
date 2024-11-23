@@ -510,7 +510,7 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 		var spectrumDataDb struct {
 			Spectrum  []float64 `db:"spectrum"`
 			StartFreq float64   `db:"start_freq"`
-			FreqStep  time.Time `db:"freq_step"`
+			FreqStep  float64   `db:"freq_step"`
 			StartedAt time.Time `db:"started_at"`
 		}
 		err = g.storage.db.Getx(ctx, &spectrumDataDb, g.storage.Builder().

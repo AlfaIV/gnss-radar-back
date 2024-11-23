@@ -276,9 +276,9 @@ func (ec *executionContext) _DataSpectrum_FreqStep(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(float64)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_DataSpectrum_FreqStep(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -288,7 +288,7 @@ func (ec *executionContext) fieldContext_DataSpectrum_FreqStep(_ context.Context
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
+			return nil, errors.New("field of type Float does not have child fields")
 		},
 	}
 	return fc, nil
