@@ -234,8 +234,8 @@ type ListTasksFilter struct {
 }
 
 func (g *GnssService) ListTasks(ctx context.Context, filter ListTasksFilter) ([]*model.Task, error) {
-
 	var satelliteName []string
+
 	if len(filter.SatelliteName) > 0 {
 		satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{
 			SatelliteName: filter.SatelliteName,

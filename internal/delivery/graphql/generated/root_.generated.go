@@ -1372,7 +1372,7 @@ type GnssMutations {
     """ Создать задачу """
     createTask(input: CreateTaskInput!): CreateTaskOutput! @goField(forceResolver: true)
     """ Обновить задачу """
-    updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true)
+    updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true) @deprecated(reason: "ломает логику, возможно исправим")
     """ Удалить задачу """
     deleteTask(input: DeleteTaskInput!): DeleteTaskOutput! @goField(forceResolver: true)
     """ Создать спутник """
@@ -1558,7 +1558,7 @@ type RinexPagination {
 """ Фильтр gnss координат """
 input GNSSFilter {
     """ Фильтр по индетификаторам """
-    Coordinates: CoordsInput!
+    coordinates: CoordsInput!
 }
 
 """ Выходные параметры для gnss координат """
@@ -1576,11 +1576,11 @@ type MeasurementsPagination {
 """ Фильтр устройств """
 input DeviceFilter {
     """ Индетификатор """
-    Ids: [String!]
+    ids: [String!]
     """ Название девайса """
-    Names: [String!]
+    names: [String!]
     """ Токен """
-    Tokens: [String!]
+    tokens: [String!]
 }
 
 """ Выходные параметры для устройств """
@@ -1618,9 +1618,9 @@ input SatellitesFilter {
     """ Индетификатор """
     IdS: [String!]
     """ Внешний индетификатор спутника """
-    ExternalSatelliteIds: [String!]
+    externalSatelliteIds: [String!]
     """ Название спутника """
-    SatelliteNames: [String!]
+    satelliteNames: [String!]
 }
 
 """ Выходные параметры для спутников """

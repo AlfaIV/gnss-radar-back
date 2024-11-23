@@ -42,7 +42,7 @@ type RinexPagination {
 """ Фильтр gnss координат """
 input GNSSFilter {
     """ Фильтр по индетификаторам """
-    Coordinates: CoordsInput!
+    coordinates: CoordsInput!
 }
 
 """ Выходные параметры для gnss координат """
@@ -60,11 +60,11 @@ type MeasurementsPagination {
 """ Фильтр устройств """
 input DeviceFilter {
     """ Индетификатор """
-    Ids: [String!]
+    ids: [String!]
     """ Название девайса """
-    Names: [String!]
+    names: [String!]
     """ Токен """
-    Tokens: [String!]
+    tokens: [String!]
 }
 
 """ Выходные параметры для устройств """
@@ -102,9 +102,9 @@ input SatellitesFilter {
     """ Индетификатор """
     IdS: [String!]
     """ Внешний индетификатор спутника """
-    ExternalSatelliteIds: [String!]
+    externalSatelliteIds: [String!]
     """ Название спутника """
-    SatelliteNames: [String!]
+    satelliteNames: [String!]
 }
 
 """ Выходные параметры для спутников """

@@ -151,11 +151,11 @@ type DeleteTaskOutput struct {
 // Фильтр устройств
 type DeviceFilter struct {
 	//  Индетификатор
-	Ids []string `json:"Ids,omitempty"`
+	Ids []string `json:"ids,omitempty"`
 	//  Название девайса
-	Names []string `json:"Names,omitempty"`
+	Names []string `json:"names,omitempty"`
 	//  Токен
-	Tokens []string `json:"Tokens,omitempty"`
+	Tokens []string `json:"tokens,omitempty"`
 }
 
 // Выходные параметры для устройств
@@ -178,7 +178,7 @@ type Gnss struct {
 // Фильтр gnss координат
 type GNSSFilter struct {
 	//  Фильтр по индетификаторам
-	Coordinates *CoordsInput `json:"Coordinates"`
+	Coordinates *CoordsInput `json:"coordinates"`
 }
 
 // Выходные параметры для gnss координат
@@ -316,9 +316,9 @@ type SatellitesFilter struct {
 	//  Индетификатор
 	IDS []string `json:"IdS,omitempty"`
 	//  Внешний индетификатор спутника
-	ExternalSatelliteIds []string `json:"ExternalSatelliteIds,omitempty"`
+	ExternalSatelliteIds []string `json:"externalSatelliteIds,omitempty"`
 	//  Название спутника
-	SatelliteNames []string `json:"SatelliteNames,omitempty"`
+	SatelliteNames []string `json:"satelliteNames,omitempty"`
 }
 
 // Выходные параметры для спутников
