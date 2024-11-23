@@ -442,9 +442,8 @@ func (g *GnssStore) addHardwareMeasurement(ctx context.Context, desc model.Descr
 }
 
 func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.MeasurementsFilter) ([]*model.Measurement, error) {
-	// Build the base query for hardware_measurements
 	query := g.storage.Builder().
-		Select("hm.token, hm.start_at, hm.end_at, hm.group_type, hm.signal, hm.satellite_name, hm.measurement_id").
+		Select("hm.token", "hm.start_at", "hm.end_at", "hm.group_type", "hm.signal", "hm.satellite_name", "hm.measurement_id").
 		From("hardware_measurements hm")
 
 	if measurementReq.Signal != nil {
@@ -489,7 +488,7 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 
 		var powerData model.DataPower
 		err := g.storage.db.Getx(ctx, &powerData, g.storage.Builder().
-			Select("power, started_at, time_step").
+			Select("power", "started_at", "time_step").
 			From("measurements_power").
 			Where(sq.Eq{"id": hm.MeasurementID}))
 		if err == nil {
@@ -500,7 +499,7 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 
 		var spectrumData model.DataSpectrum
 		err = g.storage.db.Getx(ctx, &spectrumData, g.storage.Builder().
-			Select("spectrum, start_freq, freq_step, started_at").
+			Select("spectrum", "start_freq", "freq_step", "started_at").
 			From("measurements_spectrum").
 			Where(sq.Eq{"id": hm.MeasurementID}))
 		if err == nil {
