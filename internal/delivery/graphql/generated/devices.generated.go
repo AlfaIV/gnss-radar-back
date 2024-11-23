@@ -128,22 +128,6 @@ func (ec *executionContext) marshalOGroupingType2ᚕgithubᚗcomᚋGokertᚋgnss
 	return ret
 }
 
-func (ec *executionContext) unmarshalOGroupingType2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐGroupingType(ctx context.Context, v interface{}) (*model.GroupingType, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var res = new(model.GroupingType)
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOGroupingType2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐGroupingType(ctx context.Context, sel ast.SelectionSet, v *model.GroupingType) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return v
-}
-
 func (ec *executionContext) unmarshalOSignalType2ᚕgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSignalTypeᚄ(ctx context.Context, v interface{}) ([]model.SignalType, error) {
 	if v == nil {
 		return nil, nil
@@ -209,22 +193,6 @@ func (ec *executionContext) marshalOSignalType2ᚕgithubᚗcomᚋGokertᚋgnss�
 	}
 
 	return ret
-}
-
-func (ec *executionContext) unmarshalOSignalType2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSignalType(ctx context.Context, v interface{}) (*model.SignalType, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var res = new(model.SignalType)
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOSignalType2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSignalType(ctx context.Context, sel ast.SelectionSet, v *model.SignalType) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return v
 }
 
 // endregion ***************************** type.gotpl *****************************

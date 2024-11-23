@@ -463,6 +463,9 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 	if measurementReq.EndAt != nil {
 		query = query.Where(sq.LtOrEq{"hm.end_at": *measurementReq.EndAt})
 	}
+	if measurementReq.Token != nil {
+		query = query.Where(sq.Eq{"hm.token": *measurementReq.Token})
+	}
 
 	var hardwareMeasurements []struct {
 		Token         string    `db:"token"`
