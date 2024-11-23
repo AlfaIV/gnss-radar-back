@@ -445,6 +445,15 @@ func (g *GnssStore) addHardwareMeasurement(ctx context.Context, desc model.Descr
 }
 
 func (g *GnssStore) CompareDeviceToken(ctx context.Context, token string) error {
+	query := g.storage.Builder().
+		Select("token").
+		From("devices").
+		Where(sq.Eq{"token": token})
+
+	if _, err := g.storage.db.Execx(ctx, query); err != nil {
+		return postgresError(err)
+	}
+
 	return nil
 }
 

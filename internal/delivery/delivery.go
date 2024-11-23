@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/Gokert/gnss-radar/internal/pkg/middleware"
 	"log"
 	"net"
 	"net/http"
 	"strconv"
+
+	"github.com/Gokert/gnss-radar/internal/pkg/middleware"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -94,7 +95,13 @@ func (a *App) AddSpectrum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := a.hardwareService.AddSpectrum(r.Context(), req)
+	err := a.hardwareService.CompareDeviceToken(r.Context(), req.Token)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = a.hardwareService.AddSpectrum(r.Context(), req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -110,7 +117,13 @@ func (a *App) AddPower(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := a.hardwareService.AddPower(r.Context(), req)
+	err := a.hardwareService.CompareDeviceToken(r.Context(), req.Token)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = a.hardwareService.AddPower(r.Context(), req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
