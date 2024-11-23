@@ -486,24 +486,42 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 		measurement.SignalType = hm.Signal
 		measurement.Target = hm.SatelliteName
 
-		var powerData model.DataPower
-		err := g.storage.db.Getx(ctx, &powerData, g.storage.Builder().
+		var powerDataDb struct {
+			Power     []float64 `db:"power"`
+			StartTime time.Time `db:"started_at"`
+			TimeStep  time.Time `db:"time_step"`
+		}
+		err := g.storage.db.Getx(ctx, &powerDataDb, g.storage.Builder().
 			Select("power", "started_at", "time_step").
 			From("measurements_power").
 			Where(sq.Eq{"id": hm.MeasurementID}))
 		if err == nil {
-			measurement.DataPower = &powerData
+			measurement.DataPower = &model.DataPower{
+				Power:     powerDataDb.Power,
+				StartTime: powerDataDb.StartTime,
+				TimeStep:  powerDataDb.TimeStep,
+			}
 		} else if err != sql.ErrNoRows {
 			return nil, postgresError(err)
 		}
 
-		var spectrumData model.DataSpectrum
-		err = g.storage.db.Getx(ctx, &spectrumData, g.storage.Builder().
+		var spectrumDataDb struct {
+			Spectrum  []float64 `db:"spectrum"`
+			StartFreq float64   `db:"start_freq"`
+			FreqStep  time.Time `db:"freq_step"`
+			StartedAt time.Time `db:"started_at"`
+		}
+		err = g.storage.db.Getx(ctx, &spectrumDataDb, g.storage.Builder().
 			Select("spectrum", "start_freq", "freq_step", "started_at").
 			From("measurements_spectrum").
 			Where(sq.Eq{"id": hm.MeasurementID}))
 		if err == nil {
-			measurement.DataSpectrum = &spectrumData
+			measurement.DataSpectrum = &model.DataSpectrum{
+				Spectrum:  spectrumDataDb.Spectrum,
+				StartFreq: spectrumDataDb.StartFreq,
+				FreqStep:  spectrumDataDb.FreqStep,
+				StartTime: spectrumDataDb.StartedAt,
+			}
 		} else if err != sql.ErrNoRows {
 			return nil, postgresError(err)
 		}
