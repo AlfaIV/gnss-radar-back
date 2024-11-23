@@ -2,12 +2,14 @@ package store
 
 import (
 	"context"
-	"database/sql"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	sq "github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v4"
 )
 
 type IGnssStore interface {
@@ -501,7 +503,7 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 				StartTime: powerDataDb.StartTime,
 				TimeStep:  powerDataDb.TimeStep,
 			}
-		} else if err != sql.ErrNoRows {
+		} else if !(strings.Contains(err.Error(), pgx.ErrNoRows.Error()) || errors.Is(err, pgx.ErrNoRows)) {
 			return nil, postgresError(err)
 		}
 
@@ -522,7 +524,7 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 				FreqStep:  spectrumDataDb.FreqStep,
 				StartTime: spectrumDataDb.StartedAt,
 			}
-		} else if err != sql.ErrNoRows {
+		} else if !(strings.Contains(err.Error(), pgx.ErrNoRows.Error()) || errors.Is(err, pgx.ErrNoRows)) {
 			return nil, postgresError(err)
 		}
 
