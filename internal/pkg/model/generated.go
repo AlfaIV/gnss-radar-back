@@ -255,10 +255,12 @@ type Measurement struct {
 }
 
 type MeasurementsFilter struct {
+	//  Токен для аутентификации
+	Token *string `json:"token,omitempty"`
 	//  Фильтр по сигналу
-	Signal *SignalType `json:"signal,omitempty"`
+	Signal *string `json:"signal,omitempty"`
 	//  Фильтр по группе
-	Group *GroupingType `json:"group,omitempty"`
+	Group *string `json:"group,omitempty"`
 	//  Фильтр по таргету
 	Target *string `json:"target,omitempty"`
 	//  Старт по времени

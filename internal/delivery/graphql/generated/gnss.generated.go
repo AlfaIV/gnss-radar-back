@@ -3002,23 +3002,30 @@ func (ec *executionContext) unmarshalInputMeasurementsFilter(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"signal", "group", "target", "startAt", "endAt"}
+	fieldsInOrder := [...]string{"token", "signal", "group", "target", "startAt", "endAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "token":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Token = data
 		case "signal":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("signal"))
-			data, err := ec.unmarshalOSignalType2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSignalType(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Signal = data
 		case "group":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("group"))
-			data, err := ec.unmarshalOGroupingType2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐGroupingType(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}

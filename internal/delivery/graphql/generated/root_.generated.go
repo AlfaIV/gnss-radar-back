@@ -1520,10 +1520,12 @@ type AuthcheckOutput {
 }
 
 input MeasurementsFilter {
+    """ Токен для аутентификации """
+    token: String
     """ Фильтр по сигналу """
-    signal: SignalType
+    signal: String
     """ Фильтр по группе """
-    group: GroupingType
+    group: String
     """ Фильтр по таргету """
     target: String
     """ Старт по времени """
