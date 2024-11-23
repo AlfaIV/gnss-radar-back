@@ -218,6 +218,16 @@ func (r *queryResolver) ListSatellites(ctx context.Context, filter model.Satelli
 	return &model.SatellitesPagination{Items: satellites}, nil
 }
 
+// ListMeasurements is the resolver for the listMeasurements field.
+func (r *queryResolver) ListMeasurements(ctx context.Context, filter model.MeasurementsFilter, page int, perPage int) (*model.MeasurementsPagination, error) {
+	measurements, err := r.gnssSevice.ListMeasurements(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("gnssSevice.ListMeasurements: %w", err)
+	}
+
+	return &model.MeasurementsPagination{Items: measurements}, nil
+}
+
 // GnssMutations returns generated.GnssMutationsResolver implementation.
 func (r *Resolver) GnssMutations() generated.GnssMutationsResolver { return &gnssMutationsResolver{r} }
 
