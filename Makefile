@@ -1,3 +1,5 @@
+KEEP_IMAGES = nginx postgres redis
+
 .generate-graphql:
 	go run github.com/99designs/gqlgen generate
 
@@ -11,9 +13,17 @@ up:
 	docker compose up
 
 docker-clear:
+	@echo "Остановка всех запущенных контейнеров..."
 	docker stop $(docker ps -aq)
+
+	@echo "Удаление всех контейнеров..."
 	docker rm $(docker ps -aq)
+
+	@echo "Удаление всех томов..."
 	docker volume rm $(docker volume ls -q)
+
+	@echo "Удаление всех Docker-образов, кроме: $(KEEP_IMAGES)"
+	docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep -v -e 'nginx' -e 'postgres' -e 'redis' | awk '{print $2}' | xargs -r docker rmi
 
 run-main:
 	go run cmd/gnss-radar/main.go

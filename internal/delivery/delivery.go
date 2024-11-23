@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/Gokert/gnss-radar/internal/pkg/middleware"
 	"log"
 	"net"
 	"net/http"
@@ -15,7 +16,6 @@ import (
 	graph "github.com/Gokert/gnss-radar/internal/delivery/graphql"
 	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
-	"github.com/Gokert/gnss-radar/internal/pkg/utils"
 	"github.com/Gokert/gnss-radar/internal/service"
 	grpc_go "google.golang.org/grpc"
 )
@@ -54,11 +54,7 @@ func (a *App) Run(port string) error {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(a.config))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), utils.ResponseWriterKey, w)
-		ctx = context.WithValue(ctx, utils.RequestKey, r)
-		srv.ServeHTTP(w, r.WithContext(ctx))
-	}))
+	http.Handle("/query", middleware.CallMiddlewares(middleware.Middlewares...)(srv))
 
 	log.Printf("The graphql application is running on %s", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
