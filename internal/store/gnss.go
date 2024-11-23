@@ -444,7 +444,7 @@ func (g *GnssStore) addHardwareMeasurement(ctx context.Context, desc model.Descr
 	return nil
 }
 
-func (g *GnssStore) CompareDeviceTokens(ctx context.Context, token string) error {
+func (g *GnssStore) CompareDeviceToken(ctx context.Context, token string) error {
 	return nil
 }
 
