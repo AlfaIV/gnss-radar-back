@@ -18,7 +18,6 @@ type CoordsResults {
     z: String!
 }
 
-
 type Header {
     rinex_version: String!
     file_type: String!

@@ -72,6 +72,19 @@ type ComplexityRoot struct {
 		Task func(childComplexity int) int
 	}
 
+	DataPower struct {
+		Power     func(childComplexity int) int
+		StartTime func(childComplexity int) int
+		TimeStep  func(childComplexity int) int
+	}
+
+	DataSpectrum struct {
+		FreqStep  func(childComplexity int) int
+		Spectrum  func(childComplexity int) int
+		StartFreq func(childComplexity int) int
+		StartTime func(childComplexity int) int
+	}
+
 	DeleteDeviceOutput struct {
 		Empty func(childComplexity int) int
 	}
@@ -138,6 +151,21 @@ type ComplexityRoot struct {
 		Empty func(childComplexity int) int
 	}
 
+	Measurement struct {
+		DataPower    func(childComplexity int) int
+		DataSpectrum func(childComplexity int) int
+		EndTime      func(childComplexity int) int
+		Group        func(childComplexity int) int
+		SignalType   func(childComplexity int) int
+		StartTime    func(childComplexity int) int
+		Target       func(childComplexity int) int
+		Token        func(childComplexity int) int
+	}
+
+	MeasurementsPagination struct {
+		Items func(childComplexity int) int
+	}
+
 	Mutation struct {
 		Authorization func(childComplexity int) int
 		Gnss          func(childComplexity int) int
@@ -154,6 +182,7 @@ type ComplexityRoot struct {
 		Errors             func(childComplexity int) int
 		ListDevice         func(childComplexity int, filter model.DeviceFilter, page int, perPage int) int
 		ListGnss           func(childComplexity int, filter model.GNSSFilter, page int, perPage int) int
+		ListMeasurements   func(childComplexity int, filter model.MeasurementsFilter, page int, perPage int) int
 		ListSatellites     func(childComplexity int, filter model.SatellitesFilter, page int, perPage int) int
 		ListTask           func(childComplexity int, filter model.TaskFilter, page int, perPage int) int
 		Rinexlist          func(childComplexity int, input *model.RinexInput, page int, perPage int) int
@@ -332,6 +361,55 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CreateTaskOutput.Task(childComplexity), true
+
+	case "DataPower.power":
+		if e.complexity.DataPower.Power == nil {
+			break
+		}
+
+		return e.complexity.DataPower.Power(childComplexity), true
+
+	case "DataPower.startTime":
+		if e.complexity.DataPower.StartTime == nil {
+			break
+		}
+
+		return e.complexity.DataPower.StartTime(childComplexity), true
+
+	case "DataPower.timeStep":
+		if e.complexity.DataPower.TimeStep == nil {
+			break
+		}
+
+		return e.complexity.DataPower.TimeStep(childComplexity), true
+
+	case "DataSpectrum.FreqStep":
+		if e.complexity.DataSpectrum.FreqStep == nil {
+			break
+		}
+
+		return e.complexity.DataSpectrum.FreqStep(childComplexity), true
+
+	case "DataSpectrum.spectrum":
+		if e.complexity.DataSpectrum.Spectrum == nil {
+			break
+		}
+
+		return e.complexity.DataSpectrum.Spectrum(childComplexity), true
+
+	case "DataSpectrum.StartFreq":
+		if e.complexity.DataSpectrum.StartFreq == nil {
+			break
+		}
+
+		return e.complexity.DataSpectrum.StartFreq(childComplexity), true
+
+	case "DataSpectrum.startTime":
+		if e.complexity.DataSpectrum.StartTime == nil {
+			break
+		}
+
+		return e.complexity.DataSpectrum.StartTime(childComplexity), true
 
 	case "DeleteDeviceOutput._empty":
 		if e.complexity.DeleteDeviceOutput.Empty == nil {
@@ -641,6 +719,69 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.LogoutOutput.Empty(childComplexity), true
 
+	case "Measurement.dataPower":
+		if e.complexity.Measurement.DataPower == nil {
+			break
+		}
+
+		return e.complexity.Measurement.DataPower(childComplexity), true
+
+	case "Measurement.dataSpectrum":
+		if e.complexity.Measurement.DataSpectrum == nil {
+			break
+		}
+
+		return e.complexity.Measurement.DataSpectrum(childComplexity), true
+
+	case "Measurement.endTime":
+		if e.complexity.Measurement.EndTime == nil {
+			break
+		}
+
+		return e.complexity.Measurement.EndTime(childComplexity), true
+
+	case "Measurement.group":
+		if e.complexity.Measurement.Group == nil {
+			break
+		}
+
+		return e.complexity.Measurement.Group(childComplexity), true
+
+	case "Measurement.signalType":
+		if e.complexity.Measurement.SignalType == nil {
+			break
+		}
+
+		return e.complexity.Measurement.SignalType(childComplexity), true
+
+	case "Measurement.startTime":
+		if e.complexity.Measurement.StartTime == nil {
+			break
+		}
+
+		return e.complexity.Measurement.StartTime(childComplexity), true
+
+	case "Measurement.target":
+		if e.complexity.Measurement.Target == nil {
+			break
+		}
+
+		return e.complexity.Measurement.Target(childComplexity), true
+
+	case "Measurement.token":
+		if e.complexity.Measurement.Token == nil {
+			break
+		}
+
+		return e.complexity.Measurement.Token(childComplexity), true
+
+	case "MeasurementsPagination.items":
+		if e.complexity.MeasurementsPagination.Items == nil {
+			break
+		}
+
+		return e.complexity.MeasurementsPagination.Items(childComplexity), true
+
 	case "Mutation.authorization":
 		if e.complexity.Mutation.Authorization == nil {
 			break
@@ -718,6 +859,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.ListGnss(childComplexity, args["filter"].(model.GNSSFilter), args["page"].(int), args["perPage"].(int)), true
+
+	case "Query.listMeasurements":
+		if e.complexity.Query.ListMeasurements == nil {
+			break
+		}
+
+		args, err := ec.field_Query_listMeasurements_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ListMeasurements(childComplexity, args["filter"].(model.MeasurementsFilter), args["page"].(int), args["perPage"].(int)), true
 
 	case "Query.listSatellites":
 		if e.complexity.Query.ListSatellites == nil {
@@ -983,6 +1136,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputDeviceFilter,
 		ec.unmarshalInputGNSSFilter,
 		ec.unmarshalInputLogoutInput,
+		ec.unmarshalInputMeasurementsFilter,
 		ec.unmarshalInputRinexInput,
 		ec.unmarshalInputSatellitesFilter,
 		ec.unmarshalInputSigninInput,
@@ -1362,6 +1516,22 @@ type AuthcheckOutput {
     Rinexlist(input: RinexInput,  page: Int! = 0, perPage: Int! = 10): RinexPagination!
     """ Получить список спутников """
     listSatellites(filter: SatellitesFilter!, page: Int! = 0, perPage: Int! = 10): SatellitesPagination!
+    listMeasurements(filter: MeasurementsFilter!, page: Int! = 0, perPage: Int! = 10): MeasurementsPagination!
+}
+
+input MeasurementsFilter {
+    """ Токен для аутентификации """
+    token: String
+    """ Фильтр по сигналу """
+    signal: String
+    """ Фильтр по группе """
+    group: String
+    """ Фильтр по таргету """
+    target: String
+    """ Старт по времени """
+    startAt: Time
+    """ Конец по времени """
+    endAt: Time
 }
 
 input RinexInput {
@@ -1384,6 +1554,11 @@ input GNSSFilter {
 type GNSSPagination {
     """ Загруженные элементы """
     items: [GNSS!]
+}
+
+type MeasurementsPagination {
+    """ Загруженные элементы """
+    items: [Measurement!]
 }
 
 """ Фильтр устройств """
@@ -1510,7 +1685,6 @@ type CoordsResults {
     z: String!
 }
 
-
 type Header {
     rinex_version: String!
     file_type: String!
@@ -1575,6 +1749,45 @@ type RinexResults {
     endAt: Time!
     """ Время создания """
     CreatedAt: Time!
+}
+
+type Measurement {
+    """ Уникальный идентификатор измерения """
+    token: String!
+    """ Время начала измерения """
+    startTime: Time!
+    """ Время окончания измерения """
+    endTime: Time!
+    """ Группа, к которой относится измерение """
+    group: String!
+    """ Тип сигнала, измеряемый в данном измерении """
+    signalType: String!
+    """ Цель измерения """
+    target: String!
+    """ Данные спектра измерения """
+    dataSpectrum: DataSpectrum
+    """ Данные мощности измерения """
+    dataPower: DataPower
+}
+
+type DataSpectrum {
+    """ Массив значений спектра """
+    spectrum: [Float!]!
+    """ Начальная частота спектра """
+    StartFreq: Float!
+    """ Шаг частоты спектра """
+    FreqStep: Float!
+    """ Время начала спектра """
+    startTime: Time!
+}
+
+type DataPower {
+    """ Массив значений мощности """
+    power: [Float!]!
+    """ Время начала измерения мощности """
+    startTime: Time!
+    """ Шаг времени между измерениями мощности """
+    timeStep: Time!
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/user.graphql", Input: `""" Информация о юзере """
 type User {
