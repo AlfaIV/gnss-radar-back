@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS hardware_measurements (
 
 DROP TABLE IF EXISTS measurements_power CASCADE;
 CREATE TABLE IF NOT EXISTS measurements_power (
-                                                    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     power FLOAT[] NOT NULL,
     started_at timestamptz NOT NULL,
     time_step timestamptz NOT NULL
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS measurements_power (
 
 DROP TABLE IF EXISTS measurements_spectrum CASCADE;
 CREATE TABLE IF NOT EXISTS measurements_spectrum (
-                                                      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     spectrum FLOAT[] NOT NULL,
     start_freq FLOAT NOT NULL,
     freq_step FLOAT NOT NULL,

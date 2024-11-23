@@ -173,13 +173,14 @@ func (r *queryResolver) ListDevice(ctx context.Context, filter model.DeviceFilte
 
 // ListTask is the resolver for the listTask field.
 func (r *queryResolver) ListTask(ctx context.Context, filter model.TaskFilter, page int, perPage int) (*model.TaskPagination, error) {
-	tasks, err := r.gnssSevice.ListTasks(ctx, store.ListTasksFilter{
-		Ids:          filter.Ids,
-		SatelliteIds: filter.SatelliteIds,
-		SignalType:   filter.SignalType,
-		GroupingType: filter.GroupingType,
-		StartAt:      filter.StartAt,
-		EndAt:        filter.EndAt,
+	tasks, err := r.gnssSevice.ListTasks(ctx, service.ListTasksFilter{
+		Ids:           filter.Ids,
+		SatelliteIds:  filter.SatelliteIds,
+		SatelliteName: filter.SatelliteName,
+		SignalType:    filter.SignalType,
+		GroupingType:  filter.GroupingType,
+		StartAt:       filter.StartAt,
+		EndAt:         filter.EndAt,
 		Paginator: model.Paginator{
 			Page:    uint64(page),
 			PerPage: uint64(perPage),

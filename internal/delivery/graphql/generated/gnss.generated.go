@@ -436,6 +436,8 @@ func (ec *executionContext) fieldContext_CreateTaskOutput_task(_ context.Context
 				return ec.fieldContext_Task_description(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
+			case "satelliteName":
+				return ec.fieldContext_Task_satelliteName(ctx, field)
 			case "signalType":
 				return ec.fieldContext_Task_signalType(ctx, field)
 			case "groupingType":
@@ -2545,6 +2547,8 @@ func (ec *executionContext) fieldContext_TaskPagination_items(_ context.Context,
 				return ec.fieldContext_Task_description(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
+			case "satelliteName":
+				return ec.fieldContext_Task_satelliteName(ctx, field)
 			case "signalType":
 				return ec.fieldContext_Task_signalType(ctx, field)
 			case "groupingType":
@@ -2667,6 +2671,8 @@ func (ec *executionContext) fieldContext_UpdateTaskOutput_task(_ context.Context
 				return ec.fieldContext_Task_description(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
+			case "satelliteName":
+				return ec.fieldContext_Task_satelliteName(ctx, field)
 			case "signalType":
 				return ec.fieldContext_Task_signalType(ctx, field)
 			case "groupingType":

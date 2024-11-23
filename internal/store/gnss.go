@@ -255,13 +255,14 @@ func (g *GnssStore) UpdateTask(ctx context.Context, params UpdateTaskParams) (*m
 }
 
 type ListTasksFilter struct {
-	Ids          []string
-	SatelliteIds []string
-	SignalType   []model.SignalType
-	GroupingType []model.GroupingType
-	StartAt      *time.Time
-	EndAt        *time.Time
-	Paginator    model.Paginator
+	Ids           []string
+	SatelliteIds  []string
+	SatelliteName []string
+	SignalType    []model.SignalType
+	GroupingType  []model.GroupingType
+	StartAt       *time.Time
+	EndAt         *time.Time
+	Paginator     model.Paginator
 }
 
 func (g *GnssStore) ListTask(ctx context.Context, filter ListTasksFilter) ([]*model.Task, error) {

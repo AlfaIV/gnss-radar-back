@@ -9,9 +9,11 @@ extend type Query {
     Rinexlist(input: RinexInput,  page: Int! = 0, perPage: Int! = 10): RinexPagination!
     """ Получить список спутников """
     listSatellites(filter: SatellitesFilter!, page: Int! = 0, perPage: Int! = 10): SatellitesPagination!
+    """ Получить список измерений """
     listMeasurements(filter: MeasurementsFilter!, page: Int! = 0, perPage: Int! = 10): MeasurementsPagination!
 }
 
+""" Фильтр измерений """
 input MeasurementsFilter {
     """ Токен для аутентификации """
     token: String
@@ -49,6 +51,7 @@ type GNSSPagination {
     items: [GNSS!]
 }
 
+""" Выходные параметры для gnss измерений """
 type MeasurementsPagination {
     """ Загруженные элементы """
     items: [Measurement!]
