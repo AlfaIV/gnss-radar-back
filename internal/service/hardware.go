@@ -11,6 +11,7 @@ import (
 type IHardware interface {
 	AddSpectrum(ctx context.Context, spectrumReq model.SpectrumRequest) error
 	AddPower(ctx context.Context, powerReq model.PowerRequest) error
+	CompareDeviceToken(ctx context.Context, deviceToken string) error
 }
 
 type Hardware struct {
@@ -35,6 +36,14 @@ func (h *Hardware) AddPower(ctx context.Context, powerReq model.PowerRequest) er
 	fmt.Println(powerReq, err)
 	if err != nil {
 		return fmt.Errorf("h.store.AddPower: %w", err)
+	}
+	return nil
+}
+
+func (h *Hardware) CompareDeviceToken(ctx context.Context, deviceToken string) error {
+	err := h.store.CompareDeviceToken(ctx, deviceToken)
+	if err != nil {
+		return fmt.Errorf("h.store.CompareDeviceToken: %w", err)
 	}
 	return nil
 }
