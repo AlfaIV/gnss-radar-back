@@ -131,6 +131,28 @@ func (a *App) AddPower(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (a *App) AddPairMeasurement(w http.ResponseWriter, r *http.Request) {
+	var req model.PairMeasurementRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := a.hardwareService.CompareDeviceToken(r.Context(), req.Token)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = a.hardwareService.AddPairMeasurement(r.Context(), req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
 func (s *GnssGrpc) ListenAndServeGrpc(network, port string) error {
 	listen, err := net.Listen(network, ":"+port)
 	if err != nil {

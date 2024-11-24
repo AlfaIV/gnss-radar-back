@@ -34,3 +34,10 @@ type PowerRequest struct {
 	Description Description `json:"description"`
 	Data        PowerData   `json:"data"`
 }
+
+type PairMeasurementRequest struct {
+	Token       string       `json:"token"`
+	Description Description  `json:"description"`
+	Spectrum    SpectrumData `json:"spectrum"`
+	Power       PowerData    `json:"power"`
+}
