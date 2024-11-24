@@ -170,7 +170,8 @@ func (g *GnssStore) UpdateDevice(ctx context.Context, params UpdateDeviceParams)
 }
 
 type CreateTaskParams struct {
-	SatelliteID  string
+	SatelliteId  string
+	DeviceId     string
 	Title        string
 	Description  *string
 	SignalType   model.SignalType
@@ -183,7 +184,8 @@ func (g *GnssStore) CreateTask(ctx context.Context, params CreateTaskParams) (*m
 	query := g.storage.Builder().
 		Insert(taskTable).
 		SetMap(map[string]any{
-			"satellite_id":  params.SatelliteID,
+			"satellite_id":  params.SatelliteId,
+			"device_id":     params.DeviceId,
 			"title":         params.Title,
 			"description":   params.Description,
 			"signal_type":   params.SignalType,
@@ -191,7 +193,7 @@ func (g *GnssStore) CreateTask(ctx context.Context, params CreateTaskParams) (*m
 			"start_at":      params.StartAt,
 			"end_at":        params.EndAt,
 		}).
-		Suffix("RETURNING id, title, description, satellite_id, signal_type, grouping_type, start_at, end_at, created_at")
+		Suffix("RETURNING id, title, description, satellite_id, device_id, signal_type, grouping_type, start_at, end_at, created_at")
 
 	var task model.Task
 	if err := g.storage.db.Getx(ctx, &task, query); err != nil {
@@ -256,19 +258,19 @@ func (g *GnssStore) UpdateTask(ctx context.Context, params UpdateTaskParams) (*m
 }
 
 type ListTasksFilter struct {
-	Ids           []string
-	SatelliteIds  []string
-	SatelliteName []string
-	SignalType    []model.SignalType
-	GroupingType  []model.GroupingType
-	StartAt       *time.Time
-	EndAt         *time.Time
-	Paginator     model.Paginator
+	Ids          []string
+	SatelliteIds []string
+	DeviceId     []string
+	SignalType   []model.SignalType
+	GroupingType []model.GroupingType
+	StartAt      *time.Time
+	EndAt        *time.Time
+	Paginator    model.Paginator
 }
 
 func (g *GnssStore) ListTask(ctx context.Context, filter ListTasksFilter) ([]*model.Task, error) {
 	query := g.storage.Builder().
-		Select("id, title, description, satellite_id, signal_type, grouping_type, start_at, end_at, created_at").
+		Select("id, title, description, satellite_id, device_id, signal_type, grouping_type, start_at, end_at, created_at").
 		From(taskTable)
 
 	if len(filter.Ids) > 0 {
@@ -276,6 +278,9 @@ func (g *GnssStore) ListTask(ctx context.Context, filter ListTasksFilter) ([]*mo
 	}
 	if len(filter.SatelliteIds) > 0 {
 		query = query.Where(sq.Eq{"satellite_id": filter.SatelliteIds})
+	}
+	if len(filter.DeviceId) > 0 {
+		query = query.Where(sq.Eq{"device_id": filter.DeviceId})
 	}
 	if len(filter.SignalType) > 0 {
 		query = query.Where(sq.Eq{"signal_type": filter.SignalType})

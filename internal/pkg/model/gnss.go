@@ -33,6 +33,7 @@ type Task struct {
 	Title        string       `db:"title"`
 	Description  *string      `db:"description"`
 	SatelliteID  string       `db:"satellite_id"`
+	DeviceID     string       `db:"device_id"`
 	SignalType   SignalType   `db:"signal_type"`
 	GroupingType GroupingType `db:"grouping_type"`
 	StartAt      time.Time    `db:"start_at"`

@@ -226,6 +226,7 @@ type ComplexityRoot struct {
 	Task struct {
 		CreatedAt     func(childComplexity int) int
 		Description   func(childComplexity int) int
+		DeviceID      func(childComplexity int) int
 		EndAt         func(childComplexity int) int
 		GroupingType  func(childComplexity int) int
 		ID            func(childComplexity int) int
@@ -1015,6 +1016,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Task.Description(childComplexity), true
 
+	case "Task.deviceId":
+		if e.complexity.Task.DeviceID == nil {
+			break
+		}
+
+		return e.complexity.Task.DeviceID(childComplexity), true
+
 	case "Task.endAt":
 		if e.complexity.Task.EndAt == nil {
 			break
@@ -1372,7 +1380,7 @@ type GnssMutations {
     """ Создать задачу """
     createTask(input: CreateTaskInput!): CreateTaskOutput! @goField(forceResolver: true)
     """ Обновить задачу """
-    updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true) @deprecated(reason: "ломает логику, возможно исправим")
+    updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true) @deprecated(reason: "ломает логику, возможно исправим или удалим")
     """ Удалить задачу """
     deleteTask(input: DeleteTaskInput!): DeleteTaskOutput! @goField(forceResolver: true)
     """ Создать спутник """
@@ -1421,6 +1429,8 @@ input CreateTaskInput {
     description: String
     """ Индентификатор спутника """
     satelliteId: String!
+    """ Индентификатор девайса """
+    deviceId: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
@@ -1754,6 +1764,8 @@ type Task {
     satelliteId: String!
     """ Имя спутника """
     satelliteName: String!
+    """ id девайса """
+    deviceId: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """

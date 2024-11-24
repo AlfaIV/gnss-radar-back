@@ -10,6 +10,8 @@ type Task {
     satelliteId: String!
     """ Имя спутника """
     satelliteName: String!
+    """ id девайса """
+    deviceId: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """

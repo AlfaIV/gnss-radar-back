@@ -87,6 +87,8 @@ type CreateTaskInput struct {
 	Description *string `json:"description,omitempty"`
 	//  Индентификатор спутника
 	SatelliteID string `json:"satelliteId"`
+	//  Индентификатор девайса
+	DeviceID string `json:"deviceId"`
 	//  Тип сигнала
 	SignalType SignalType `json:"signalType"`
 	//  Тип группировки

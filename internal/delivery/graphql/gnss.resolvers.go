@@ -65,7 +65,8 @@ func (r *gnssMutationsResolver) DeleteDevice(ctx context.Context, obj *model.Gns
 // CreateTask is the resolver for the createTask field.
 func (r *gnssMutationsResolver) CreateTask(ctx context.Context, obj *model.GnssMutations, input model.CreateTaskInput) (*model.CreateTaskOutput, error) {
 	task, err := r.gnssSevice.CreateTask(ctx, store.CreateTaskParams{
-		SatelliteID:  input.SatelliteID,
+		SatelliteId:  input.SatelliteID,
+		DeviceId:     input.DeviceID,
 		Title:        input.Title,
 		Description:  input.Description,
 		SignalType:   input.SignalType,

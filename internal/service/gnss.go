@@ -180,12 +180,20 @@ func (g *GnssService) RinexList(ctx context.Context, req RinexRequest) ([]*model
 }
 
 func (g *GnssService) CreateTask(ctx context.Context, params store.CreateTaskParams) (*model.Task, error) {
-	satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{Ids: []string{params.SatelliteID}})
+	satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{Ids: []string{params.SatelliteId}})
 	if err != nil {
 		return nil, fmt.Errorf("gnssStore.ListSatellites: %w", err)
 	}
 	if len(satellites) == 0 {
-		return nil, fmt.Errorf("satellites with id = %s not found", params.SatelliteID)
+		return nil, fmt.Errorf("satellites with id = %s not found", params.SatelliteId)
+	}
+
+	devices, err := g.gnssStore.ListDevice(ctx, store.ListDeviceFilter{Ids: []string{params.DeviceId}})
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.ListDevice: %w", err)
+	}
+	if len(devices) == 0 {
+		return nil, fmt.Errorf("devices with id = %s not found", params.DeviceId)
 	}
 
 	task, err := g.gnssStore.CreateTask(ctx, params)
@@ -234,7 +242,7 @@ type ListTasksFilter struct {
 }
 
 func (g *GnssService) ListTasks(ctx context.Context, filter ListTasksFilter) ([]*model.Task, error) {
-	var satelliteName []string
+	var satelliteIds []string
 
 	if len(filter.SatelliteName) > 0 {
 		satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{
@@ -248,20 +256,19 @@ func (g *GnssService) ListTasks(ctx context.Context, filter ListTasksFilter) ([]
 			return []*model.Task{}, nil
 		}
 
-		satelliteName = lo.Map(satellites, func(satellite *model.SatelliteInfo, _ int) string {
-			return satellite.SatelliteName
+		satelliteIds = lo.Map(satellites, func(satellite *model.SatelliteInfo, _ int) string {
+			return satellite.ID
 		})
 	}
 
 	tasks, err := g.gnssStore.ListTask(ctx, store.ListTasksFilter{
-		Ids:           filter.Ids,
-		SatelliteIds:  filter.SatelliteIds,
-		SatelliteName: satelliteName,
-		SignalType:    filter.SignalType,
-		GroupingType:  filter.GroupingType,
-		StartAt:       filter.StartAt,
-		EndAt:         filter.EndAt,
-		Paginator:     filter.Paginator,
+		Ids:          append(satelliteIds, filter.Ids...),
+		SatelliteIds: filter.SatelliteIds,
+		SignalType:   filter.SignalType,
+		GroupingType: filter.GroupingType,
+		StartAt:      filter.StartAt,
+		EndAt:        filter.EndAt,
+		Paginator:    filter.Paginator,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("gnssStore.ListTask: %w", err)
