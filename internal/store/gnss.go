@@ -573,6 +573,7 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 		return nil, postgresError(err)
 	}
 
+	fmt.Println(hardwareMeasurements)
 	var measurements []*model.Measurement
 
 	for _, hm := range hardwareMeasurements {
