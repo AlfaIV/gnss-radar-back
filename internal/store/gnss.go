@@ -559,15 +559,15 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 	}
 
 	var hardwareMeasurements []struct {
-		Id                    string    `db:"id"`
-		Token                 string    `db:"token"`
-		StartAt               time.Time `db:"start_at"`
-		EndAt                 time.Time `db:"end_at"`
-		GroupType             string    `db:"group_type"`
-		Signal                string    `db:"signal"`
-		SatelliteName         string    `db:"satellite_name"`
-		MeasurementPowerID    string    `db:"measurement_power_id"`
-		MeasurementSpectrumID string    `db:"measurement_spectrum_id"`
+		Id            string    `db:"id"`
+		Token         string    `db:"token"`
+		StartAt       time.Time `db:"start_at"`
+		EndAt         time.Time `db:"end_at"`
+		GroupType     string    `db:"group_type"`
+		Signal        string    `db:"signal"`
+		SatelliteName string    `db:"satellite_name"`
+		// MeasurementPowerID    string    `db:"measurement_power_id"`
+		MeasurementSpectrumID string `db:"measurement_spectrum_id"`
 	}
 	if err := g.storage.db.Selectx(ctx, &hardwareMeasurements, query); err != nil {
 		fmt.Println(hardwareMeasurements)
