@@ -559,18 +559,17 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 	}
 
 	var hardwareMeasurements []struct {
-		Id            string    `db:"id"`
-		Token         string    `db:"token"`
-		StartAt       time.Time `db:"start_at"`
-		EndAt         time.Time `db:"end_at"`
-		GroupType     string    `db:"group_type"`
-		Signal        string    `db:"signal"`
-		SatelliteName string    `db:"satellite_name"`
-		// MeasurementPowerID    string    `db:"measurement_power_id"`
-		MeasurementSpectrumID string `db:"measurement_spectrum_id"`
+		Id                    string    `db:"id"`
+		Token                 string    `db:"token"`
+		StartAt               time.Time `db:"start_at"`
+		EndAt                 time.Time `db:"end_at"`
+		GroupType             string    `db:"group_type"`
+		Signal                string    `db:"signal"`
+		SatelliteName         string    `db:"satellite_name"`
+		MeasurementPowerID    string    `db:"measurement_power_id"`
+		MeasurementSpectrumID string    `db:"measurement_spectrum_id"`
 	}
 	if err := g.storage.db.Selectx(ctx, &hardwareMeasurements, query); err != nil {
-		fmt.Println(hardwareMeasurements)
 		return nil, postgresError(err)
 	}
 
@@ -586,24 +585,24 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 		measurement.SignalType = hm.Signal
 		measurement.Target = hm.SatelliteName
 
-		// var powerDataDb struct {
-		// 	Power     []float64 `db:"power"`
-		// 	StartTime time.Time `db:"started_at"`
-		// 	TimeStep  time.Time `db:"time_step"`
-		// }
-		// err := g.storage.db.Getx(ctx, &powerDataDb, g.storage.Builder().
-		// 	Select("power", "started_at", "time_step").
-		// 	From("measurements_power").
-		// 	Where(sq.Eq{"id": hm.MeasurementPowerID}))
-		// if err == nil {
-		// 	measurement.DataPower = &model.DataPower{
-		// 		Power:     powerDataDb.Power,
-		// 		StartTime: powerDataDb.StartTime,
-		// 		TimeStep:  powerDataDb.TimeStep,
-		// 	}
-		// } else if !(strings.Contains(err.Error(), pgx.ErrNoRows.Error()) || errors.Is(err, pgx.ErrNoRows)) {
-		// 	return nil, postgresError(err)
-		// }
+		var powerDataDb struct {
+			Power     []float64 `db:"power"`
+			StartTime time.Time `db:"started_at"`
+			TimeStep  time.Time `db:"time_step"`
+		}
+		err := g.storage.db.Getx(ctx, &powerDataDb, g.storage.Builder().
+			Select("power", "started_at", "time_step").
+			From("measurements_power").
+			Where(sq.Eq{"id": hm.MeasurementPowerID}))
+		if err == nil {
+			measurement.DataPower = &model.DataPower{
+				Power:     powerDataDb.Power,
+				StartTime: powerDataDb.StartTime,
+				TimeStep:  powerDataDb.TimeStep,
+			}
+		} else if !(strings.Contains(err.Error(), pgx.ErrNoRows.Error()) || errors.Is(err, pgx.ErrNoRows)) {
+			return nil, postgresError(err)
+		}
 
 		var spectrumDataDb struct {
 			Spectrum  []float64 `db:"spectrum"`
@@ -611,7 +610,7 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 			FreqStep  float64   `db:"freq_step"`
 			StartedAt time.Time `db:"started_at"`
 		}
-		err := g.storage.db.Getx(ctx, &spectrumDataDb, g.storage.Builder().
+		err = g.storage.db.Getx(ctx, &spectrumDataDb, g.storage.Builder().
 			Select("spectrum", "start_freq", "freq_step", "started_at").
 			From("measurements_spectrum").
 			Where(sq.Eq{"id": hm.MeasurementSpectrumID}))

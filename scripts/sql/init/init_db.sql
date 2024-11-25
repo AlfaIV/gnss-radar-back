@@ -63,8 +63,8 @@ CREATE TABLE IF NOT EXISTS hardware_measurements (
     group_type TEXT NOT NULL, 
     signal TEXT NOT NULL,
     satellite_name TEXT NOT NULL,
-    measurement_power_id UUID,
-    measurement_spectrum_id UUID,
+    measurement_power_id UUID DEFAULT "",
+    measurement_spectrum_id UUID DEFAULT "",
     created_at timestamptz NOT NULL DEFAULT now()
 );
 
