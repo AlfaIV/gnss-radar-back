@@ -570,10 +570,10 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 		MeasurementSpectrumID string    `db:"measurement_spectrum_id"`
 	}
 	if err := g.storage.db.Selectx(ctx, &hardwareMeasurements, query); err != nil {
+		fmt.Println(hardwareMeasurements)
 		return nil, postgresError(err)
 	}
 
-	fmt.Println(hardwareMeasurements)
 	var measurements []*model.Measurement
 
 	for _, hm := range hardwareMeasurements {
