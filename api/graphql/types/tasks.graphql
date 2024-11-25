@@ -1,3 +1,4 @@
+""" Задача """
 type Task {
     """ Индетификатор """
     id: String!
@@ -7,6 +8,10 @@ type Task {
     description: String
     """ Id спутника """
     satelliteId: String!
+    """ Имя спутника """
+    satelliteName: String!
+    """ id девайса """
+    deviceId: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
@@ -19,6 +24,7 @@ type Task {
     CreatedAt: Time!
 }
 
+""" Измерение """
 type Measurement {
     """ Уникальный идентификатор измерения """
     id: String!
@@ -40,6 +46,7 @@ type Measurement {
     dataPower: DataPower
 }
 
+""" Данные спектра """
 type DataSpectrum {
     """ Массив значений спектра """
     spectrum: [Float!]!
@@ -51,6 +58,7 @@ type DataSpectrum {
     startTime: Time!
 }
 
+""" Мощность """
 type DataPower {
     """ Массив значений мощности """
     power: [Float!]!

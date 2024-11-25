@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     title TEXT NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     satellite_id TEXT NOT NULL,
+    device_id TEXT NOT NULL,
     signal_type TEXT NOT NULL,
     grouping_type TEXT NOT NULL,
     start_at timestamptz NOT NULL,
@@ -55,7 +56,7 @@ CREATE TABLE IF NOT EXISTS tasks (
 
 DROP TABLE IF EXISTS hardware_measurements CASCADE;
 CREATE TABLE IF NOT EXISTS hardware_measurements (
-                                                       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     token TEXT NOT NULL,
     start_at timestamptz NOT NULL,
     end_at timestamptz NOT NULL,
@@ -69,7 +70,7 @@ CREATE TABLE IF NOT EXISTS hardware_measurements (
 
 DROP TABLE IF EXISTS measurements_power CASCADE;
 CREATE TABLE IF NOT EXISTS measurements_power (
-                                                    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     power FLOAT[] NOT NULL,
     started_at timestamptz NOT NULL,
     time_step timestamptz NOT NULL
@@ -77,13 +78,15 @@ CREATE TABLE IF NOT EXISTS measurements_power (
 
 DROP TABLE IF EXISTS measurements_spectrum CASCADE;
 CREATE TABLE IF NOT EXISTS measurements_spectrum (
-                                                      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     spectrum FLOAT[] NOT NULL,
     start_freq FLOAT NOT NULL,
     freq_step FLOAT NOT NULL,
     started_at timestamptz NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now()
-);                                        
+);
+
+CREATE UNIQUE INDEX tas_device_id_start_end_satellite_id_signal_type ON tasks (device_id, satellite_id, signal_type, start_at, end_at);
 
 INSERT INTO profile(login, password, role) VALUES ('admin', '\xc7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', 'admin');
 
@@ -108,7 +111,7 @@ INSERT INTO devices (name, token, description, x, y, z) VALUES
                                                             ('device2', uuid_generate_v4(), 'desc2', 15.0, 25.0, 35.0),
                                                             ('device3', uuid_generate_v4(), 'desc3', 20.0, 30.0, 40.0);
 
-INSERT INTO tasks (satellite_id, title, description, signal_type, grouping_type, start_at, end_at) VALUES
-                                                   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC06'), 'Задание 1', 'Описание 1', 'SIGNAL_TYPE_L1', 'GROUPING_TYPE_GPS', now(), now() + interval '2 days'),
-                                                   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC07'), 'Задание 2', 'Описание 2', 'SIGNAL_TYPE_L2', 'GROUPING_TYPE_GLONASS', now(), now() + interval '3 days'),
-                                                   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC08'), 'Задание 3', '', 'SIGNAL_TYPE_L3', 'GROUPING_TYPE_GLONASS', now(), now() + interval '4 days');
+INSERT INTO tasks (satellite_id, device_id, title, description, signal_type, grouping_type, start_at, end_at) VALUES
+                                                   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC06'), (SELECT id FROM devices WHERE name = 'device1'), 'Задание 1', 'Описание 1', 'SIGNAL_TYPE_L1', 'GROUPING_TYPE_GPS', now(), now() + interval '2 days'),
+                                                   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC07'), (SELECT id FROM devices WHERE name = 'device2'), 'Задание 2', 'Описание 2', 'SIGNAL_TYPE_L2', 'GROUPING_TYPE_GLONASS', now(), now() + interval '3 days'),
+                                                   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC08'), (SELECT id FROM devices WHERE name = 'device3'), 'Задание 3', '', 'SIGNAL_TYPE_L3', 'GROUPING_TYPE_GLONASS', now(), now() + interval '4 days');

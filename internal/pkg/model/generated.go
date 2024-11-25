@@ -87,6 +87,8 @@ type CreateTaskInput struct {
 	Description *string `json:"description,omitempty"`
 	//  Индентификатор спутника
 	SatelliteID string `json:"satelliteId"`
+	//  Индентификатор девайса
+	DeviceID string `json:"deviceId"`
 	//  Тип сигнала
 	SignalType SignalType `json:"signalType"`
 	//  Тип группировки
@@ -102,6 +104,7 @@ type CreateTaskOutput struct {
 	Task *Task `json:"task"`
 }
 
+// Мощность
 type DataPower struct {
 	//  Массив значений мощности
 	Power []float64 `json:"power"`
@@ -111,6 +114,7 @@ type DataPower struct {
 	TimeStep time.Time `json:"timeStep"`
 }
 
+// Данные спектра
 type DataSpectrum struct {
 	//  Массив значений спектра
 	Spectrum []float64 `json:"spectrum"`
@@ -149,11 +153,11 @@ type DeleteTaskOutput struct {
 // Фильтр устройств
 type DeviceFilter struct {
 	//  Индетификатор
-	Ids []string `json:"Ids,omitempty"`
+	Ids []string `json:"ids,omitempty"`
 	//  Название девайса
-	Names []string `json:"Names,omitempty"`
+	Names []string `json:"names,omitempty"`
 	//  Токен
-	Tokens []string `json:"Tokens,omitempty"`
+	Tokens []string `json:"tokens,omitempty"`
 }
 
 // Выходные параметры для устройств
@@ -176,7 +180,7 @@ type Gnss struct {
 // Фильтр gnss координат
 type GNSSFilter struct {
 	//  Фильтр по индетификаторам
-	Coordinates *CoordsInput `json:"Coordinates"`
+	Coordinates *CoordsInput `json:"coordinates"`
 }
 
 // Выходные параметры для gnss координат
@@ -235,6 +239,7 @@ type LogoutOutput struct {
 	Empty *string `json:"_empty,omitempty"`
 }
 
+// Измерение
 type Measurement struct {
 	//  Уникальный идентификатор измерения
 	ID string `json:"id"`
@@ -256,6 +261,7 @@ type Measurement struct {
 	DataPower *DataPower `json:"dataPower,omitempty"`
 }
 
+// Фильтр измерений
 type MeasurementsFilter struct {
 	//  Токен для аутентификации
 	Token *string `json:"token,omitempty"`
@@ -271,6 +277,7 @@ type MeasurementsFilter struct {
 	EndAt *time.Time `json:"endAt,omitempty"`
 }
 
+// Выходные параметры для gnss измерений
 type MeasurementsPagination struct {
 	//  Загруженные элементы
 	Items []*Measurement `json:"items,omitempty"`
@@ -313,9 +320,9 @@ type SatellitesFilter struct {
 	//  Индетификатор
 	IDS []string `json:"IdS,omitempty"`
 	//  Внешний индетификатор спутника
-	ExternalSatelliteIds []string `json:"ExternalSatelliteIds,omitempty"`
+	ExternalSatelliteIds []string `json:"externalSatelliteIds,omitempty"`
 	//  Название спутника
-	SatelliteNames []string `json:"SatelliteNames,omitempty"`
+	SatelliteNames []string `json:"satelliteNames,omitempty"`
 }
 
 // Выходные параметры для спутников

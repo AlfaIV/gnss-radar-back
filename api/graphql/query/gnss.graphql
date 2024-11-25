@@ -9,9 +9,11 @@ extend type Query {
     Rinexlist(input: RinexInput,  page: Int! = 0, perPage: Int! = 10): RinexPagination!
     """ Получить список спутников """
     listSatellites(filter: SatellitesFilter!, page: Int! = 0, perPage: Int! = 10): SatellitesPagination!
+    """ Получить список измерений """
     listMeasurements(filter: MeasurementsFilter!, page: Int! = 0, perPage: Int! = 10): MeasurementsPagination!
 }
 
+""" Фильтр измерений """
 input MeasurementsFilter {
     """ Токен для аутентификации """
     token: String
@@ -40,7 +42,7 @@ type RinexPagination {
 """ Фильтр gnss координат """
 input GNSSFilter {
     """ Фильтр по индетификаторам """
-    Coordinates: CoordsInput!
+    coordinates: CoordsInput!
 }
 
 """ Выходные параметры для gnss координат """
@@ -49,6 +51,7 @@ type GNSSPagination {
     items: [GNSS!]
 }
 
+""" Выходные параметры для gnss измерений """
 type MeasurementsPagination {
     """ Загруженные элементы """
     items: [Measurement!]
@@ -57,11 +60,11 @@ type MeasurementsPagination {
 """ Фильтр устройств """
 input DeviceFilter {
     """ Индетификатор """
-    Ids: [String!]
+    ids: [String!]
     """ Название девайса """
-    Names: [String!]
+    names: [String!]
     """ Токен """
-    Tokens: [String!]
+    tokens: [String!]
 }
 
 """ Выходные параметры для устройств """
@@ -99,9 +102,9 @@ input SatellitesFilter {
     """ Индетификатор """
     IdS: [String!]
     """ Внешний индетификатор спутника """
-    ExternalSatelliteIds: [String!]
+    externalSatelliteIds: [String!]
     """ Название спутника """
-    SatelliteNames: [String!]
+    satelliteNames: [String!]
 }
 
 """ Выходные параметры для спутников """

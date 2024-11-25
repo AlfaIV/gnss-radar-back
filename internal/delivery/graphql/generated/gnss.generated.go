@@ -436,6 +436,10 @@ func (ec *executionContext) fieldContext_CreateTaskOutput_task(_ context.Context
 				return ec.fieldContext_Task_description(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
+			case "satelliteName":
+				return ec.fieldContext_Task_satelliteName(ctx, field)
+			case "deviceId":
+				return ec.fieldContext_Task_deviceId(ctx, field)
 			case "signalType":
 				return ec.fieldContext_Task_signalType(ctx, field)
 			case "groupingType":
@@ -2547,6 +2551,10 @@ func (ec *executionContext) fieldContext_TaskPagination_items(_ context.Context,
 				return ec.fieldContext_Task_description(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
+			case "satelliteName":
+				return ec.fieldContext_Task_satelliteName(ctx, field)
+			case "deviceId":
+				return ec.fieldContext_Task_deviceId(ctx, field)
 			case "signalType":
 				return ec.fieldContext_Task_signalType(ctx, field)
 			case "groupingType":
@@ -2669,6 +2677,10 @@ func (ec *executionContext) fieldContext_UpdateTaskOutput_task(_ context.Context
 				return ec.fieldContext_Task_description(ctx, field)
 			case "satelliteId":
 				return ec.fieldContext_Task_satelliteId(ctx, field)
+			case "satelliteName":
+				return ec.fieldContext_Task_satelliteName(ctx, field)
+			case "deviceId":
+				return ec.fieldContext_Task_deviceId(ctx, field)
 			case "signalType":
 				return ec.fieldContext_Task_signalType(ctx, field)
 			case "groupingType":
@@ -2813,7 +2825,7 @@ func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"title", "description", "satelliteId", "signalType", "groupingType", "startAt", "endAt"}
+	fieldsInOrder := [...]string{"title", "description", "satelliteId", "deviceId", "signalType", "groupingType", "startAt", "endAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2841,6 +2853,13 @@ func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, o
 				return it, err
 			}
 			it.SatelliteID = data
+		case "deviceId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deviceId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DeviceID = data
 		case "signalType":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("signalType"))
 			data, err := ec.unmarshalNSignalType2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSignalType(ctx, v)
@@ -2936,29 +2955,29 @@ func (ec *executionContext) unmarshalInputDeviceFilter(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"Ids", "Names", "Tokens"}
+	fieldsInOrder := [...]string{"ids", "names", "tokens"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "Ids":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Ids"))
+		case "ids":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Ids = data
-		case "Names":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Names"))
+		case "names":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("names"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Names = data
-		case "Tokens":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Tokens"))
+		case "tokens":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokens"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
@@ -2977,15 +2996,15 @@ func (ec *executionContext) unmarshalInputGNSSFilter(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"Coordinates"}
+	fieldsInOrder := [...]string{"coordinates"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "Coordinates":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Coordinates"))
+		case "coordinates":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("coordinates"))
 			data, err := ec.unmarshalNCoordsInput2ᚖgithubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐCoordsInput(ctx, v)
 			if err != nil {
 				return it, err
@@ -3093,7 +3112,7 @@ func (ec *executionContext) unmarshalInputSatellitesFilter(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"IdS", "ExternalSatelliteIds", "SatelliteNames"}
+	fieldsInOrder := [...]string{"IdS", "externalSatelliteIds", "satelliteNames"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3107,15 +3126,15 @@ func (ec *executionContext) unmarshalInputSatellitesFilter(ctx context.Context, 
 				return it, err
 			}
 			it.IDS = data
-		case "ExternalSatelliteIds":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ExternalSatelliteIds"))
+		case "externalSatelliteIds":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("externalSatelliteIds"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.ExternalSatelliteIds = data
-		case "SatelliteNames":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("SatelliteNames"))
+		case "satelliteNames":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("satelliteNames"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err

@@ -38,6 +38,7 @@ type ResolverRoot interface {
 	GnssMutations() GnssMutationsResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Task() TaskResolver
 }
 
 type DirectiveRoot struct {
@@ -224,15 +225,17 @@ type ComplexityRoot struct {
 	}
 
 	Task struct {
-		CreatedAt    func(childComplexity int) int
-		Description  func(childComplexity int) int
-		EndAt        func(childComplexity int) int
-		GroupingType func(childComplexity int) int
-		ID           func(childComplexity int) int
-		SatelliteID  func(childComplexity int) int
-		SignalType   func(childComplexity int) int
-		StartAt      func(childComplexity int) int
-		Title        func(childComplexity int) int
+		CreatedAt     func(childComplexity int) int
+		Description   func(childComplexity int) int
+		DeviceID      func(childComplexity int) int
+		EndAt         func(childComplexity int) int
+		GroupingType  func(childComplexity int) int
+		ID            func(childComplexity int) int
+		SatelliteID   func(childComplexity int) int
+		SatelliteName func(childComplexity int) int
+		SignalType    func(childComplexity int) int
+		StartAt       func(childComplexity int) int
+		Title         func(childComplexity int) int
 	}
 
 	TaskPagination struct {
@@ -1021,6 +1024,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Task.Description(childComplexity), true
 
+	case "Task.deviceId":
+		if e.complexity.Task.DeviceID == nil {
+			break
+		}
+
+		return e.complexity.Task.DeviceID(childComplexity), true
+
 	case "Task.endAt":
 		if e.complexity.Task.EndAt == nil {
 			break
@@ -1048,6 +1058,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Task.SatelliteID(childComplexity), true
+
+	case "Task.satelliteName":
+		if e.complexity.Task.SatelliteName == nil {
+			break
+		}
+
+		return e.complexity.Task.SatelliteName(childComplexity), true
 
 	case "Task.signalType":
 		if e.complexity.Task.SignalType == nil {
@@ -1371,7 +1388,7 @@ type GnssMutations {
     """ Создать задачу """
     createTask(input: CreateTaskInput!): CreateTaskOutput! @goField(forceResolver: true)
     """ Обновить задачу """
-    updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true)
+    updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true) @deprecated(reason: "ломает логику, возможно исправим или удалим")
     """ Удалить задачу """
     deleteTask(input: DeleteTaskInput!): DeleteTaskOutput! @goField(forceResolver: true)
     """ Создать спутник """
@@ -1420,6 +1437,8 @@ input CreateTaskInput {
     description: String
     """ Индентификатор спутника """
     satelliteId: String!
+    """ Индентификатор девайса """
+    deviceId: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
@@ -1524,9 +1543,11 @@ type AuthcheckOutput {
     Rinexlist(input: RinexInput,  page: Int! = 0, perPage: Int! = 10): RinexPagination!
     """ Получить список спутников """
     listSatellites(filter: SatellitesFilter!, page: Int! = 0, perPage: Int! = 10): SatellitesPagination!
+    """ Получить список измерений """
     listMeasurements(filter: MeasurementsFilter!, page: Int! = 0, perPage: Int! = 10): MeasurementsPagination!
 }
 
+""" Фильтр измерений """
 input MeasurementsFilter {
     """ Токен для аутентификации """
     token: String
@@ -1555,7 +1576,7 @@ type RinexPagination {
 """ Фильтр gnss координат """
 input GNSSFilter {
     """ Фильтр по индетификаторам """
-    Coordinates: CoordsInput!
+    coordinates: CoordsInput!
 }
 
 """ Выходные параметры для gnss координат """
@@ -1564,6 +1585,7 @@ type GNSSPagination {
     items: [GNSS!]
 }
 
+""" Выходные параметры для gnss измерений """
 type MeasurementsPagination {
     """ Загруженные элементы """
     items: [Measurement!]
@@ -1572,11 +1594,11 @@ type MeasurementsPagination {
 """ Фильтр устройств """
 input DeviceFilter {
     """ Индетификатор """
-    Ids: [String!]
+    ids: [String!]
     """ Название девайса """
-    Names: [String!]
+    names: [String!]
     """ Токен """
-    Tokens: [String!]
+    tokens: [String!]
 }
 
 """ Выходные параметры для устройств """
@@ -1614,9 +1636,9 @@ input SatellitesFilter {
     """ Индетификатор """
     IdS: [String!]
     """ Внешний индетификатор спутника """
-    ExternalSatelliteIds: [String!]
+    externalSatelliteIds: [String!]
     """ Название спутника """
-    SatelliteNames: [String!]
+    satelliteNames: [String!]
 }
 
 """ Выходные параметры для спутников """
@@ -1738,7 +1760,8 @@ type RinexResults {
     """ Время создания """
     CreatedAt: Time!
 }`, BuiltIn: false},
-	{Name: "../../../../api/graphql/types/tasks.graphql", Input: `type Task {
+	{Name: "../../../../api/graphql/types/tasks.graphql", Input: `""" Задача """
+type Task {
     """ Индетификатор """
     id: String!
     """ Название задачи """
@@ -1747,6 +1770,10 @@ type RinexResults {
     description: String
     """ Id спутника """
     satelliteId: String!
+    """ Имя спутника """
+    satelliteName: String!
+    """ id девайса """
+    deviceId: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
@@ -1759,6 +1786,7 @@ type RinexResults {
     CreatedAt: Time!
 }
 
+""" Измерение """
 type Measurement {
     """ Уникальный идентификатор измерения """
     id: String!
@@ -1780,6 +1808,7 @@ type Measurement {
     dataPower: DataPower
 }
 
+""" Данные спектра """
 type DataSpectrum {
     """ Массив значений спектра """
     spectrum: [Float!]!
@@ -1791,6 +1820,7 @@ type DataSpectrum {
     startTime: Time!
 }
 
+""" Мощность """
 type DataPower {
     """ Массив значений мощности """
     power: [Float!]!

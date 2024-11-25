@@ -65,7 +65,8 @@ func (r *gnssMutationsResolver) DeleteDevice(ctx context.Context, obj *model.Gns
 // CreateTask is the resolver for the createTask field.
 func (r *gnssMutationsResolver) CreateTask(ctx context.Context, obj *model.GnssMutations, input model.CreateTaskInput) (*model.CreateTaskOutput, error) {
 	task, err := r.gnssSevice.CreateTask(ctx, store.CreateTaskParams{
-		SatelliteID:  input.SatelliteID,
+		SatelliteId:  input.SatelliteID,
+		DeviceId:     input.DeviceID,
 		Title:        input.Title,
 		Description:  input.Description,
 		SignalType:   input.SignalType,
@@ -173,13 +174,14 @@ func (r *queryResolver) ListDevice(ctx context.Context, filter model.DeviceFilte
 
 // ListTask is the resolver for the listTask field.
 func (r *queryResolver) ListTask(ctx context.Context, filter model.TaskFilter, page int, perPage int) (*model.TaskPagination, error) {
-	tasks, err := r.gnssSevice.ListTasks(ctx, store.ListTasksFilter{
-		Ids:          filter.Ids,
-		SatelliteIds: filter.SatelliteIds,
-		SignalType:   filter.SignalType,
-		GroupingType: filter.GroupingType,
-		StartAt:      filter.StartAt,
-		EndAt:        filter.EndAt,
+	tasks, err := r.gnssSevice.ListTasks(ctx, service.ListTasksFilter{
+		Ids:           filter.Ids,
+		SatelliteIds:  filter.SatelliteIds,
+		SatelliteName: filter.SatelliteName,
+		SignalType:    filter.SignalType,
+		GroupingType:  filter.GroupingType,
+		StartAt:       filter.StartAt,
+		EndAt:         filter.EndAt,
 		Paginator: model.Paginator{
 			Page:    uint64(page),
 			PerPage: uint64(perPage),

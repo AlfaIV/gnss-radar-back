@@ -3,7 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/samber/lo"
 	"strconv"
+	"time"
 
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	"github.com/Gokert/gnss-radar/internal/store"
@@ -20,7 +22,7 @@ type IGnss interface {
 	CreateTask(ctx context.Context, params store.CreateTaskParams) (*model.Task, error)
 	UpdateTask(ctx context.Context, params store.UpdateTaskParams) (*model.Task, error)
 	DeleteTask(ctx context.Context, filter store.DeleteTaskFilter) error
-	ListTasks(ctx context.Context, filter store.ListTasksFilter) ([]*model.Task, error)
+	ListTasks(ctx context.Context, filter ListTasksFilter) ([]*model.Task, error)
 	ListSatellites(ctx context.Context, filter store.ListSatellitesFilter) ([]*model.SatelliteInfo, error)
 	CreateSatellite(ctx context.Context, params store.CreateSatelliteParams) (*model.SatelliteInfo, error)
 	ListMeasurements(ctx context.Context, measurementReq model.MeasurementsFilter) ([]*model.Measurement, error)
@@ -178,12 +180,20 @@ func (g *GnssService) RinexList(ctx context.Context, req RinexRequest) ([]*model
 }
 
 func (g *GnssService) CreateTask(ctx context.Context, params store.CreateTaskParams) (*model.Task, error) {
-	satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{Ids: []string{params.SatelliteID}})
+	satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{Ids: []string{params.SatelliteId}})
 	if err != nil {
 		return nil, fmt.Errorf("gnssStore.ListSatellites: %w", err)
 	}
 	if len(satellites) == 0 {
-		return nil, fmt.Errorf("satellites with id = %s not found", params.SatelliteID)
+		return nil, fmt.Errorf("satellites with id = %s not found", params.SatelliteId)
+	}
+
+	devices, err := g.gnssStore.ListDevice(ctx, store.ListDeviceFilter{Ids: []string{params.DeviceId}})
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.ListDevice: %w", err)
+	}
+	if len(devices) == 0 {
+		return nil, fmt.Errorf("devices with id = %s not found", params.DeviceId)
 	}
 
 	task, err := g.gnssStore.CreateTask(ctx, params)
@@ -220,8 +230,46 @@ func (g *GnssService) DeleteTask(ctx context.Context, filter store.DeleteTaskFil
 	return nil
 }
 
-func (g *GnssService) ListTasks(ctx context.Context, filter store.ListTasksFilter) ([]*model.Task, error) {
-	tasks, err := g.gnssStore.ListTask(ctx, filter)
+type ListTasksFilter struct {
+	Ids           []string
+	SatelliteIds  []string
+	SatelliteName []string
+	SignalType    []model.SignalType
+	GroupingType  []model.GroupingType
+	StartAt       *time.Time
+	EndAt         *time.Time
+	Paginator     model.Paginator
+}
+
+func (g *GnssService) ListTasks(ctx context.Context, filter ListTasksFilter) ([]*model.Task, error) {
+	var satelliteIds []string
+
+	if len(filter.SatelliteName) > 0 {
+		satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{
+			SatelliteName: filter.SatelliteName,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("gnssStore.ListSatellites: %w", err)
+		}
+
+		if len(satellites) == 0 {
+			return []*model.Task{}, nil
+		}
+
+		satelliteIds = lo.Map(satellites, func(satellite *model.SatelliteInfo, _ int) string {
+			return satellite.ID
+		})
+	}
+
+	tasks, err := g.gnssStore.ListTask(ctx, store.ListTasksFilter{
+		Ids:          append(satelliteIds, filter.Ids...),
+		SatelliteIds: filter.SatelliteIds,
+		SignalType:   filter.SignalType,
+		GroupingType: filter.GroupingType,
+		StartAt:      filter.StartAt,
+		EndAt:        filter.EndAt,
+		Paginator:    filter.Paginator,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("gnssStore.ListTask: %w", err)
 	}

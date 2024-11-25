@@ -14,7 +14,7 @@ type GnssMutations {
     """ Создать задачу """
     createTask(input: CreateTaskInput!): CreateTaskOutput! @goField(forceResolver: true)
     """ Обновить задачу """
-    updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true)
+    updateTask(input: UpdateTaskInput!): UpdateTaskOutput! @goField(forceResolver: true) @deprecated(reason: "ломает логику, возможно исправим или удалим")
     """ Удалить задачу """
     deleteTask(input: DeleteTaskInput!): DeleteTaskOutput! @goField(forceResolver: true)
     """ Создать спутник """
@@ -63,6 +63,8 @@ input CreateTaskInput {
     description: String
     """ Индентификатор спутника """
     satelliteId: String!
+    """ Индентификатор девайса """
+    deviceId: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
