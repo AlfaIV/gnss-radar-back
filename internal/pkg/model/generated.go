@@ -263,6 +263,8 @@ type Measurement struct {
 
 // Фильтр измерений
 type MeasurementsFilter struct {
+	//  Уникальный ид измерения
+	ID *string `json:"id,omitempty"`
 	//  Токен для аутентификации
 	Token *string `json:"token,omitempty"`
 	//  Фильтр по сигналу

@@ -3023,13 +3023,20 @@ func (ec *executionContext) unmarshalInputMeasurementsFilter(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"token", "signal", "group", "target", "startAt", "endAt"}
+	fieldsInOrder := [...]string{"id", "token", "signal", "group", "target", "startAt", "endAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
 		case "token":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)

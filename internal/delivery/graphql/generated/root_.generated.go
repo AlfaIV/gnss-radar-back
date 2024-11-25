@@ -1549,6 +1549,8 @@ type AuthcheckOutput {
 
 """ Фильтр измерений """
 input MeasurementsFilter {
+    """ Уникальный ид измерения """
+    id: String
     """ Токен для аутентификации """
     token: String
     """ Фильтр по сигналу """

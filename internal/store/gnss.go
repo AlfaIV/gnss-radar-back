@@ -557,6 +557,9 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 	if measurementReq.Token != nil {
 		query = query.Where(sq.Eq{"hm.token": *measurementReq.Token})
 	}
+	if measurementReq.ID != nil {
+		query = query.Where(sq.Eq{"hm.id": *measurementReq.ID})
+	}
 
 	var hardwareMeasurements []struct {
 		Id                    string    `db:"id"`
