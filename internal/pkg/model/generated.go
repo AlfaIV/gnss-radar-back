@@ -237,6 +237,8 @@ type LogoutOutput struct {
 
 type Measurement struct {
 	//  Уникальный идентификатор измерения
+	ID string `json:"id"`
+	//  Токен устройства, с которого было сделано измерение
 	Token string `json:"token"`
 	//  Время начала измерения
 	StartTime time.Time `json:"startTime"`

@@ -530,7 +530,7 @@ func (g *GnssStore) CompareDeviceToken(ctx context.Context, token string) error 
 
 func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.MeasurementsFilter) ([]*model.Measurement, error) {
 	query := g.storage.Builder().
-		Select("hm.token", "hm.start_at", "hm.end_at", "hm.group_type", "hm.signal", "hm.satellite_name", "hm.measurement_id").
+		Select("hm.id", "hm.token", "hm.start_at", "hm.end_at", "hm.group_type", "hm.signal", "hm.satellite_name", "hm.measurement_power_id", "hm.measurement_spectrum_id").
 		From("hardware_measurements hm")
 
 	if measurementReq.Signal != nil {
@@ -553,6 +553,7 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 	}
 
 	var hardwareMeasurements []struct {
+		Id                    string    `db:"id"`
 		Token                 string    `db:"token"`
 		StartAt               time.Time `db:"start_at"`
 		EndAt                 time.Time `db:"end_at"`
@@ -570,6 +571,7 @@ func (g *GnssStore) ListMeasurements(ctx context.Context, measurementReq model.M
 
 	for _, hm := range hardwareMeasurements {
 		var measurement model.Measurement
+		measurement.ID = hm.Id
 		measurement.Token = hm.Token
 		measurement.StartTime = hm.StartAt
 		measurement.EndTime = hm.EndAt

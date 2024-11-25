@@ -2022,6 +2022,8 @@ func (ec *executionContext) fieldContext_MeasurementsPagination_items(_ context.
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "id":
+				return ec.fieldContext_Measurement_id(ctx, field)
 			case "token":
 				return ec.fieldContext_Measurement_token(ctx, field)
 			case "startTime":

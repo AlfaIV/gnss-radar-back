@@ -156,6 +156,7 @@ type ComplexityRoot struct {
 		DataSpectrum func(childComplexity int) int
 		EndTime      func(childComplexity int) int
 		Group        func(childComplexity int) int
+		ID           func(childComplexity int) int
 		SignalType   func(childComplexity int) int
 		StartTime    func(childComplexity int) int
 		Target       func(childComplexity int) int
@@ -746,6 +747,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Measurement.Group(childComplexity), true
+
+	case "Measurement.id":
+		if e.complexity.Measurement.ID == nil {
+			break
+		}
+
+		return e.complexity.Measurement.ID(childComplexity), true
 
 	case "Measurement.signalType":
 		if e.complexity.Measurement.SignalType == nil {
@@ -1753,6 +1761,8 @@ type RinexResults {
 
 type Measurement {
     """ Уникальный идентификатор измерения """
+    id: String!
+    """ Токен устройства, с которого было сделано измерение """
     token: String!
     """ Время начала измерения """
     startTime: Time!
