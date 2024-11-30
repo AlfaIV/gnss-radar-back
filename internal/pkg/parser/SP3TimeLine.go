@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type SP3TimeLine struct {
@@ -57,4 +58,16 @@ func ParseSP3TimeLine(line string, id int) (SP3TimeLine, error) {
 	}
 
 	return timeLine, nil
+}
+
+func (t *SP3TimeLine) ToString() string {
+	return time.Date(
+		t.YearStart,
+		time.Month(t.MonthStart),
+		t.DayOfMonthStart,
+		t.HourStart,
+		t.MinuteStart,
+		int(t.SecondStart),
+		0, time.UTC).
+		Format("2006-01-02 15:04:05.00")
 }

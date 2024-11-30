@@ -1,9 +1,10 @@
 package main
 
 import (
-	middleware2 "github.com/Gokert/gnss-radar/internal/pkg/middleware"
 	"log"
 	"sync"
+
+	middleware2 "github.com/Gokert/gnss-radar/internal/pkg/middleware"
 
 	"github.com/Gokert/gnss-radar/configurations"
 	"github.com/Gokert/gnss-radar/internal/delivery"

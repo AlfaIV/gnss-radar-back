@@ -6,6 +6,7 @@ package graphql
 
 import (
 	"context"
+
 	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 )

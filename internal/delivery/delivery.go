@@ -4,12 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
+	"io"
 	"log"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
+
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/google/uuid"
 
 	"github.com/Gokert/gnss-radar/internal/pkg/middleware"
 
@@ -153,6 +158,59 @@ func (a *App) AddPairMeasurement(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (a *App) UploadSP3(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	randomID := uuid.New().String()
+	saveDir := filepath.Join("sp3", randomID)
+	err := os.MkdirAll(saveDir, os.ModePerm)
+	if err != nil {
+		http.Error(w, "Failed to create directory", http.StatusInternalServerError)
+		return
+	}
+
+	err = r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		http.Error(w, "Failed to parse form", http.StatusBadRequest)
+		return
+	}
+
+	files := r.MultipartForm.File["files"]
+	for _, fileHeader := range files {
+		file, err := fileHeader.Open()
+		if err != nil {
+			http.Error(w, "Failed to open file", http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
+
+		savePath := filepath.Join(saveDir, fileHeader.Filename)
+		out, err := os.Create(savePath)
+		if err != nil {
+			http.Error(w, "Failed to save file", http.StatusInternalServerError)
+			return
+		}
+		defer out.Close()
+
+		_, err = io.Copy(out, file)
+		if err != nil {
+			http.Error(w, "Failed to copy file", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	err = a.hardwareService.UploadSP3(r.Context(), saveDir)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to process files: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintf(w, "Files uploaded and processed successfully")
 }
 
 func (s *GnssGrpc) ListenAndServeGrpc(network, port string) error {

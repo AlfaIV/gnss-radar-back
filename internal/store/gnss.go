@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
+	"github.com/Gokert/gnss-radar/internal/pkg/parser"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4"
 )
@@ -30,6 +31,7 @@ type IGnssStore interface {
 	AddPairMeasurement(ctx context.Context, pairMeasurementReq model.PairMeasurementRequest) error
 	ListMeasurements(ctx context.Context, measurementReq model.MeasurementsFilter) ([]*model.Measurement, error)
 	CompareDeviceToken(ctx context.Context, deviceTokenReq string) error
+	SaveParsedSP3(ctx context.Context, satelliteId string, x float64, y float64, z float64, timeLine parser.SP3TimeLine) error
 }
 
 type GnssStore struct {
@@ -526,6 +528,24 @@ func (g *GnssStore) CompareDeviceToken(ctx context.Context, token string) error 
 		Select("token").
 		From("devices").
 		Where(sq.Eq{"token": token})
+
+	if _, err := g.storage.db.Execx(ctx, query); err != nil {
+		return postgresError(err)
+	}
+
+	return nil
+}
+
+func (g *GnssStore) SaveParsedSP3(ctx context.Context, satelliteId string, x float64, y float64, z float64, timeLine parser.SP3TimeLine) error {
+	query := g.storage.Builder().
+		Insert("gnss_coords").
+		SetMap(map[string]any{
+			"satellite_id": satelliteId,
+			"x":            x,
+			"y":            y,
+			"z":            z,
+			"created_at":   timeLine.ToString(),
+		})
 
 	if _, err := g.storage.db.Execx(ctx, query); err != nil {
 		return postgresError(err)

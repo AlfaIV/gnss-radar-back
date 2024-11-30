@@ -3,9 +3,10 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/samber/lo"
 	"strconv"
 	"time"
+
+	"github.com/samber/lo"
 
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	"github.com/Gokert/gnss-radar/internal/store"

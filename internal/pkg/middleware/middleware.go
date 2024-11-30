@@ -3,10 +3,11 @@ package middleware
 import (
 	"context"
 	"errors"
+	"net/http"
+
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
 	"github.com/Gokert/gnss-radar/internal/pkg/utils"
 	"github.com/Gokert/gnss-radar/internal/service"
-	"net/http"
 )
 
 type Middleware func(http.Handler) http.Handler
