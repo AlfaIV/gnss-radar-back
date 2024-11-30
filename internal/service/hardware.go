@@ -75,7 +75,7 @@ func (h *Hardware) UploadSP3(ctx context.Context, pathWithFiles string) error {
 			return fmt.Errorf("failed to parse SP3 file %s: %w", filePath, err)
 		}
 
-		for _, satellite := range parsedFile.SatelliteLines {
+		for _, satellite := range parsedFile.SatelliteLines[:len(parsedFile.SatelliteLines)-1] {
 			x, y, z, err := parseCoordinates(satellite.CoordinateSystem)
 			if err != nil {
 				return fmt.Errorf("failed to parse coordinates for satellite %s: %w", satellite.SatelliteId, err)
