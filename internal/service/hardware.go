@@ -80,7 +80,11 @@ func (h *Hardware) UploadSP3(ctx context.Context, pathWithFiles string) error {
 			if err != nil {
 				return fmt.Errorf("failed to parse coordinates for satellite %s: %w", satellite.SatelliteId, err)
 			}
+
 			err = h.store.SaveParsedSP3(ctx, satellite.SatelliteId, x, y, z, parsedFile.TimeLines[satellite.TimeLineId-1])
+			if err != nil {
+				return fmt.Errorf("failed to save parsed SP3 for satellite %s: %w", satellite.SatelliteId, err)
+			}
 		}
 	}
 
@@ -88,7 +92,8 @@ func (h *Hardware) UploadSP3(ctx context.Context, pathWithFiles string) error {
 }
 
 func parseCoordinates(coordStr string) (float64, float64, float64, error) {
-	parts := strings.Fields(coordStr[1:])
+	parts := strings.Fields(coordStr)
+	fmt.Println(parts, coordStr)
 
 	if len(parts) < 3 {
 		return 0, 0, 0, fmt.Errorf("invalid input: not enough parts")
