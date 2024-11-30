@@ -252,10 +252,15 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
-		CreatedAt func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Login     func(childComplexity int) int
-		Role      func(childComplexity int) int
+		CreatedAt        func(childComplexity int) int
+		Email            func(childComplexity int) int
+		FirstName        func(childComplexity int) int
+		ID               func(childComplexity int) int
+		Login            func(childComplexity int) int
+		OrganizationName func(childComplexity int) int
+		Role             func(childComplexity int) int
+		SecondName       func(childComplexity int) int
+		UpdatedAt        func(childComplexity int) int
 	}
 
 	_Service struct {
@@ -1116,6 +1121,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.CreatedAt(childComplexity), true
 
+	case "User.email":
+		if e.complexity.User.Email == nil {
+			break
+		}
+
+		return e.complexity.User.Email(childComplexity), true
+
+	case "User.firstName":
+		if e.complexity.User.FirstName == nil {
+			break
+		}
+
+		return e.complexity.User.FirstName(childComplexity), true
+
 	case "User.id":
 		if e.complexity.User.ID == nil {
 			break
@@ -1130,12 +1149,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.Login(childComplexity), true
 
+	case "User.organizationName":
+		if e.complexity.User.OrganizationName == nil {
+			break
+		}
+
+		return e.complexity.User.OrganizationName(childComplexity), true
+
 	case "User.role":
 		if e.complexity.User.Role == nil {
 			break
 		}
 
 		return e.complexity.User.Role(childComplexity), true
+
+	case "User.secondName":
+		if e.complexity.User.SecondName == nil {
+			break
+		}
+
+		return e.complexity.User.SecondName(childComplexity), true
+
+	case "User.updatedAt":
+		if e.complexity.User.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.User.UpdatedAt(childComplexity), true
 
 	case "_Service.sdl":
 		if e.complexity._Service.SDL == nil {
@@ -1350,6 +1390,14 @@ input SignupInput {
     login: String!
     """ Пароль """
     password: String!
+    """ Эектронная почта """
+    email: String!
+    """ Название организации """
+    organizationName: String!
+    """ Имя """
+    firstName: String!
+    """ Фамилия """
+    secondName: String!
 }
 
 """ Выходные параметры для регистрации """
@@ -1853,6 +1901,16 @@ type User {
     role: Roles!
     """ Время создания """
     CreatedAt: Time!
+    """ Время обновления """
+    updatedAt: Time!
+    """ Эектронная почта """
+    email: String!
+    """ Название организации """
+    organizationName: String!
+    """ Имя """
+    firstName: String!
+    """ Фамилия """
+    secondName: String!
 }`, BuiltIn: false},
 	{Name: "../../../../federation/directives.graphql", Input: `
 	directive @authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM

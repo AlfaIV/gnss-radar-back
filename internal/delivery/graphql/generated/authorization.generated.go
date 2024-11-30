@@ -126,6 +126,16 @@ func (ec *executionContext) fieldContext_AuthcheckOutput_userInfo(_ context.Cont
 				return ec.fieldContext_User_role(ctx, field)
 			case "CreatedAt":
 				return ec.fieldContext_User_CreatedAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "organizationName":
+				return ec.fieldContext_User_organizationName(ctx, field)
+			case "firstName":
+				return ec.fieldContext_User_firstName(ctx, field)
+			case "secondName":
+				return ec.fieldContext_User_secondName(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -395,6 +405,16 @@ func (ec *executionContext) fieldContext_SigninOutput_userInfo(_ context.Context
 				return ec.fieldContext_User_role(ctx, field)
 			case "CreatedAt":
 				return ec.fieldContext_User_CreatedAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "organizationName":
+				return ec.fieldContext_User_organizationName(ctx, field)
+			case "firstName":
+				return ec.fieldContext_User_firstName(ctx, field)
+			case "secondName":
+				return ec.fieldContext_User_secondName(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -449,6 +469,16 @@ func (ec *executionContext) fieldContext_SignupOutput_userInfo(_ context.Context
 				return ec.fieldContext_User_role(ctx, field)
 			case "CreatedAt":
 				return ec.fieldContext_User_CreatedAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "organizationName":
+				return ec.fieldContext_User_organizationName(ctx, field)
+			case "firstName":
+				return ec.fieldContext_User_firstName(ctx, field)
+			case "secondName":
+				return ec.fieldContext_User_secondName(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -555,7 +585,7 @@ func (ec *executionContext) unmarshalInputSignupInput(ctx context.Context, obj i
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"login", "password"}
+	fieldsInOrder := [...]string{"login", "password", "email", "organizationName", "firstName", "secondName"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -576,6 +606,34 @@ func (ec *executionContext) unmarshalInputSignupInput(ctx context.Context, obj i
 				return it, err
 			}
 			it.Password = data
+		case "email":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Email = data
+		case "organizationName":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("organizationName"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.OrganizationName = data
+		case "firstName":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firstName"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirstName = data
+		case "secondName":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("secondName"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SecondName = data
 		}
 	}
 

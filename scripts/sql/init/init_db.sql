@@ -3,12 +3,17 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 DROP TABLE IF EXISTS profile CASCADE;
 CREATE TABLE IF NOT EXISTS profile (
-                                       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     login TEXT NOT NULL UNIQUE DEFAULT '',
     password bytea NOT NULL DEFAULT '',
     role TEXT NOT NULL DEFAULT 'USER',
-    created_at timestamptz NOT NULL DEFAULT now()
-    );
+    updated_at timestamptz NOT NULL DEFAULT now(),
+    created_at timestamptz NOT NULL DEFAULT now(),
+    email TEXT NOT NULL UNIQUE DEFAULT '',
+    organization_name TEXT NOT NULL DEFAULT '',
+    first_name TEXT NOT NULL DEFAULT '',
+    second_name TEXT NOT NULL DEFAULT ''
+);
 
 DROP TABLE IF EXISTS satellites CASCADE;
 CREATE TABLE IF NOT EXISTS satellites (
@@ -88,7 +93,7 @@ CREATE TABLE IF NOT EXISTS measurements_spectrum (
 
 CREATE UNIQUE INDEX tas_device_id_start_end_satellite_id_signal_type ON tasks (device_id, satellite_id, signal_type, start_at, end_at);
 
-INSERT INTO profile(login, password, role) VALUES ('admin', '\xc7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', 'ADMIN');
+INSERT INTO profile(login, password, role, email, organization_name, first_name, second_name) VALUES ('admin', '\xc7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', 'ADMIN', 'admin@mail.ru', 'gnss-company', 'admin', 'admin');
 
 INSERT INTO satellites (external_satellite_id, satellite_name) VALUES
                                                                    ('PC06', 'PC06'),

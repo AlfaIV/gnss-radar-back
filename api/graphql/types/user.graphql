@@ -8,4 +8,14 @@ type User {
     role: Roles!
     """ Время создания """
     CreatedAt: Time!
+    """ Время обновления """
+    updatedAt: Time!
+    """ Эектронная почта """
+    email: String!
+    """ Название организации """
+    organizationName: String!
+    """ Имя """
+    firstName: String!
+    """ Фамилия """
+    secondName: String!
 }
