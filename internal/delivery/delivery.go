@@ -75,6 +75,7 @@ func (a *App) Run(port string) error {
 func (a *App) HardwareHandlers(port string) error {
 	a.mux.Handle("/hardware/spectrum", http.HandlerFunc(a.AddSpectrum))
 	a.mux.Handle("/hardware/power", http.HandlerFunc(a.AddPower))
+	a.mux.Handle("/hardware/upload", http.HandlerFunc(a.UploadSP3))
 
 	portNum, err := strconv.Atoi(port)
 	if err != nil {
