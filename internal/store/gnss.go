@@ -92,15 +92,15 @@ func (g *GnssStore) ListGnssCoords(ctx context.Context, filter ListGnssCoordsFil
 		Select("id, satellite_id, x, y, z, created_at").
 		From(gnssTable)
 
-	if filter.X != 0 {
-		query = query.Where(sq.Eq{"x": filter.X})
-	}
-	if filter.Y != 0 {
-		query = query.Where(sq.Eq{"y": filter.Y})
-	}
-	if filter.Z != 0 {
-		query = query.Where(sq.Eq{"z": filter.Z})
-	}
+	// if filter.X != 0 {
+	// 	query = query.Where(sq.Eq{"x": filter.X})
+	// }
+	// if filter.Y != 0 {
+	// 	query = query.Where(sq.Eq{"y": filter.Y})
+	// }
+	// if filter.Z != 0 {
+	// 	query = query.Where(sq.Eq{"z": filter.Z})
+	// }
 	if filter.Paginator.Page != 0 {
 		query = query.Offset(filter.Paginator.Page)
 	}
@@ -364,6 +364,7 @@ func (g *GnssStore) CreateSatellite(ctx context.Context, params CreateSatelliteP
 			"external_satellite_id": params.ExternalSatelliteId,
 			"satellite_name":        params.SatelliteName,
 		}).
+		Suffix(`ON CONFLICT (external_satellite_id, satellite_name) DO NOTHING`).
 		Suffix("RETURNING id, external_satellite_id, satellite_name, created_at")
 
 	var satelliteInfo model.SatelliteInfo
@@ -540,10 +541,18 @@ func (g *GnssStore) CompareDeviceToken(ctx context.Context, token string) error 
 }
 
 func (g *GnssStore) SaveParsedSP3(ctx context.Context, satelliteId string, x float64, y float64, z float64, timeLine parser.SP3TimeLine) error {
+	satelliteEx, err := g.CreateSatellite(ctx, CreateSatelliteParams{
+		ExternalSatelliteId: satelliteId,
+		SatelliteName:       satelliteId,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create satellite: %w", err)
+	}
+
 	query := g.storage.Builder().
 		Insert("gnss_coords").
 		SetMap(map[string]any{
-			"satellite_id": satelliteId,
+			"satellite_id": satelliteEx.ID,
 			"x":            x,
 			"y":            y,
 			"z":            z,
