@@ -6,6 +6,7 @@ package graphql
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
@@ -90,7 +91,12 @@ func (r *gnssMutationsResolver) CreateTask(ctx context.Context, obj *model.GnssM
 		EndAt:        input.EndAt,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("gnssSevice.CreateTask %w", err)
+		switch {
+		case errors.Is(err, store.ErrEntityAlreadyExist):
+			return nil, model.ErrorAlreadyExists
+		default:
+			return nil, fmt.Errorf("gnssSevice.CreateTask %w", err)
+		}
 	}
 
 	return &model.CreateTaskOutput{Task: task}, nil
@@ -107,13 +113,19 @@ func (r *gnssMutationsResolver) UpdateTask(ctx context.Context, obj *model.GnssM
 		Title:        input.Title,
 		Description:  input.Description,
 		SatelliteID:  input.SatelliteID,
+		DeviceID:     input.DeviceID,
 		SignalType:   input.SignalType,
 		GroupingType: input.GroupingType,
 		StartAt:      input.StartAt,
 		EndAt:        input.EndAt,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("gnssSevice.UpdateTask %w", err)
+		switch {
+		case errors.Is(err, store.ErrEntityAlreadyExist):
+			return nil, model.ErrorAlreadyExists
+		default:
+			return nil, fmt.Errorf("gnssSevice.UpdateTask %w", err)
+		}
 	}
 
 	return &model.UpdateTaskOutput{

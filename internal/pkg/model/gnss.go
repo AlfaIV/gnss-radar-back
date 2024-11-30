@@ -39,6 +39,7 @@ type Task struct {
 	StartAt      time.Time    `db:"start_at"`
 	EndAt        time.Time    `db:"end_at"`
 	CreatedAt    time.Time    `db:"created_at"`
+	UpdatedAt    time.Time    `db:"updated_at"`
 }
 
 type SatelliteInfo struct {

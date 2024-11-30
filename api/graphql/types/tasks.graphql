@@ -22,6 +22,8 @@ type Task {
     endAt: Time!
     """ Время создания """
     CreatedAt: Time!
+    """ Время обновления """
+    updatedAt: Time!
 }
 
 """ Измерение """

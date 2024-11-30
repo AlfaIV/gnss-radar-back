@@ -56,7 +56,8 @@ CREATE TABLE IF NOT EXISTS tasks (
     grouping_type TEXT NOT NULL,
     start_at timestamptz NOT NULL,
     end_at timestamptz NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT now()
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now()
     );
 
 DROP TABLE IF EXISTS hardware_measurements CASCADE;

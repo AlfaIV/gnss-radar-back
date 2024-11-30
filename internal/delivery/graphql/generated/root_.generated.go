@@ -237,6 +237,7 @@ type ComplexityRoot struct {
 		SignalType    func(childComplexity int) int
 		StartAt       func(childComplexity int) int
 		Title         func(childComplexity int) int
+		UpdatedAt     func(childComplexity int) int
 	}
 
 	TaskPagination struct {
@@ -1093,6 +1094,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Task.Title(childComplexity), true
 
+	case "Task.updatedAt":
+		if e.complexity.Task.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Task.UpdatedAt(childComplexity), true
+
 	case "TaskPagination.items":
 		if e.complexity.TaskPagination.Items == nil {
 			break
@@ -1524,6 +1532,8 @@ input UpdateTaskInput {
     description: String
     """ Индетификатор спутника """
     satelliteId: String!
+    """ Индентификатор девайса """
+    deviceId: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """
@@ -1846,6 +1856,8 @@ type Task {
     endAt: Time!
     """ Время создания """
     CreatedAt: Time!
+    """ Время обновления """
+    updatedAt: Time!
 }
 
 """ Измерение """

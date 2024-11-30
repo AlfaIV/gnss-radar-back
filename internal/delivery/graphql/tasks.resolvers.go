@@ -7,6 +7,7 @@ package graphql
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
@@ -31,6 +32,11 @@ func (r *taskResolver) SatelliteName(ctx context.Context, obj *model.Task) (stri
 	}
 
 	return satellites[0].SatelliteName, nil
+}
+
+// UpdatedAt is the resolver for the updatedAt field.
+func (r *taskResolver) UpdatedAt(ctx context.Context, obj *model.Task) (*time.Time, error) {
+	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
 }
 
 // Task returns generated.TaskResolver implementation.
