@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"log"
 	"net"
 	"net/http"
@@ -11,8 +13,6 @@ import (
 
 	"github.com/Gokert/gnss-radar/internal/pkg/middleware"
 
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 	gnss_radar "github.com/Gokert/gnss-radar/gen/go/api/proto/gnss-radar"
 	graph "github.com/Gokert/gnss-radar/internal/delivery/graphql"
 	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
@@ -56,7 +56,7 @@ func NewServer() (*GnssGrpc, error) {
 func (a *App) Run(port string) error {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(a.config))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/", a.middleware.CheckAuthorize(playground.Handler("GraphQL playground", "/query")))
 	http.Handle("/query", a.middleware.CallMiddlewares()(srv))
 
 	log.Printf("The graphql application is running on %s", port)

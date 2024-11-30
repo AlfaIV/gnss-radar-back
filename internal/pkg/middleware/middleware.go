@@ -11,8 +11,13 @@ import (
 
 type Middleware func(http.Handler) http.Handler
 
+const permissionDenied = "permission denied"
+
 type IMiddlewareService interface {
 	CallMiddlewares() Middleware
+	SetResponseRequest(next http.Handler) http.Handler
+	SetRole(next http.Handler) http.Handler
+	CheckAuthorize(next http.Handler) http.Handler
 }
 
 type Service struct {
@@ -36,12 +41,12 @@ func (s *Service) CallMiddlewares() Middleware {
 
 func (s *Service) getMiddlewares() []Middleware {
 	return []Middleware{
-		s.setResponseRequest,
-		s.checkAuthorize,
+		s.SetResponseRequest,
+		s.SetRole,
 	}
 }
 
-func (s *Service) setResponseRequest(next http.Handler) http.Handler {
+func (s *Service) SetResponseRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), utils.ResponseWriterKey, w)
 		ctx = context.WithValue(ctx, utils.RequestKey, r)
@@ -49,7 +54,7 @@ func (s *Service) setResponseRequest(next http.Handler) http.Handler {
 	})
 }
 
-func (s *Service) checkAuthorize(next http.Handler) http.Handler {
+func (s *Service) SetRole(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		session, err := r.Cookie("session_id")
 		if errors.Is(err, http.ErrNoCookie) {
@@ -66,6 +71,32 @@ func (s *Service) checkAuthorize(next http.Handler) http.Handler {
 		}
 
 		r = r.WithContext(context.WithValue(r.Context(), utils.UserRoleKey, model.Roles(user.Role)))
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (s *Service) CheckAuthorize(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		session, err := r.Cookie("session_id")
+		if errors.Is(err, http.ErrNoCookie) {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte(permissionDenied))
+			return
+		}
+
+		_, user, err := s.authService.Authcheck(r.Context(), session.Value)
+		if err != nil || user == nil {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte(permissionDenied))
+			return
+		}
+
+		if !model.Roles(user.Role).IsValid() {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte(permissionDenied))
+			return
+		}
+
 		next.ServeHTTP(w, r)
 	})
 }
