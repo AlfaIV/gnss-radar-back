@@ -5,7 +5,7 @@ type User {
     """ Логин """
     login: String!
     """ Роль """
-    role: String!
+    role: Roles!
     """ Время создания """
     CreatedAt: Time!
 }

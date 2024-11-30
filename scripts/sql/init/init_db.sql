@@ -6,13 +6,13 @@ CREATE TABLE IF NOT EXISTS profile (
                                        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     login TEXT NOT NULL UNIQUE DEFAULT '',
     password bytea NOT NULL DEFAULT '',
-    role TEXT NOT NULL DEFAULT 'user',
+    role TEXT NOT NULL DEFAULT 'USER',
     created_at timestamptz NOT NULL DEFAULT now()
     );
 
 DROP TABLE IF EXISTS satellites CASCADE;
 CREATE TABLE IF NOT EXISTS satellites (
-                                          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     external_satellite_id TEXT UNIQUE NOT NULL,
     satellite_name TEXT UNIQUE NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now()
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS satellites (
 
 DROP TABLE IF EXISTS gnss_coords CASCADE;
 CREATE TABLE IF NOT EXISTS gnss_coords (
-                                           id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     satellite_id TEXT NOT NULL,
     x DOUBLE PRECISION NOT NULL,
     y DOUBLE PRECISION NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS gnss_coords (
 
 DROP TABLE IF EXISTS devices CASCADE;
 CREATE TABLE IF NOT EXISTS devices (
-                                       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT UNIQUE NOT NULL,
     token TEXT UNIQUE NOT NULL,
     description TEXT,
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS measurements_spectrum (
 
 CREATE UNIQUE INDEX tas_device_id_start_end_satellite_id_signal_type ON tasks (device_id, satellite_id, signal_type, start_at, end_at);
 
-INSERT INTO profile(login, password, role) VALUES ('admin', '\xc7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', 'admin');
+INSERT INTO profile(login, password, role) VALUES ('admin', '\xc7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', 'ADMIN');
 
 INSERT INTO satellites (external_satellite_id, satellite_name) VALUES
                                                                    ('PC06', 'PC06'),

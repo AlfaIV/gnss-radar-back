@@ -39,6 +39,7 @@ type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
 	Task() TaskResolver
+	User() UserResolver
 }
 
 type DirectiveRoot struct {
@@ -1317,6 +1318,17 @@ enum Error {
     """ User отсутствует """
     USER_NOT_FOUND
 }`, BuiltIn: false},
+	{Name: "../../../../api/graphql/enums/roles.graphql", Input: `""" Роли """
+enum Roles {
+    """ Неизвестно """
+    UNKNOWN
+    """ Админ """
+    ADMIN
+    """ Оператор """
+    OPERATOR
+    """ ЮЗЕР """
+    USER
+}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/mutation/authorization.graphql", Input: `extend type Mutation {
     """ Мутации связанные с авторизацией """
     authorization: AuthorizationMutations!
@@ -1838,7 +1850,7 @@ type User {
     """ Логин """
     login: String!
     """ Роль """
-    role: String!
+    role: Roles!
     """ Время создания """
     CreatedAt: Time!
 }`, BuiltIn: false},

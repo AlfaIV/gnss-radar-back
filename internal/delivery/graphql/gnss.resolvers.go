@@ -17,6 +17,10 @@ import (
 
 // UpdateDevice is the resolver for the updateDevice field.
 func (r *gnssMutationsResolver) UpdateDevice(ctx context.Context, obj *model.GnssMutations, input model.UpdateDeviceInput) (*model.UpdateDeviceOutput, error) {
+	if result := utils.CheckPermission(ctx, utils.OperatorUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
 	device, err := r.gnssSevice.UpdateDevice(ctx, service.UpdateDeviceParams{
 		ID:          input.ID,
 		Name:        input.Name,
@@ -36,6 +40,10 @@ func (r *gnssMutationsResolver) UpdateDevice(ctx context.Context, obj *model.Gns
 
 // CreateDevice is the resolver for the createDevice field.
 func (r *gnssMutationsResolver) CreateDevice(ctx context.Context, obj *model.GnssMutations, input model.CreateDeviceInput) (*model.CreateDeviceOutput, error) {
+	if result := utils.CheckPermission(ctx, utils.OperatorUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
 	device, err := r.gnssSevice.CreateDevice(ctx, service.CreateDeviceParams{
 		Name:        input.Name,
 		Description: input.Description,
@@ -54,8 +62,11 @@ func (r *gnssMutationsResolver) CreateDevice(ctx context.Context, obj *model.Gns
 
 // DeleteDevice is the resolver for the deleteDevice field.
 func (r *gnssMutationsResolver) DeleteDevice(ctx context.Context, obj *model.GnssMutations, input model.DeleteDeviceInput) (*model.DeleteDeviceOutput, error) {
-	err := r.gnssSevice.DeleteDevice(ctx, store.DeleteDeviceFilter{Id: input.ID})
-	if err != nil {
+	if result := utils.CheckPermission(ctx, utils.OperatorUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
+	if err := r.gnssSevice.DeleteDevice(ctx, store.DeleteDeviceFilter{Id: input.ID}); err != nil {
 		return nil, fmt.Errorf("gnssSevice.DeleteDevice %w", err)
 	}
 
@@ -64,6 +75,10 @@ func (r *gnssMutationsResolver) DeleteDevice(ctx context.Context, obj *model.Gns
 
 // CreateTask is the resolver for the createTask field.
 func (r *gnssMutationsResolver) CreateTask(ctx context.Context, obj *model.GnssMutations, input model.CreateTaskInput) (*model.CreateTaskOutput, error) {
+	if result := utils.CheckPermission(ctx, utils.OperatorUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
 	task, err := r.gnssSevice.CreateTask(ctx, store.CreateTaskParams{
 		SatelliteId:  input.SatelliteID,
 		DeviceId:     input.DeviceID,
@@ -83,6 +98,10 @@ func (r *gnssMutationsResolver) CreateTask(ctx context.Context, obj *model.GnssM
 
 // UpdateTask is the resolver for the updateTask field.
 func (r *gnssMutationsResolver) UpdateTask(ctx context.Context, obj *model.GnssMutations, input model.UpdateTaskInput) (*model.UpdateTaskOutput, error) {
+	if result := utils.CheckPermission(ctx, utils.OperatorUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
 	task, err := r.gnssSevice.UpdateTask(ctx, store.UpdateTaskParams{
 		Id:           input.ID,
 		Title:        input.Title,
@@ -104,8 +123,11 @@ func (r *gnssMutationsResolver) UpdateTask(ctx context.Context, obj *model.GnssM
 
 // DeleteTask is the resolver for the deleteTask field.
 func (r *gnssMutationsResolver) DeleteTask(ctx context.Context, obj *model.GnssMutations, input model.DeleteTaskInput) (*model.DeleteTaskOutput, error) {
-	err := r.gnssSevice.DeleteTask(ctx, store.DeleteTaskFilter{Id: input.ID})
-	if err != nil {
+	if result := utils.CheckPermission(ctx, utils.OperatorUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
+	if err := r.gnssSevice.DeleteTask(ctx, store.DeleteTaskFilter{Id: input.ID}); err != nil {
 		return nil, fmt.Errorf("gnssSevice.DeleteTask %w", err)
 	}
 
@@ -114,6 +136,10 @@ func (r *gnssMutationsResolver) DeleteTask(ctx context.Context, obj *model.GnssM
 
 // CreateSatellite is the resolver for the createSatellite field.
 func (r *gnssMutationsResolver) CreateSatellite(ctx context.Context, obj *model.GnssMutations, input model.CreateSatelliteInput) (*model.CreateSatelliteOutput, error) {
+	if result := utils.CheckPermission(ctx, utils.OperatorUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
 	satellite, err := r.gnssSevice.CreateSatellite(ctx, store.CreateSatelliteParams{
 		ExternalSatelliteId: input.ExternalSatelliteID,
 		SatelliteName:       input.SatelliteName,
@@ -132,6 +158,10 @@ func (r *mutationResolver) Gnss(ctx context.Context) (*model.GnssMutations, erro
 
 // ListGnss is the resolver for the listGnss field.
 func (r *queryResolver) ListGnss(ctx context.Context, filter model.GNSSFilter, page int, perPage int) (*model.GNSSPagination, error) {
+	if result := utils.CheckPermission(ctx, utils.AuthorizedUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
 	if filter.Coordinates == nil {
 		return nil, nil
 	}
@@ -156,6 +186,10 @@ func (r *queryResolver) ListGnss(ctx context.Context, filter model.GNSSFilter, p
 
 // ListDevice is the resolver for the listDevice field.
 func (r *queryResolver) ListDevice(ctx context.Context, filter model.DeviceFilter, page int, perPage int) (*model.DevicePagination, error) {
+	if result := utils.CheckPermission(ctx, utils.AuthorizedUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
 	devices, err := r.gnssSevice.ListDevice(ctx, service.ListDeviceFilter{
 		Ids:    filter.Ids,
 		Names:  filter.Names,
@@ -174,6 +208,10 @@ func (r *queryResolver) ListDevice(ctx context.Context, filter model.DeviceFilte
 
 // ListTask is the resolver for the listTask field.
 func (r *queryResolver) ListTask(ctx context.Context, filter model.TaskFilter, page int, perPage int) (*model.TaskPagination, error) {
+	if result := utils.CheckPermission(ctx, utils.AuthorizedUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
 	tasks, err := r.gnssSevice.ListTasks(ctx, service.ListTasksFilter{
 		Ids:           filter.Ids,
 		SatelliteIds:  filter.SatelliteIds,
@@ -196,6 +234,10 @@ func (r *queryResolver) ListTask(ctx context.Context, filter model.TaskFilter, p
 
 // Rinexlist is the resolver for the Rinexlist field.
 func (r *queryResolver) Rinexlist(ctx context.Context, input *model.RinexInput, page int, perPage int) (*model.RinexPagination, error) {
+	if result := utils.CheckPermission(ctx, utils.AuthorizedUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
 	gnssRinex, err := r.gnssSevice.RinexList(ctx, service.RinexRequest{})
 	if err != nil {
 		return nil, fmt.Errorf("gnssSevice.Rinexlist: %w", err)
@@ -207,6 +249,10 @@ func (r *queryResolver) Rinexlist(ctx context.Context, input *model.RinexInput, 
 
 // ListSatellites is the resolver for the listSatellites field.
 func (r *queryResolver) ListSatellites(ctx context.Context, filter model.SatellitesFilter, page int, perPage int) (*model.SatellitesPagination, error) {
+	if result := utils.CheckPermission(ctx, utils.AuthorizedUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
 	satellites, err := r.gnssSevice.ListSatellites(ctx, store.ListSatellitesFilter{
 		Ids:                  filter.IDS,
 		ExternalSatelliteIds: filter.ExternalSatelliteIds,
@@ -222,6 +268,10 @@ func (r *queryResolver) ListSatellites(ctx context.Context, filter model.Satelli
 
 // ListMeasurements is the resolver for the listMeasurements field.
 func (r *queryResolver) ListMeasurements(ctx context.Context, filter model.MeasurementsFilter, page int, perPage int) (*model.MeasurementsPagination, error) {
+	if result := utils.CheckPermission(ctx, utils.AuthorizedUsers); result == false {
+		return nil, model.ErrorPermissionDenied
+	}
+
 	measurements, err := r.gnssSevice.ListMeasurements(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("gnssSevice.ListMeasurements: %w", err)

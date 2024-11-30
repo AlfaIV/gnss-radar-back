@@ -17,6 +17,7 @@ type IAuthorizationService interface {
 	Signup(ctx context.Context, req SignupRequest) (*model.User, error)
 	ListUsers(ctx context.Context, filter ListUsersFilter) ([]*model.User, error)
 	Authcheck(ctx context.Context, value string) (bool, *model.User, error)
+	GetRoleByToken(ctx context.Context, value string) (model.Roles, error)
 	Logout(ctx context.Context, value string) (bool, error)
 }
 
@@ -136,4 +137,21 @@ func (a *AuthorizationService) ListUsers(ctx context.Context, filter ListUsersFi
 	}
 
 	return result, nil
+}
+
+func (a *AuthorizationService) GetRoleByToken(ctx context.Context, value string) (model.Roles, error) {
+	login, err := a.session.GetUserLogin(ctx, value)
+	if err != nil {
+		return model.RolesUnknown, fmt.Errorf("session.GetUserLogin: %w", err)
+	}
+
+	users, err := a.authorization.ListUsers(ctx, store.UserFilter{Logins: []string{login}})
+	if err != nil {
+		return model.RolesUnknown, fmt.Errorf("authorization.ListUsers: %w", err)
+	}
+	if len(users) == 0 {
+		return model.RolesUnknown, nil
+	}
+
+	return model.Roles(users[0].Role), nil
 }

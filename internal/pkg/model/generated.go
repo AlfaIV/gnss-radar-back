@@ -543,6 +543,56 @@ func (e GroupingType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
+// Роли
+type Roles string
+
+const (
+	//  Неизвестно
+	RolesUnknown Roles = "UNKNOWN"
+	//  Админ
+	RolesAdmin Roles = "ADMIN"
+	//  Оператор
+	RolesOperator Roles = "OPERATOR"
+	//  ЮЗЕР
+	RolesUser Roles = "USER"
+)
+
+var AllRoles = []Roles{
+	RolesUnknown,
+	RolesAdmin,
+	RolesOperator,
+	RolesUser,
+}
+
+func (e Roles) IsValid() bool {
+	switch e {
+	case RolesUnknown, RolesAdmin, RolesOperator, RolesUser:
+		return true
+	}
+	return false
+}
+
+func (e Roles) String() string {
+	return string(e)
+}
+
+func (e *Roles) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Roles(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Roles", str)
+	}
+	return nil
+}
+
+func (e Roles) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
 type SignalType string
 
 const (

@@ -26,13 +26,15 @@ type App struct {
 	mux             http.ServeMux
 	hardwareService service.IHardware
 	httpServer      http.Server
+	middleware      middleware.IMiddlewareService
 }
 
-func NewApp(service2 *service.Service, hardwareService service.IHardware) *App {
+func NewApp(service2 *service.Service, hardwareService service.IHardware, middleware middleware.IMiddlewareService) *App {
 	return &App{
 		config:          generated.Config{Resolvers: graph.NewResolver(service2)},
 		mux:             *http.NewServeMux(),
 		hardwareService: hardwareService,
+		middleware:      middleware,
 	}
 }
 
@@ -55,7 +57,7 @@ func (a *App) Run(port string) error {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(a.config))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", middleware.CallMiddlewares(middleware.Middlewares...)(srv))
+	http.Handle("/query", a.middleware.CallMiddlewares()(srv))
 
 	log.Printf("The graphql application is running on %s", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {

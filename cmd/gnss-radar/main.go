@@ -1,6 +1,7 @@
 package main
 
 import (
+	middleware2 "github.com/Gokert/gnss-radar/internal/pkg/middleware"
 	"log"
 	"sync"
 
@@ -45,11 +46,11 @@ func main() {
 	cacheStorage := store.NewCacheStorage(redisDB)
 
 	storageManager := store.NewStore(storage, cacheStorage)
-
-	newService := service.NewService(storageManager.GetAuthorizationStore(), storageManager.GetSessionStore(), storageManager.GetGnssStore())
+	authService := service.NewService(storageManager.GetAuthorizationStore(), storageManager.GetSessionStore(), storageManager.GetGnssStore())
+	middleware := middleware2.NewService(authService.GetAuthorizationService())
 
 	hardwareService := service.NewHardwareService(storageManager.GetGnssStore())
-	graphqlApp := delivery.NewApp(newService, hardwareService)
+	graphqlApp := delivery.NewApp(authService, hardwareService, middleware)
 
 	grpcListenerServer, err := delivery.NewServer()
 	if err != nil {
