@@ -353,6 +353,14 @@ type SignupInput struct {
 	Login string `json:"login"`
 	//  Пароль
 	Password string `json:"password"`
+	//  Эектронная почта
+	Email string `json:"email"`
+	//  Название организации
+	OrganizationName string `json:"organizationName"`
+	//  Имя
+	FirstName string `json:"firstName"`
+	//  Фамилия
+	SecondName string `json:"secondName"`
 }
 
 // Выходные параметры для регистрации
@@ -413,6 +421,8 @@ type UpdateTaskInput struct {
 	Description *string `json:"description,omitempty"`
 	//  Индетификатор спутника
 	SatelliteID string `json:"satelliteId"`
+	//  Индентификатор девайса
+	DeviceID string `json:"deviceId"`
 	//  Тип сигнала
 	SignalType SignalType `json:"signalType"`
 	//  Тип группировки

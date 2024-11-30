@@ -6,10 +6,6 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-const (
-	profileTable = "profile"
-)
-
 type IAuthorizationStore interface {
 	Signin(ctx context.Context, params SigninParams) (*model.User, error)
 	Signup(ctx context.Context, params SignupParams) (*model.User, error)
@@ -21,8 +17,12 @@ type AuthorizationStore struct {
 }
 
 type SignupParams struct {
-	Login    string
-	Password []byte
+	Login            string
+	Password         []byte
+	Email            string
+	OrganizationName string
+	FirstName        string
+	SecondName       string
 }
 
 type SignupResponse struct {
@@ -33,10 +33,14 @@ func (a *AuthorizationStore) Signup(ctx context.Context, params SignupParams) (*
 	query := a.storage.Builder().
 		Insert(profileTable).
 		SetMap(map[string]any{
-			"login":    params.Login,
-			"password": params.Password,
+			"login":             params.Login,
+			"password":          params.Password,
+			"email":             params.Email,
+			"organization_name": params.OrganizationName,
+			"first_name":        params.FirstName,
+			"second_name":       params.SecondName,
 		}).
-		Suffix("RETURNING id, login, role, created_at")
+		Suffix("RETURNING" + AllProfileTable)
 
 	var response model.User
 	if err := a.storage.db.Getx(ctx, &response, query); err != nil {
@@ -54,7 +58,7 @@ type UserFilter struct {
 
 func (a *AuthorizationStore) ListUsers(ctx context.Context, filter UserFilter) ([]*model.User, error) {
 	query := a.storage.Builder().
-		Select("id, login, role, created_at").
+		Select(AllProfileTable).
 		From(profileTable)
 
 	if len(filter.IDs) > 0 {
@@ -82,7 +86,7 @@ type SigninParams struct {
 
 func (a *AuthorizationStore) Signin(ctx context.Context, params SigninParams) (*model.User, error) {
 	query := a.storage.Builder().
-		Select("id, login, role, created_at").
+		Select(AllProfileTable).
 		From(profileTable).
 		Where(map[string]any{
 			"login":    params.Login,

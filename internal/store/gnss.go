@@ -196,7 +196,7 @@ func (g *GnssStore) CreateTask(ctx context.Context, params CreateTaskParams) (*m
 			"start_at":      params.StartAt,
 			"end_at":        params.EndAt,
 		}).
-		Suffix("RETURNING id, title, description, satellite_id, device_id, signal_type, grouping_type, start_at, end_at, created_at")
+		Suffix("RETURNING" + AllTaskTable)
 
 	var task model.Task
 	if err := g.storage.db.Getx(ctx, &task, query); err != nil {
@@ -229,6 +229,7 @@ func (g *GnssStore) DeleteTask(ctx context.Context, filter DeleteTaskFilter) err
 type UpdateTaskParams struct {
 	Id           string
 	Title        string
+	DeviceID     string
 	Description  *string
 	SatelliteID  string
 	SignalType   model.SignalType
@@ -243,14 +244,16 @@ func (g *GnssStore) UpdateTask(ctx context.Context, params UpdateTaskParams) (*m
 		Where(sq.Eq{"id": params.Id}).
 		SetMap(map[string]any{
 			"satellite_id":  params.SatelliteID,
+			"device_id":     params.DeviceID,
 			"title":         params.Title,
 			"description":   params.Description,
 			"signal_type":   params.SignalType,
 			"grouping_type": params.GroupingType,
 			"start_at":      params.StartAt,
 			"end_at":        params.EndAt,
+			"updated_at":    time.Now(),
 		}).
-		Suffix("RETURNING id, title, description, satellite_id, signal_type, grouping_type, start_at, end_at, created_at")
+		Suffix("RETURNING" + AllTaskTable)
 
 	var task model.Task
 	if err := g.storage.db.Getx(ctx, &task, query); err != nil {
@@ -273,7 +276,7 @@ type ListTasksFilter struct {
 
 func (g *GnssStore) ListTask(ctx context.Context, filter ListTasksFilter) ([]*model.Task, error) {
 	query := g.storage.Builder().
-		Select("id, title, description, satellite_id, device_id, signal_type, grouping_type, start_at, end_at, created_at").
+		Select(AllTaskTable).
 		From(taskTable)
 
 	if len(filter.Ids) > 0 {

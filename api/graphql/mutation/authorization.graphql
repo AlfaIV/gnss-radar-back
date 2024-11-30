@@ -19,6 +19,14 @@ input SignupInput {
     login: String!
     """ Пароль """
     password: String!
+    """ Эектронная почта """
+    email: String!
+    """ Название организации """
+    organizationName: String!
+    """ Имя """
+    firstName: String!
+    """ Фамилия """
+    secondName: String!
 }
 
 """ Выходные параметры для регистрации """

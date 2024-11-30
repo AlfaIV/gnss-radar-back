@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
@@ -81,20 +82,23 @@ func (s *Service) CheckAuthorize(next http.Handler) http.Handler {
 		session, err := r.Cookie("session_id")
 		if errors.Is(err, http.ErrNoCookie) {
 			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte(permissionDenied))
+			_, err1 := w.Write([]byte(permissionDenied))
+			log.Printf("w.Write: %v", err1)
 			return
 		}
 
 		_, user, err := s.authService.Authcheck(r.Context(), session.Value)
 		if err != nil || user == nil {
 			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte(permissionDenied))
+			_, err1 := w.Write([]byte(permissionDenied))
+			log.Printf("w.Write: %v", err1)
 			return
 		}
 
 		if !model.Roles(user.Role).IsValid() {
 			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte(permissionDenied))
+			_, err1 := w.Write([]byte(permissionDenied))
+			log.Printf("w.Write: %v", err1)
 			return
 		}
 

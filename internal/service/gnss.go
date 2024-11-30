@@ -181,6 +181,19 @@ func (g *GnssService) RinexList(ctx context.Context, req RinexRequest) ([]*model
 }
 
 func (g *GnssService) CreateTask(ctx context.Context, params store.CreateTaskParams) (*model.Task, error) {
+	listTask, err := g.gnssStore.ListTask(ctx, store.ListTasksFilter{
+		DeviceId: []string{params.DeviceId},
+		StartAt:  &params.StartAt,
+		EndAt:    &params.EndAt,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.ListTask: %w", err)
+	}
+
+	if len(listTask) > 0 {
+		return nil, store.ErrEntityAlreadyExist
+	}
+
 	satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{Ids: []string{params.SatelliteId}})
 	if err != nil {
 		return nil, fmt.Errorf("gnssStore.ListSatellites: %w", err)
@@ -206,6 +219,19 @@ func (g *GnssService) CreateTask(ctx context.Context, params store.CreateTaskPar
 }
 
 func (g *GnssService) UpdateTask(ctx context.Context, params store.UpdateTaskParams) (*model.Task, error) {
+	listTask, err := g.gnssStore.ListTask(ctx, store.ListTasksFilter{
+		DeviceId: []string{params.DeviceID},
+		StartAt:  &params.StartAt,
+		EndAt:    &params.EndAt,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gnssStore.ListTask: %w", err)
+	}
+
+	if len(listTask) > 0 {
+		return nil, store.ErrEntityAlreadyExist
+	}
+
 	satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{Ids: []string{params.SatelliteID}})
 	if err != nil {
 		return nil, fmt.Errorf("gnssStore.ListSatellites: %w", err)

@@ -107,12 +107,23 @@ func (a *AuthorizationService) Logout(ctx context.Context, value string) (bool, 
 }
 
 type SignupRequest struct {
-	Login    string
-	Password string
+	Login            string
+	Password         string
+	Email            string
+	OrganizationName string
+	FirstName        string
+	SecondName       string
 }
 
 func (a *AuthorizationService) Signup(ctx context.Context, req SignupRequest) (*model.User, error) {
-	result, err := a.authorization.Signup(ctx, store.SignupParams{Login: req.Login, Password: utils.HashPassword(req.Password)})
+	result, err := a.authorization.Signup(ctx, store.SignupParams{
+		Login:            req.Login,
+		Password:         utils.HashPassword(req.Password),
+		Email:            req.Email,
+		OrganizationName: req.OrganizationName,
+		FirstName:        req.FirstName,
+		SecondName:       req.SecondName,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("authorization.Signup: %w", err)
 	}

@@ -90,6 +90,8 @@ input UpdateTaskInput {
     description: String
     """ Индетификатор спутника """
     satelliteId: String!
+    """ Индентификатор девайса """
+    deviceId: String!
     """ Тип сигнала """
     signalType: SignalType!
     """ Тип группировки """

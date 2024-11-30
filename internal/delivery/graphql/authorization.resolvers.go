@@ -22,7 +22,14 @@ func (r *authorizationMutationsResolver) Signup(ctx context.Context, obj *model.
 		return nil, fmt.Errorf("validation.ValidateStruct %w", err)
 	}
 
-	user, err := r.authService.Signup(ctx, service.SignupRequest{Login: input.Login, Password: input.Password})
+	user, err := r.authService.Signup(ctx, service.SignupRequest{
+		Login:            input.Login,
+		Password:         input.Password,
+		Email:            input.Email,
+		OrganizationName: input.OrganizationName,
+		FirstName:        input.FirstName,
+		SecondName:       input.SecondName,
+	})
 	if err != nil {
 		switch {
 		case errors.Is(err, store.ErrEntityAlreadyExist):

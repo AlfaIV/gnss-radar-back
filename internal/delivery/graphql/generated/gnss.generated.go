@@ -450,6 +450,8 @@ func (ec *executionContext) fieldContext_CreateTaskOutput_task(_ context.Context
 				return ec.fieldContext_Task_endAt(ctx, field)
 			case "CreatedAt":
 				return ec.fieldContext_Task_CreatedAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Task_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
 		},
@@ -2565,6 +2567,8 @@ func (ec *executionContext) fieldContext_TaskPagination_items(_ context.Context,
 				return ec.fieldContext_Task_endAt(ctx, field)
 			case "CreatedAt":
 				return ec.fieldContext_Task_CreatedAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Task_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
 		},
@@ -2691,6 +2695,8 @@ func (ec *executionContext) fieldContext_UpdateTaskOutput_task(_ context.Context
 				return ec.fieldContext_Task_endAt(ctx, field)
 			case "CreatedAt":
 				return ec.fieldContext_Task_CreatedAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Task_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
 		},
@@ -3277,7 +3283,7 @@ func (ec *executionContext) unmarshalInputUpdateTaskInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "title", "description", "satelliteId", "signalType", "groupingType", "startAt", "endAt"}
+	fieldsInOrder := [...]string{"id", "title", "description", "satelliteId", "deviceId", "signalType", "groupingType", "startAt", "endAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3312,6 +3318,13 @@ func (ec *executionContext) unmarshalInputUpdateTaskInput(ctx context.Context, o
 				return it, err
 			}
 			it.SatelliteID = data
+		case "deviceId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deviceId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DeviceID = data
 		case "signalType":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("signalType"))
 			data, err := ec.unmarshalNSignalType2githubᚗcomᚋGokertᚋgnssᚑradarᚋinternalᚋpkgᚋmodelᚐSignalType(ctx, v)

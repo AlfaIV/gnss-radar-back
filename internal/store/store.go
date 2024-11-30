@@ -26,6 +26,10 @@ const (
 	deviceTable    = "devices"
 	taskTable      = "tasks"
 	satelliteTable = "satellites"
+	profileTable   = "profile"
+
+	AllProfileTable = " id, login, role, created_at, updated_at, email, organization_name, first_name, second_name"
+	AllTaskTable    = " id, title, description, satellite_id, device_id, signal_type, grouping_type, start_at, end_at, created_at, updated_at"
 )
 
 func NewStore(storage *Storage, cacheStorage *CacheStorage) *Store {
