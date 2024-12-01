@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS profile (
 DROP TABLE IF EXISTS satellites CASCADE;
 CREATE TABLE IF NOT EXISTS satellites (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    external_satellite_id TEXT NOT NULL,
-    satellite_name TEXT NOT NULL,
+    external_satellite_id TEXT UNIQUE NOT NULL,
+    satellite_name TEXT UNIQUE NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now()
     );
 
@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS gnss_coords (
     x DOUBLE PRECISION NOT NULL,
     y DOUBLE PRECISION NOT NULL,
     z DOUBLE PRECISION NOT NULL,
+    coordinate_measurement_time timestamptz NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now()
     );
 
@@ -93,7 +94,7 @@ CREATE TABLE IF NOT EXISTS measurements_spectrum (
 );
 
 CREATE UNIQUE INDEX tas_device_id_start_end_satellite_id_signal_type ON tasks (device_id, satellite_id, signal_type, start_at, end_at);
-CREATE UNIQUE INDEX tas_satellite_idx ON satellites (satellite_name, external_satellite_id);
+-- CREATE UNIQUE INDEX tas_satellite_idx ON satellites (satellite_name, external_satellite_id);
 
 INSERT INTO profile(login, password, role, email, organization_name, first_name, second_name) VALUES ('admin', '\xc7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', 'ADMIN', 'admin@mail.ru', 'gnss-company', 'admin', 'admin');
 
@@ -109,8 +110,8 @@ INSERT INTO gnss_coords (satellite_id, x, y, z) VALUES
                                                     ((SELECT id FROM satellites WHERE external_satellite_id = 'PC06'), -16806.320344, 29291.120310, -25355.710938),
                                                     ((SELECT id FROM satellites WHERE external_satellite_id = 'PC07'), -6959.418476, 39332.954409, -13000.851001),
                                                     ((SELECT id FROM satellites WHERE external_satellite_id = 'PC08'), -1908.204600, 21553.224987, 36203.881809),
-                                                    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC09'), -11202.586298, 28046.331947, -29182.143554),
-                                                    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC10'), -917.431406, 41238.966109, -6711.991412),
+                                                    ((SELECT id FROM satellites WHERE esatellites WHERE exxternal_satellite_id = 'PC09'), -11202.586298, 28046.331947, -29182.143554),
+                                                    ((SELECT id FROM ternal_satellite_id = 'PC10')   -917.431406, 41238.966109, -6711.991412),
                                                     ((SELECT id FROM satellites WHERE external_satellite_id = 'PC11'), -16138.177056, -3913.891460, -22348.411693);
 
 INSERT INTO devices (name, token, description, x, y, z) VALUES

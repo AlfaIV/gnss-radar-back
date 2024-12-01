@@ -382,6 +382,8 @@ func (ec *executionContext) fieldContext_CreateSatelliteOutput_satellite(_ conte
 				return ec.fieldContext_SatelliteInfo_SatelliteName(ctx, field)
 			case "CreatedAt":
 				return ec.fieldContext_SatelliteInfo_CreatedAt(ctx, field)
+			case "CoordinateMeasurementTime":
+				return ec.fieldContext_SatelliteInfo_CoordinateMeasurementTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SatelliteInfo", field.Name)
 		},
@@ -2502,6 +2504,8 @@ func (ec *executionContext) fieldContext_SatellitesPagination_items(_ context.Co
 				return ec.fieldContext_SatelliteInfo_SatelliteName(ctx, field)
 			case "CreatedAt":
 				return ec.fieldContext_SatelliteInfo_CreatedAt(ctx, field)
+			case "CoordinateMeasurementTime":
+				return ec.fieldContext_SatelliteInfo_CoordinateMeasurementTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SatelliteInfo", field.Name)
 		},

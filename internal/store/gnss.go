@@ -551,11 +551,11 @@ func (g *GnssStore) SaveParsedSP3(ctx context.Context, satelliteId string, x flo
 	query := g.storage.Builder().
 		Insert("gnss_coords").
 		SetMap(map[string]any{
-			"satellite_id": satelliteEx.ID,
-			"x":            x,
-			"y":            y,
-			"z":            z,
-			"created_at":   timeLine.ToString(),
+			"satellite_id":                satelliteEx.ID,
+			"x":                           x,
+			"y":                           y,
+			"z":                           z,
+			"coordinate_measurement_time": timeLine.ToString(),
 		})
 
 	if _, err := g.storage.db.Execx(ctx, query); err != nil {
