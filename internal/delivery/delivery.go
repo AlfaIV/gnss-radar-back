@@ -61,8 +61,10 @@ func NewServer() (*GnssGrpc, error) {
 func (a *App) Run(port string) error {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(a.config))
 
-	http.Handle("/", a.middleware.CheckAuthorize(playground.Handler("GraphQL playground", "/query")))
+	//http.Handle("/", a.middleware.CheckAuthorize(playground.Handler("GraphQL playground", "/query")))
 	http.Handle("/query", a.middleware.CallMiddlewares()(srv))
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	//http.Handle("/query", a.middleware.SetResponseRequest(srv))
 
 	log.Printf("The graphql application is running on %s", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {

@@ -2,8 +2,6 @@ package middleware
 
 import (
 	"context"
-	"errors"
-	"log"
 	"net/http"
 
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
@@ -58,50 +56,54 @@ func (s *Service) SetResponseRequest(next http.Handler) http.Handler {
 
 func (s *Service) SetRole(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		session, err := r.Cookie("session_id")
-		if errors.Is(err, http.ErrNoCookie) {
-			r = r.WithContext(context.WithValue(r.Context(), utils.UserRoleKey, model.RolesUnknown))
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		_, user, err := s.authService.Authcheck(r.Context(), session.Value)
-		if err != nil && user == nil {
-			r = r.WithContext(context.WithValue(r.Context(), utils.UserRoleKey, model.RolesUnknown))
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		r = r.WithContext(context.WithValue(r.Context(), utils.UserRoleKey, model.Roles(user.Role)))
+		r = r.WithContext(context.WithValue(r.Context(), utils.UserRoleKey, model.RolesAdmin))
 		next.ServeHTTP(w, r)
+
+		//session, err := r.Cookie("session_id")
+		//if errors.Is(err, http.ErrNoCookie) {
+		//	r = r.WithContext(context.WithValue(r.Context(), utils.UserRoleKey, model.RolesUnknown))
+		//	next.ServeHTTP(w, r)
+		//	return
+		//}
+		//
+		//_, user, err := s.authService.Authcheck(r.Context(), session.Value)
+		//if err != nil && user == nil {
+		//	r = r.WithContext(context.WithValue(r.Context(), utils.UserRoleKey, model.RolesUnknown))
+		//	next.ServeHTTP(w, r)
+		//	return
+		//}
+
+		//r = r.WithContext(context.WithValue(r.Context(), utils.UserRoleKey, model.Roles(user.Role)))
+		//next.ServeHTTP(w, r)
 	})
 }
 
 func (s *Service) CheckAuthorize(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		session, err := r.Cookie("session_id")
-		if errors.Is(err, http.ErrNoCookie) {
-			w.WriteHeader(http.StatusForbidden)
-			_, err1 := w.Write([]byte(permissionDenied))
-			log.Printf("w.Write: %v", err1)
-			return
-		}
-
-		_, user, err := s.authService.Authcheck(r.Context(), session.Value)
-		if err != nil || user == nil {
-			w.WriteHeader(http.StatusForbidden)
-			_, err1 := w.Write([]byte(permissionDenied))
-			log.Printf("w.Write: %v", err1)
-			return
-		}
-
-		if !model.Roles(user.Role).IsValid() {
-			w.WriteHeader(http.StatusForbidden)
-			_, err1 := w.Write([]byte(permissionDenied))
-			log.Printf("w.Write: %v", err1)
-			return
-		}
-
 		next.ServeHTTP(w, r)
+		//session, err := r.Cookie("session_id")
+		//if errors.Is(err, http.ErrNoCookie) {
+		//	w.WriteHeader(http.StatusForbidden)
+		//	_, err1 := w.Write([]byte(permissionDenied))
+		//	log.Printf("w.Write: %v", err1)
+		//	return
+		//}
+		//
+		//_, user, err := s.authService.Authcheck(r.Context(), session.Value)
+		//if err != nil || user == nil {
+		//	w.WriteHeader(http.StatusForbidden)
+		//	_, err1 := w.Write([]byte(permissionDenied))
+		//	log.Printf("w.Write: %v", err1)
+		//	return
+		//}
+		//
+		//if !model.Roles(user.Role).IsValid() {
+		//	w.WriteHeader(http.StatusForbidden)
+		//	_, err1 := w.Write([]byte(permissionDenied))
+		//	log.Printf("w.Write: %v", err1)
+		//	return
+		//}
+		//
+		//next.ServeHTTP(w, r)
 	})
 }
