@@ -82,7 +82,7 @@ func (a *App) HardwareHandlers(port string) error {
 		return fmt.Errorf("strconv.Atoi: %w port is NaN", err)
 	}
 	portStr := strconv.Itoa(portNum + 1)
-	log.Printf("Port %s", portStr)
+	log.Printf("Hardware Port %s", portStr)
 	a.httpServer = http.Server{
 		Addr:    ":" + portStr,
 		Handler: &a.mux,
