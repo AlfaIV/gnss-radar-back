@@ -38,7 +38,6 @@ type ResolverRoot interface {
 	GnssMutations() GnssMutationsResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
-	SatelliteInfo() SatelliteInfoResolver
 	Task() TaskResolver
 	User() UserResolver
 }
