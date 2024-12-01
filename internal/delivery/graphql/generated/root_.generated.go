@@ -1719,6 +1719,8 @@ input SatellitesFilter {
     externalSatelliteIds: [String!]
     """ Название спутника """
     satelliteNames: [String!]
+    """ Индентификаторы устройств """
+    deviceIds: [String!]
 }
 
 """ Выходные параметры для спутников """

@@ -24,7 +24,7 @@ type IGnss interface {
 	UpdateTask(ctx context.Context, params store.UpdateTaskParams) (*model.Task, error)
 	DeleteTask(ctx context.Context, filter store.DeleteTaskFilter) error
 	ListTasks(ctx context.Context, filter ListTasksFilter) ([]*model.Task, error)
-	ListSatellites(ctx context.Context, filter store.ListSatellitesFilter) ([]*model.SatelliteInfo, error)
+	ListSatellites(ctx context.Context, filter ListSatellitesFilter) ([]*model.SatelliteInfo, error)
 	CreateSatellite(ctx context.Context, params store.CreateSatelliteParams) (*model.SatelliteInfo, error)
 	ListMeasurements(ctx context.Context, measurementReq model.MeasurementsFilter) ([]*model.Measurement, error)
 }
@@ -304,8 +304,37 @@ func (g *GnssService) ListTasks(ctx context.Context, filter ListTasksFilter) ([]
 	return tasks, nil
 }
 
-func (g *GnssService) ListSatellites(ctx context.Context, filter store.ListSatellitesFilter) ([]*model.SatelliteInfo, error) {
-	satellites, err := g.gnssStore.ListSatellites(ctx, filter)
+type ListSatellitesFilter struct {
+	Ids                  []string
+	ExternalSatelliteIds []string
+	SatelliteName        []string
+	DeviceIds            []string
+	Paginator            model.Paginator
+}
+
+func (g *GnssService) ListSatellites(ctx context.Context, filter ListSatellitesFilter) ([]*model.SatelliteInfo, error) {
+	if len(filter.DeviceIds) > 0 {
+		devices, err := g.gnssStore.ListDevice(ctx, store.ListDeviceFilter{
+			Ids: filter.DeviceIds,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("gnssStore.ListDevice: %w", err)
+		}
+
+		if len(devices) == 0 {
+			return []*model.SatelliteInfo{}, nil
+		}
+
+		filter.Ids = lo.Map(devices, func(device *model.Device, _ int) string {
+			return device.ID
+		})
+	}
+
+	satellites, err := g.gnssStore.ListSatellites(ctx, store.ListSatellitesFilter{
+		Ids:                  filter.Ids,
+		ExternalSatelliteIds: filter.ExternalSatelliteIds,
+		Paginator:            filter.Paginator,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("gnssStore.ListSatellites: %w", err)
 	}

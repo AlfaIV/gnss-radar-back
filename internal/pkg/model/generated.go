@@ -325,6 +325,8 @@ type SatellitesFilter struct {
 	ExternalSatelliteIds []string `json:"externalSatelliteIds,omitempty"`
 	//  Название спутника
 	SatelliteNames []string `json:"satelliteNames,omitempty"`
+	//  Индентификаторы устройств
+	DeviceIds []string `json:"deviceIds,omitempty"`
 }
 
 // Выходные параметры для спутников

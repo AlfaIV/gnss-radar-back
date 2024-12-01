@@ -3129,7 +3129,7 @@ func (ec *executionContext) unmarshalInputSatellitesFilter(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"IdS", "externalSatelliteIds", "satelliteNames"}
+	fieldsInOrder := [...]string{"IdS", "externalSatelliteIds", "satelliteNames", "deviceIds"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3157,6 +3157,13 @@ func (ec *executionContext) unmarshalInputSatellitesFilter(ctx context.Context, 
 				return it, err
 			}
 			it.SatelliteNames = data
+		case "deviceIds":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deviceIds"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DeviceIds = data
 		}
 	}
 

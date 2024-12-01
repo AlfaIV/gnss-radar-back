@@ -265,10 +265,11 @@ func (r *queryResolver) ListSatellites(ctx context.Context, filter model.Satelli
 		return nil, model.ErrorPermissionDenied
 	}
 
-	satellites, err := r.gnssSevice.ListSatellites(ctx, store.ListSatellitesFilter{
+	satellites, err := r.gnssSevice.ListSatellites(ctx, service.ListSatellitesFilter{
 		Ids:                  filter.IDS,
 		ExternalSatelliteIds: filter.ExternalSatelliteIds,
 		SatelliteName:        filter.SatelliteNames,
+		DeviceIds:            filter.DeviceIds,
 		Paginator:            model.Paginator{Page: uint64(page), PerPage: uint64(perPage)},
 	})
 	if err != nil {
