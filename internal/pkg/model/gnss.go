@@ -46,6 +46,6 @@ type SatelliteInfo struct {
 	ID                        string    `db:"id"`
 	ExternalSatelliteId       string    `db:"external_satellite_id"`
 	SatelliteName             string    `db:"satellite_name"`
-	CoordinateMeasurementTime string    `db:"coordinate_measurement_time"`
+	CoordinateMeasurementTime time.Time `db:"coordinate_measurement_time"`
 	CreatedAt                 time.Time `db:"created_at"`
 }
