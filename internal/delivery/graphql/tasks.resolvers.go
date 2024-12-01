@@ -7,10 +7,10 @@ package graphql
 import (
 	"context"
 	"fmt"
+	"github.com/Gokert/gnss-radar/internal/service"
 
 	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
-	"github.com/Gokert/gnss-radar/internal/store"
 )
 
 // SatelliteName is the resolver for the satelliteName field.
@@ -19,7 +19,7 @@ func (r *taskResolver) SatelliteName(ctx context.Context, obj *model.Task) (stri
 		return "", nil
 	}
 
-	satellites, err := r.gnssSevice.ListSatellites(ctx, store.ListSatellitesFilter{
+	satellites, err := r.gnssSevice.ListSatellites(ctx, service.ListSatellitesFilter{
 		Ids: []string{obj.SatelliteID},
 	})
 	if err != nil {
