@@ -109,10 +109,13 @@ type ComplexityRoot struct {
 	}
 
 	GNSS struct {
-		Coordinates func(childComplexity int) int
-		CreatedAt   func(childComplexity int) int
-		ID          func(childComplexity int) int
-		SatelliteID func(childComplexity int) int
+		Azimuth        func(childComplexity int) int
+		Coordinates    func(childComplexity int) int
+		CreatedAt      func(childComplexity int) int
+		Distance       func(childComplexity int) int
+		ElevationAngle func(childComplexity int) int
+		ID             func(childComplexity int) int
+		SatelliteID    func(childComplexity int) int
 	}
 
 	GNSSPagination struct {
@@ -486,6 +489,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.DevicePagination.Items(childComplexity), true
 
+	case "GNSS.azimuth":
+		if e.complexity.GNSS.Azimuth == nil {
+			break
+		}
+
+		return e.complexity.GNSS.Azimuth(childComplexity), true
+
 	case "GNSS.Coordinates":
 		if e.complexity.GNSS.Coordinates == nil {
 			break
@@ -499,6 +509,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GNSS.CreatedAt(childComplexity), true
+
+	case "GNSS.distance":
+		if e.complexity.GNSS.Distance == nil {
+			break
+		}
+
+		return e.complexity.GNSS.Distance(childComplexity), true
+
+	case "GNSS.elevation_angle":
+		if e.complexity.GNSS.ElevationAngle == nil {
+			break
+		}
+
+		return e.complexity.GNSS.ElevationAngle(childComplexity), true
 
 	case "GNSS.Id":
 		if e.complexity.GNSS.ID == nil {
@@ -1786,6 +1810,12 @@ type Device {
     Coordinates: CoordsResults!
     """ Время создания """
     CreatedAt: Time!
+    """ Азимут """
+    azimuth: Int!
+    """ Угол места """
+    elevation_angle: Int!
+    """ Расстояние """
+    distance: Int!
 }
 
 type CoordsResults {

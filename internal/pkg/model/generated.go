@@ -175,6 +175,12 @@ type Gnss struct {
 	Coordinates *CoordsResults `json:"Coordinates"`
 	//  Время создания
 	CreatedAt time.Time `json:"CreatedAt"`
+	//  Азимут
+	Azimuth int `json:"azimuth"`
+	//  Угол места
+	ElevationAngle int `json:"elevation_angle"`
+	//  Расстояние
+	Distance int `json:"distance"`
 }
 
 // Фильтр gnss координат

@@ -7,6 +7,12 @@ type GNSS {
     Coordinates: CoordsResults!
     """ Время создания """
     CreatedAt: Time!
+    """ Азимут """
+    azimuth: Int!
+    """ Угол места """
+    elevation_angle: Int!
+    """ Расстояние """
+    distance: Int!
 }
 
 type CoordsResults {

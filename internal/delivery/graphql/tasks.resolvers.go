@@ -7,10 +7,10 @@ package graphql
 import (
 	"context"
 	"fmt"
-	"github.com/Gokert/gnss-radar/internal/service"
 
 	"github.com/Gokert/gnss-radar/internal/delivery/graphql/generated"
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
+	"github.com/Gokert/gnss-radar/internal/service"
 )
 
 // SatelliteName is the resolver for the satelliteName field.

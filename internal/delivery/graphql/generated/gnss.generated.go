@@ -782,6 +782,138 @@ func (ec *executionContext) fieldContext_GNSS_CreatedAt(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _GNSS_azimuth(ctx context.Context, field graphql.CollectedField, obj *model.Gnss) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GNSS_azimuth(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Azimuth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GNSS_azimuth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GNSS",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GNSS_elevation_angle(ctx context.Context, field graphql.CollectedField, obj *model.Gnss) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GNSS_elevation_angle(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ElevationAngle, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GNSS_elevation_angle(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GNSS",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GNSS_distance(ctx context.Context, field graphql.CollectedField, obj *model.Gnss) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GNSS_distance(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Distance, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GNSS_distance(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GNSS",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _GNSSPagination_items(ctx context.Context, field graphql.CollectedField, obj *model.GNSSPagination) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_GNSSPagination_items(ctx, field)
 	if err != nil {
@@ -826,6 +958,12 @@ func (ec *executionContext) fieldContext_GNSSPagination_items(_ context.Context,
 				return ec.fieldContext_GNSS_Coordinates(ctx, field)
 			case "CreatedAt":
 				return ec.fieldContext_GNSS_CreatedAt(ctx, field)
+			case "azimuth":
+				return ec.fieldContext_GNSS_azimuth(ctx, field)
+			case "elevation_angle":
+				return ec.fieldContext_GNSS_elevation_angle(ctx, field)
+			case "distance":
+				return ec.fieldContext_GNSS_distance(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GNSS", field.Name)
 		},
@@ -3680,6 +3818,21 @@ func (ec *executionContext) _GNSS(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "CreatedAt":
 			out.Values[i] = ec._GNSS_CreatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "azimuth":
+			out.Values[i] = ec._GNSS_azimuth(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "elevation_angle":
+			out.Values[i] = ec._GNSS_elevation_angle(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "distance":
+			out.Values[i] = ec._GNSS_distance(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
