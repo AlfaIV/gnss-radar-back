@@ -93,6 +93,7 @@ func (h *Hardware) UploadSP3(ctx context.Context, pathWithFiles string) error {
 
 func parseCoordinates(coordStr string) (float64, float64, float64, error) {
 	parts := strings.Fields(coordStr)
+	fmt.Println(parts, coordStr)
 
 	if len(parts) < 3 {
 		return 0, 0, 0, fmt.Errorf("invalid input: not enough parts")
