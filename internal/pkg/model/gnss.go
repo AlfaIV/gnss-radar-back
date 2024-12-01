@@ -43,8 +43,9 @@ type Task struct {
 }
 
 type SatelliteInfo struct {
-	ID                  string    `db:"id"`
-	ExternalSatelliteId string    `db:"external_satellite_id"`
-	SatelliteName       string    `db:"satellite_name"`
-	CreatedAt           time.Time `db:"created_at"`
+	ID                        string    `db:"id"`
+	ExternalSatelliteId       string    `db:"external_satellite_id"`
+	SatelliteName             string    `db:"satellite_name"`
+	CoordinateMeasurementTime time.Time `db:"coordinate_measurement_time"`
+	CreatedAt                 time.Time `db:"created_at"`
 }

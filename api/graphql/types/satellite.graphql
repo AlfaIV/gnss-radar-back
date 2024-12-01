@@ -7,4 +7,6 @@ type SatelliteInfo {
     SatelliteName: String!
     """ Время создания """
     CreatedAt: Time!
+    """ Время измерения """
+    CoordinateMeasurementTime: Time!
 }

@@ -207,10 +207,11 @@ type ComplexityRoot struct {
 	}
 
 	SatelliteInfo struct {
-		CreatedAt           func(childComplexity int) int
-		ExternalSatelliteId func(childComplexity int) int
-		ID                  func(childComplexity int) int
-		SatelliteName       func(childComplexity int) int
+		CoordinateMeasurementTime func(childComplexity int) int
+		CreatedAt                 func(childComplexity int) int
+		ExternalSatelliteId       func(childComplexity int) int
+		ID                        func(childComplexity int) int
+		SatelliteName             func(childComplexity int) int
 	}
 
 	SatellitesPagination struct {
@@ -967,6 +968,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Satellite.SatelliteID(childComplexity), true
+
+	case "SatelliteInfo.CoordinateMeasurementTime":
+		if e.complexity.SatelliteInfo.CoordinateMeasurementTime == nil {
+			break
+		}
+
+		return e.complexity.SatelliteInfo.CoordinateMeasurementTime(childComplexity), true
 
 	case "SatelliteInfo.CreatedAt":
 		if e.complexity.SatelliteInfo.CreatedAt == nil {
@@ -1833,6 +1841,8 @@ type RinexResults {
     SatelliteName: String!
     """ Время создания """
     CreatedAt: Time!
+    """ Время измерения """
+    CoordinateMeasurementTime: Time!
 }`, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/tasks.graphql", Input: `""" Задача """
 type Task {
