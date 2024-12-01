@@ -110,8 +110,8 @@ INSERT INTO gnss_coords (satellite_id, x, y, z, coordinate_measurement_time) VAL
                                                     ((SELECT id FROM satellites WHERE external_satellite_id = 'PC06'), -16806.320344, 29291.120310, -25355.710938, now()),
                                                     ((SELECT id FROM satellites WHERE external_satellite_id = 'PC07'), -6959.418476, 39332.954409, -13000.851001, now()),
                                                     ((SELECT id FROM satellites WHERE external_satellite_id = 'PC08'), -1908.204600, 21553.224987, 36203.881809, now()),
-                                                    ((SELECT id FROM satellites WHERE esatellites WHERE exxternal_satellite_id = 'PC09'), -11202.586298, 28046.331947, -29182.143554, now()),
-                                                    ((SELECT id FROM ternal_satellite_id = 'PC10')   -917.431406, 41238.966109, -6711.991412, now()),
+                                                    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC09'), -11202.586298, 28046.331947, -29182.143554, now()),
+                                                    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC10')   -917.431406, 41238.966109, -6711.991412, now()),
                                                     ((SELECT id FROM satellites WHERE external_satellite_id = 'PC11'), -16138.177056, -3913.891460, -22348.411693, now());
 
 INSERT INTO devices (name, token, description, x, y, z) VALUES
