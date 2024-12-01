@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS profile (
 DROP TABLE IF EXISTS satellites CASCADE;
 CREATE TABLE IF NOT EXISTS satellites (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    external_satellite_id TEXT UNIQUE NOT NULL,
-    satellite_name TEXT UNIQUE NOT NULL,
+    external_satellite_id TEXT NOT NULL,
+    satellite_name TEXT NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now()
     );
 
