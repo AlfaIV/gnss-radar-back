@@ -99,7 +99,7 @@ CREATE UNIQUE INDEX tas_satellite_idx ON satellites (satellite_name, external_sa
 INSERT INTO profile(login, password, role, email, organization_name, first_name, second_name) VALUES ('admin', '\xc7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', 'ADMIN', 'admin@mail.ru', 'gnss-company', 'admin', 'admin');
 
 INSERT INTO satellites (external_satellite_id, satellite_name) VALUES
-                                                                   ('PC03', 'PC03'),
+                                                                   ('PC06', 'PC06'),
                                                                    ('PC07', 'PC07'),
                                                                    ('PC08', 'PC08'),
                                                                    ('PC09', 'PC09'),
@@ -107,7 +107,7 @@ INSERT INTO satellites (external_satellite_id, satellite_name) VALUES
                                                                    ('PC11', 'PC11');
 
 INSERT INTO gnss_coords (satellite_id, x, y, z, coordinate_measurement_time) VALUES
-                                                    ((SELECT id::uuid FROM satellites WHERE external_satellite_id = 'PC03'), -16806.320344, 29291.120310, -25355.710938, now()),
+                                                    ((SELECT id::uuid FROM satellites WHERE external_satellite_id = 'PC06'), -16806.320344, 29291.120310, -25355.710938, now()),
                                                     ((SELECT id::uuid FROM satellites WHERE external_satellite_id = 'PC07'), -6959.418476, 39332.954409, -13000.851001, now()),
                                                     ((SELECT id::uuid FROM satellites WHERE external_satellite_id = 'PC08'), -1908.204600, 21553.224987, 36203.881809, now()),
                                                     ((SELECT id::uuid FROM satellites WHERE external_satellite_id = 'PC09'), -11202.586298, 28046.331947, -29182.143554, now()),
@@ -119,6 +119,6 @@ INSERT INTO devices (name, token, description, x, y, z) VALUES
                                                             ('device3', uuid_generate_v4(), 'desc3', 20.0, 30.0, 40.0);
 
 INSERT INTO tasks (satellite_id, device_id, title, description, signal_type, grouping_type, start_at, end_at) VALUES
-                                                   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC03'), (SELECT id FROM devices WHERE name = 'device1'), 'Задание 1', 'Описание 1', 'SIGNAL_TYPE_L1', 'GROUPING_TYPE_GPS', now(), now() + interval '2 days'),
+                                                   ((SELECT id FROM satellites WHERE external_satellite_id = 'PC06'), (SELECT id FROM devices WHERE name = 'device1'), 'Задание 1', 'Описание 1', 'SIGNAL_TYPE_L1', 'GROUPING_TYPE_GPS', now(), now() + interval '2 days'),
                                                    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC07'), (SELECT id FROM devices WHERE name = 'device2'), 'Задание 2', 'Описание 2', 'SIGNAL_TYPE_L2', 'GROUPING_TYPE_GLONASS', now(), now() + interval '3 days'),
                                                    ((SELECT id FROM satellites WHERE external_satellite_id = 'PC08'), (SELECT id FROM devices WHERE name = 'device3'), 'Задание 3', '', 'SIGNAL_TYPE_L3', 'GROUPING_TYPE_GLONASS', now(), now() + interval '4 days');
