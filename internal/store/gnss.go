@@ -364,8 +364,7 @@ func (g *GnssStore) CreateSatellite(ctx context.Context, params CreateSatelliteP
 			"external_satellite_id": params.ExternalSatelliteId,
 			"satellite_name":        params.SatelliteName,
 		}).
-		Suffix(`ON CONFLICT (external_satellite_id, satellite_name) DO NOTHING`).
-		Suffix("RETURNING id, external_satellite_id, satellite_name, created_at")
+		Suffix(`ON CONFLICT (external_satellite_id, satellite_name) DO UPDATE SET external_satellite_id = EXCLUDED.external_satellite_id RETURNING id, external_satellite_id, satellite_name, created_at`)
 
 	var satelliteInfo model.SatelliteInfo
 	if err := g.storage.db.Getx(ctx, &satelliteInfo, query); err != nil {
