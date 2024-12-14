@@ -13,5 +13,9 @@ import (
 
 // GenerateRecieverCode is the resolver for the generateRecieverCode field.
 func (r *queryResolver) GenerateRecieverCode(ctx context.Context, filter model.CodeRecieverInput) (*model.CodeReciever, error) {
-	panic(fmt.Errorf("not implemented: GenerateRecieverCode - generateRecieverCode"))
+	reciever, err := r.gnssSevice.CodeGen(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("r.gnssSevice.CodeGen: %w", err)
+	}
+	return &reciever, nil
 }
