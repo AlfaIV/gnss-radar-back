@@ -31,6 +31,23 @@ type AuthorizationMutations struct {
 	Logout *LogoutOutput `json:"logout,omitempty"`
 }
 
+// Программа
+type CodeReciever struct {
+	//  Название программы(токен устройства + язык программирования)
+	ProgramName string `json:"programName"`
+	//  Язык программирования
+	Language string `json:"language"`
+	//  Код программы
+	ProgramCode string `json:"programCode"`
+}
+
+type CodeRecieverInput struct {
+	//  Идентификатор пользователя
+	UserID string `json:"userId"`
+	//  Язык, на котором будет сгенерирован код
+	TypeLang string `json:"typeLang"`
+}
+
 // Координаты
 type CoordsInput struct {
 	//  Координата X

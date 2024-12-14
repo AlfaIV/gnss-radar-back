@@ -9,6 +9,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/Gokert/gnss-radar/internal/pkg/model"
+	"github.com/Gokert/gnss-radar/internal/pkg/pythoncodegen"
 	"github.com/Gokert/gnss-radar/internal/store"
 	"github.com/google/uuid"
 )
@@ -27,6 +28,7 @@ type IGnss interface {
 	ListSatellites(ctx context.Context, filter ListSatellitesFilter) ([]*model.SatelliteInfo, error)
 	CreateSatellite(ctx context.Context, params store.CreateSatelliteParams) (*model.SatelliteInfo, error)
 	ListMeasurements(ctx context.Context, measurementReq model.MeasurementsFilter) ([]*model.Measurement, error)
+	CodeGen(ctx context.Context, codegenReq model.CodeRecieverInput) (model.CodeReciever, error)
 }
 
 type GnssService struct {
@@ -367,4 +369,25 @@ func (g *GnssService) ListMeasurements(ctx context.Context, measurementReq model
 	}
 
 	return measurements, nil
+}
+
+func (g *GnssService) CodeGen(ctx context.Context, codegenReq model.CodeRecieverInput) (model.CodeReciever, error) {
+	var codeGenResp model.CodeReciever
+	switch codegenReq.TypeLang {
+	case "python":
+		pyCode, err := pythoncodegen.GenerateCode(model.PythonGenConfig{
+			BaseURL:   model.HardwareHandlersBaseAddress,
+			Token:     codegenReq.UserID,
+			SampleNum: 256,
+		})
+		if err != nil {
+			return model.CodeReciever{}, fmt.Errorf("pythoncodegen.GenerateCode: %w", err)
+		}
+		codeGenResp.Language = codegenReq.TypeLang
+		codeGenResp.ProgramName = codegenReq.UserID + "_" + codegenReq.TypeLang
+		codeGenResp.ProgramCode = pyCode
+	default:
+		return model.CodeReciever{}, fmt.Errorf("unsupported code generation language: %s", codegenReq.TypeLang)
+	}
+	return codeGenResp, nil
 }

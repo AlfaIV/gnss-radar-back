@@ -1,0 +1,12 @@
+""" Язык программирования """
+scalar CodeLang
+
+""" Программа """
+type CodeReciever {
+    """ Название программы(токен устройства + язык программирования) """
+    programName: String!
+    """ Язык программирования """
+    language: CodeLang!
+    """ Код программы """
+    programCode: String!
+}

@@ -1,0 +1,11 @@
+extend type Query {
+    """ Сгенерировать код для отправки данных на девайс """
+    generateRecieverCode(filter: CodeRecieverInput!): CodeReciever!
+}
+
+input CodeRecieverInput {
+    """ Идентификатор пользователя """
+    userId: ID!
+    """ Язык, на котором будет сгенерирован код """
+    typeLang: CodeLang! = "python"
+}

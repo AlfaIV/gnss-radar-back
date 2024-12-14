@@ -56,6 +56,12 @@ type ComplexityRoot struct {
 		Signup func(childComplexity int, input model.SignupInput) int
 	}
 
+	CodeReciever struct {
+		Language    func(childComplexity int) int
+		ProgramCode func(childComplexity int) int
+		ProgramName func(childComplexity int) int
+	}
+
 	CoordsResults struct {
 		X func(childComplexity int) int
 		Y func(childComplexity int) int
@@ -184,15 +190,16 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Authcheck          func(childComplexity int, input *model.AuthcheckInput) int
-		Errors             func(childComplexity int) int
-		ListDevice         func(childComplexity int, filter model.DeviceFilter, page int, perPage int) int
-		ListGnss           func(childComplexity int, filter model.GNSSFilter, page int, perPage int) int
-		ListMeasurements   func(childComplexity int, filter model.MeasurementsFilter, page int, perPage int) int
-		ListSatellites     func(childComplexity int, filter model.SatellitesFilter, page int, perPage int) int
-		ListTask           func(childComplexity int, filter model.TaskFilter, page int, perPage int) int
-		Rinexlist          func(childComplexity int, input *model.RinexInput, page int, perPage int) int
-		__resolve__service func(childComplexity int) int
+		Authcheck            func(childComplexity int, input *model.AuthcheckInput) int
+		Errors               func(childComplexity int) int
+		GenerateRecieverCode func(childComplexity int, filter model.CodeRecieverInput) int
+		ListDevice           func(childComplexity int, filter model.DeviceFilter, page int, perPage int) int
+		ListGnss             func(childComplexity int, filter model.GNSSFilter, page int, perPage int) int
+		ListMeasurements     func(childComplexity int, filter model.MeasurementsFilter, page int, perPage int) int
+		ListSatellites       func(childComplexity int, filter model.SatellitesFilter, page int, perPage int) int
+		ListTask             func(childComplexity int, filter model.TaskFilter, page int, perPage int) int
+		Rinexlist            func(childComplexity int, input *model.RinexInput, page int, perPage int) int
+		__resolve__service   func(childComplexity int) int
 	}
 
 	RinexPagination struct {
@@ -334,6 +341,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AuthorizationMutations.Signup(childComplexity, args["input"].(model.SignupInput)), true
+
+	case "CodeReciever.language":
+		if e.complexity.CodeReciever.Language == nil {
+			break
+		}
+
+		return e.complexity.CodeReciever.Language(childComplexity), true
+
+	case "CodeReciever.programCode":
+		if e.complexity.CodeReciever.ProgramCode == nil {
+			break
+		}
+
+		return e.complexity.CodeReciever.ProgramCode(childComplexity), true
+
+	case "CodeReciever.programName":
+		if e.complexity.CodeReciever.ProgramName == nil {
+			break
+		}
+
+		return e.complexity.CodeReciever.ProgramName(childComplexity), true
 
 	case "CoordsResults.x":
 		if e.complexity.CoordsResults.X == nil {
@@ -879,6 +907,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Errors(childComplexity), true
 
+	case "Query.generateRecieverCode":
+		if e.complexity.Query.GenerateRecieverCode == nil {
+			break
+		}
+
+		args, err := ec.field_Query_generateRecieverCode_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GenerateRecieverCode(childComplexity, args["filter"].(model.CodeRecieverInput)), true
+
 	case "Query.listDevice":
 		if e.complexity.Query.ListDevice == nil {
 			break
@@ -1233,6 +1273,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAuthcheckInput,
+		ec.unmarshalInputCodeRecieverInput,
 		ec.unmarshalInputCoordsInput,
 		ec.unmarshalInputCreateDeviceInput,
 		ec.unmarshalInputCreateSatelliteInput,
@@ -1634,6 +1675,17 @@ type AuthcheckOutput {
     """ Информация о юзере """
     userInfo: User!
 }`, BuiltIn: false},
+	{Name: "../../../../api/graphql/query/code.graphql", Input: `extend type Query {
+    """ Сгенерировать код для отправки данных на девайс """
+    generateRecieverCode(filter: CodeRecieverInput!): CodeReciever!
+}
+
+input CodeRecieverInput {
+    """ Идентификатор пользователя """
+    userId: ID!
+    """ Язык, на котором будет сгенерирован код """
+    typeLang: CodeLang! = "python"
+}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/query/gnss.graphql", Input: `extend type Query {
     """ Получить список GNSS """
     listGnss(filter: GNSSFilter!, page: Int! = 0, perPage: Int! = 10): GNSSPagination!
@@ -1782,6 +1834,18 @@ type Query
 
 type Mutation
 `, BuiltIn: false},
+	{Name: "../../../../api/graphql/types/code.graphql", Input: `""" Язык программирования """
+scalar CodeLang
+
+""" Программа """
+type CodeReciever {
+    """ Название программы(токен устройства + язык программирования) """
+    programName: String!
+    """ Язык программирования """
+    language: CodeLang!
+    """ Код программы """
+    programCode: String!
+}`, BuiltIn: false},
 	{Name: "../../../../api/graphql/types/device.graphql", Input: `""" Девайс """
 type Device {
     """ Индетификатор """
