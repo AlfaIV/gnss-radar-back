@@ -42,8 +42,8 @@ type CodeReciever struct {
 }
 
 type CodeRecieverInput struct {
-	//  Идентификатор пользователя
-	UserID string `json:"userId"`
+	//  Токен устройства
+	Token string `json:"token"`
 	//  Язык, на котором будет сгенерирован код
 	TypeLang string `json:"typeLang"`
 }

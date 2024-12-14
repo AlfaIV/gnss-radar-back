@@ -1681,8 +1681,8 @@ type AuthcheckOutput {
 }
 
 input CodeRecieverInput {
-    """ Идентификатор пользователя """
-    userId: ID!
+    """ Токен устройства """
+    token: ID!
     """ Язык, на котором будет сгенерирован код """
     typeLang: CodeLang! = "python"
 }`, BuiltIn: false},

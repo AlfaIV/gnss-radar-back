@@ -174,20 +174,20 @@ func (ec *executionContext) unmarshalInputCodeRecieverInput(ctx context.Context,
 		asMap["typeLang"] = "python"
 	}
 
-	fieldsInOrder := [...]string{"userId", "typeLang"}
+	fieldsInOrder := [...]string{"token", "typeLang"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "userId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+		case "token":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.UserID = data
+			it.Token = data
 		case "typeLang":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeLang"))
 			data, err := ec.unmarshalNCodeLang2string(ctx, v)

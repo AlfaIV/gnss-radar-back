@@ -377,14 +377,14 @@ func (g *GnssService) CodeGen(ctx context.Context, codegenReq model.CodeReciever
 	case "python":
 		pyCode, err := pythoncodegen.GenerateCode(model.PythonGenConfig{
 			BaseURL:   model.HardwareHandlersBaseAddress,
-			Token:     codegenReq.UserID,
+			Token:     codegenReq.Token,
 			SampleNum: 256,
 		})
 		if err != nil {
 			return model.CodeReciever{}, fmt.Errorf("pythoncodegen.GenerateCode: %w", err)
 		}
 		codeGenResp.Language = codegenReq.TypeLang
-		codeGenResp.ProgramName = codegenReq.UserID + "_" + codegenReq.TypeLang
+		codeGenResp.ProgramName = codegenReq.Token + "_" + codegenReq.TypeLang
 		codeGenResp.ProgramCode = pyCode
 	default:
 		return model.CodeReciever{}, fmt.Errorf("unsupported code generation language: %s", codegenReq.TypeLang)

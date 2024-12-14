@@ -29,22 +29,23 @@ func GenerateCode(config model.PythonGenConfig) (string, error) {
 	return buf.String(), nil
 }
 
-func SaveCodeToFile(config model.PythonGenConfig, filename string) error {
+func SaveCodeToFile(config model.PythonGenConfig, filename string) (*os.File, error) {
+
 	code, err := GenerateCode(config)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	file, err := os.Create(filename)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer file.Close()
 
 	_, err = file.WriteString(code)
 	if err != nil {
-		return err
+		file.Close()
+		return nil, err
 	}
 
-	return nil
+	return file, nil
 }

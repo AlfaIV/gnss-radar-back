@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/Gokert/gnss-radar/internal/pkg/middleware"
+	"github.com/Gokert/gnss-radar/internal/pkg/pythoncodegen"
 
 	gnss_radar "github.com/Gokert/gnss-radar/gen/go/api/proto/gnss-radar"
 	graph "github.com/Gokert/gnss-radar/internal/delivery/graphql"
@@ -79,6 +80,7 @@ func (a *App) HardwareHandlers(port string) error {
 	a.mux.Handle("/hardware/power", http.HandlerFunc(a.AddPower))
 	a.mux.Handle("/hardware/upload", http.HandlerFunc(a.UploadSP3))
 	a.mux.Handle("/hardware/pair_measurement", http.HandlerFunc(a.AddPairMeasurement))
+	a.mux.Handle("/codegen/download", http.HandlerFunc(a.CodeGenDownload))
 
 	portNum, err := strconv.Atoi(port)
 	if err != nil {
@@ -230,6 +232,31 @@ func (s *GnssGrpc) ListenAndServeGrpc(network, port string) error {
 	}
 
 	return nil
+}
+
+func (a *App) CodeGenDownload(w http.ResponseWriter, r *http.Request) {
+	var downloadCodeReq model.CodeRecieverInput
+	if err := json.NewDecoder(r.Body).Decode(&downloadCodeReq); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	switch downloadCodeReq.TypeLang {
+	case "python":
+		codeFile, err := pythoncodegen.SaveCodeToFile(model.PythonGenConfig{
+			BaseURL:   model.HardwareHandlersBaseAddress,
+			Token:     downloadCodeReq.Token,
+			SampleNum: 256,
+		}, downloadCodeReq.Token+"_"+downloadCodeReq.TypeLang)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s.py", downloadCodeReq.Token+"_"+downloadCodeReq.TypeLang))
+		http.ServeFile(w, r, codeFile.Name())
+		os.Remove(codeFile.Name())
+	default:
+		http.Error(w, "Unsupported code generation language", http.StatusBadRequest)
+	}
 }
 
 func (s *server) GetStatus(ctx context.Context, req *gnss_radar.GetStatusRequest) (*gnss_radar.GetStatusResponse, error) {
