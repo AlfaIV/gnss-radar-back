@@ -11,7 +11,7 @@ import (
 
 type Middleware func(http.Handler) http.Handler
 
-const permissionDenied = "permission denied"
+//const permissionDenied = "permission denied"
 
 type IMiddlewareService interface {
 	CallMiddlewares() Middleware

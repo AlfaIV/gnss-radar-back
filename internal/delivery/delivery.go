@@ -130,14 +130,12 @@ func (a *App) AddPower(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := a.hardwareService.CompareDeviceToken(r.Context(), req.Token)
-	if err != nil {
+	if err := a.hardwareService.CompareDeviceToken(r.Context(), req.Token); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = a.hardwareService.AddPower(r.Context(), req)
-	if err != nil {
+	if err := a.hardwareService.AddPower(r.Context(), req); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -151,14 +149,12 @@ func (a *App) AddPairMeasurement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := a.hardwareService.CompareDeviceToken(r.Context(), req.Token)
-	if err != nil {
+	if err := a.hardwareService.CompareDeviceToken(r.Context(), req.Token); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = a.hardwareService.AddPairMeasurement(r.Context(), req)
-	if err != nil {
+	if err := a.hardwareService.AddPairMeasurement(r.Context(), req); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -174,14 +170,12 @@ func (a *App) UploadSP3(w http.ResponseWriter, r *http.Request) {
 
 	randomID := uuid.New().String()
 	saveDir := filepath.Join("sp3", randomID)
-	err := os.MkdirAll(saveDir, os.ModePerm)
-	if err != nil {
+	if err := os.MkdirAll(saveDir, os.ModePerm); err != nil {
 		http.Error(w, "Failed to create directory", http.StatusInternalServerError)
 		return
 	}
 
-	err = r.ParseMultipartForm(10 << 20)
-	if err != nil {
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		http.Error(w, "Failed to parse form", http.StatusBadRequest)
 		return
 	}
@@ -203,15 +197,13 @@ func (a *App) UploadSP3(w http.ResponseWriter, r *http.Request) {
 		}
 		defer out.Close()
 
-		_, err = io.Copy(out, file)
-		if err != nil {
+		if _, err = io.Copy(out, file); err != nil {
 			http.Error(w, "Failed to copy file", http.StatusInternalServerError)
 			return
 		}
 	}
 
-	err = a.hardwareService.UploadSP3(r.Context(), saveDir)
-	if err != nil {
+	if err := a.hardwareService.UploadSP3(r.Context(), saveDir); err != nil {
 		http.Error(w, fmt.Sprintf("Failed to process files: %v", err), http.StatusInternalServerError)
 		return
 	}

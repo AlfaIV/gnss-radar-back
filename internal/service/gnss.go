@@ -368,7 +368,50 @@ func (g *GnssService) ListMeasurements(ctx context.Context, measurementReq model
 		return nil, fmt.Errorf("gnssStore.ListMeasurements: %w", err)
 	}
 
-	return measurements, nil
+	if len(measurements) == 0 {
+		return []*model.Measurement{}, nil
+	}
+
+	measurementsGroupByToken := lo.GroupBy(measurements, func(measurement *model.Measurement) string {
+		return measurement.Token
+	})
+
+	var newMeasurements []*model.Measurement
+	for _, bufMeasurements := range measurementsGroupByToken {
+		var spectrum, dataPower []float64
+
+		//временно
+		newMeasurement := &model.Measurement{
+			ID:           bufMeasurements[0].ID,
+			Token:        bufMeasurements[0].Token,
+			StartTime:    bufMeasurements[0].StartTime,
+			Group:        bufMeasurements[0].Group,
+			SignalType:   bufMeasurements[0].SignalType,
+			Target:       bufMeasurements[0].Target,
+			DataSpectrum: bufMeasurements[0].DataSpectrum,
+			DataPower:    bufMeasurements[0].DataPower,
+		}
+
+		for _, bufMeasurement := range bufMeasurements {
+			if bufMeasurement.DataSpectrum != nil {
+				spectrum = append(spectrum, bufMeasurement.DataSpectrum.Spectrum...)
+			}
+			if bufMeasurement.DataPower != nil {
+				dataPower = append(dataPower, bufMeasurement.DataPower.Power...)
+			}
+		}
+
+		newMeasurement.EndTime = bufMeasurements[len(bufMeasurements)-1].EndTime
+		if newMeasurement.DataSpectrum != nil {
+			newMeasurement.DataSpectrum.Spectrum = spectrum
+		}
+		if newMeasurement.DataPower != nil {
+			newMeasurement.DataPower.Power = dataPower
+		}
+		newMeasurements = append(newMeasurements, newMeasurement)
+	}
+
+	return newMeasurements, nil
 }
 
 func (g *GnssService) CodeGen(ctx context.Context, codegenReq model.CodeRecieverInput) (model.CodeReciever, error) {
