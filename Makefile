@@ -1,16 +1,8 @@
 KEEP_IMAGES = nginx postgres redis
 
-.generate-graphql:
-	go run github.com/99designs/gqlgen generate
-
-build:
-#	go get github.com/99designs/gqlgen/graphql/handler/lru@v0.17.49
-#	go get github.com/99designs/gqlgen/graphql/handler/extension@v0.17.49
-
-	docker compose up --build
-
-up:
-	docker compose up
+build-images:
+	docker build -t gateway-image -f gnss-api-gateway/Dockerfile .
+	docker build -t auth-image -f gnss-auth/Dockerfile .
 
 docker-clear:
 	@echo "Остановка всех запущенных контейнеров..."
@@ -25,43 +17,15 @@ docker-clear:
 	@echo "Удаление всех Docker-образов, кроме: $(KEEP_IMAGES)"
 	docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep -v -e 'nginx' -e 'postgres' -e 'redis' | awk '{print $2}' | xargs -r docker rmi
 
-run-main:
-	go run cmd/gnss-radar/main.go
+start-networks:
+	@if [ -z "$$(docker network ls --filter name=gnss-radar-net -q)" ]; then \
+		docker network create --driver bridge gnss-radar-net; \
+	fi
 
-init:
-	go mod init github.com/Gokert/gnss-radar
+start-services:
+	docker compose -f deployments/docker-compose.yml up -d
 
-generate:
-	# go generate ./api/proto/gnss-radar/gnss-radar.proto
-	#protoc --go_out=./pb --go-grpc_out=./pb ./api/proto/gnss-radar/gnss-radar.proto
-	#go generate ./api/proto/gnss-radar/gnss-radar.proto
-	rm -rf gen
-	buf generate
+stop-services:
+	docker compose -f deployments/docker-compose.yml down
 
-docker-drop:
-	docker-compose down
-
-lint:
-	golangci-lint run
-
-gg:
-	go get github.com/99designs/gqlgen@v0.17.49
-	go get github.com/99designs/gqlgen/graphql/handler/lru@v0.17.49
-	go get github.com/99designs/gqlgen/graphql/handler/extension@v0.17.49
-
-	go run github.com/99designs/gqlgen generate
-
-gg-init:
-	go run github.com/99designs/gqlgen init
-
-migrate:
-	psql postgres -c "drop database if exists gnss;"
-	createdb gnss
-	goose -allow-missing -dir migrations postgres "dbname=gnss sslmode=disable" up
-
-SQL_NAME ?= new_sql
-
-create-goose:
-	goose -dir ./migrations -s create $(SQL_NAME) sql
-
-
+deploy: docker-clear build-images start-networks start-services
