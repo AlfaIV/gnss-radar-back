@@ -11,6 +11,5 @@ type Repository interface {
 	GetId(ctx context.Context, sessionId string) (string, error)
 }
 
-
-//2 недели жива сессия
+// 2 недели жива сессия
 const CookieTTL = 24 * 14 * time.Hour

@@ -16,6 +16,6 @@ type PgxIFace interface {
 }
 
 type UserRepo struct {
-	pool      PgxIFace
-	logger    *logrus.Logger
+	pool   PgxIFace
+	logger *logrus.Logger
 }

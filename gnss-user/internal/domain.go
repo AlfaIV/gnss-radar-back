@@ -3,25 +3,26 @@ package user_domain
 import "context"
 
 type UserInfoRequest struct {
-	Login string `json:"login"`
+	Login    string `json:"login"`
 	Password string `json:"password"`
 }
 
 type UserInfoResponse struct {
-	Id string `json:"id"`
-	Login string `json:"login"`
-	Role string `json:"role"`
-	OrganizationName string `json:"organizationName"`
-	Name string `json:"name"`
-	Surname string `json:"surname"`
-	Api []string `json:"api"`
+	Id               string   `json:"id"`
+	Login            string   `json:"login"`
+	Role             string   `json:"role"`
+	OrganizationName string   `json:"organizationName"`
+	Name             string   `json:"name"`
+	Surname          string   `json:"surname"`
+	Api              []string `json:"api"`
+	Email            string   `json:"email"`
 }
 
 type CreateUserRequest struct {
-	Login string `json:"login"`
+	Login            string `json:"login"`
 	OrganizationName string `json:"organizationName"`
-	Name string `json:"name"`
-	Surname string `json:"surname"`
+	Name             string `json:"name"`
+	Surname          string `json:"surname"`
 }
 
 type Repository interface {

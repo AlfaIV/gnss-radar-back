@@ -26,6 +26,5 @@ func Setup(config *config.Config, authUsecase auth_domain.Usecase, logger *logru
 	user := base.Group("/user")
 	user.Use(userIDMiddleware.Process)
 
-
 	return mux
 }
