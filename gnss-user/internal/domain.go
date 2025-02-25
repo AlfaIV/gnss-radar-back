@@ -14,8 +14,8 @@ type UserInfoResponse struct {
 	OrganizationName string   `json:"organizationName"`
 	Name             string   `json:"name"`
 	Surname          string   `json:"surname"`
-	Api              []string `json:"api"`
 	Email            string   `json:"email"`
+	Api              []string `json:"api"`
 }
 
 type CreateUserRequest struct {
