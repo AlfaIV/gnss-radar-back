@@ -8,23 +8,22 @@ WORKDIR /source
 COPY . .
 
 RUN go mod download && \
-    go build -ldflags="-s -w" -o /app/auth ./cmd/main.go
+    go build -ldflags="-s -w" -o /app/user ./cmd/main.go
 
 FROM alpine:3.18
 
 RUN apk --no-cache add ca-certificates tzdata
 
 ENV AUTH_ADDR=:8001 \
-    REDIS_ADDR=:6379 \
     TZ=UTC \
 
-COPY --from=build /app/auth /auth
+COPY --from=build /app/user /user
 
 RUN adduser -D -g '' appuser && \
     chown -R appuser:appuser /auth
 
 USER appuser
 
-EXPOSE 8001
+EXPOSE 8002
 
-CMD ["/auth"]
+CMD ["/user"]

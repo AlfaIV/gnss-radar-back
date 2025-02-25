@@ -5,7 +5,7 @@ import (
 	"gnss-radar/gnss-api-gateway/internal/mux"
 	"os"
 
-	auth_proto "gnss-radar/gnss-api-gateway/internal/auth/proto"
+	auth_proto "gnss-radar/api/proto/auth"
 	auth_client "gnss-radar/gnss-api-gateway/internal/auth/service/client"
 
 	"github.com/sirupsen/logrus"

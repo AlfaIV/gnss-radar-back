@@ -2,8 +2,8 @@ package auth_server
 
 import (
 	"context"
+	proto "gnss-radar/api/proto/auth"
 	auth_domain "gnss-radar/gnss-auth/internal/auth"
-	"gnss-radar/gnss-auth/internal/auth/proto"
 
 	google_proto "github.com/golang/protobuf/ptypes/empty"
 

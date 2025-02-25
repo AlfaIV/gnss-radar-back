@@ -1,4 +1,0 @@
-extend type Query {
-    """ Словарь ошибок """
-    errors: [Error]!
-}

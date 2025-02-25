@@ -2,7 +2,7 @@ package auth_client
 
 import (
 	"context"
-	"gnss-radar/gnss-api-gateway/internal/auth/proto"
+	proto "gnss-radar/api/proto/auth"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"

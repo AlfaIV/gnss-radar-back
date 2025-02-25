@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	auth_proto "gnss-radar/gnss-auth/internal/auth/proto"
+	auth_proto "gnss-radar/api/proto/auth"
 	auth_server "gnss-radar/gnss-auth/internal/auth/server"
 	auth_repository "gnss-radar/gnss-auth/internal/repository"
 	"net"

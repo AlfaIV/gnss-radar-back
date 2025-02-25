@@ -17,6 +17,18 @@ docker-clear:
 	@echo "Удаление всех Docker-образов, кроме: $(KEEP_IMAGES)"
 	docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep -v -e 'nginx' -e 'postgres' -e 'redis' | awk '{print $2}' | xargs -r docker rmi
 
+PROTO_ROOT = api/proto
+GO_OUT = .
+
+generate:
+	find $(PROTO_ROOT) -name '*.proto' -exec sh -c ' \
+		protoc \
+			--proto_path=$(PROTO_ROOT) \
+			--go_out=$(GO_OUT) --go_opt=paths=source_relative \
+			--go-grpc_out=$(GO_OUT) --go-grpc_opt=paths=source_relative \
+			"$$1" \
+	' _ {} \;
+
 start-networks:
 	@if [ -z "$$(docker network ls --filter name=gnss-radar-net -q)" ]; then \
 		docker network create --driver bridge gnss-radar-net; \
