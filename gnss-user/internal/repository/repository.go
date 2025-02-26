@@ -19,3 +19,7 @@ type UserRepo struct {
 	pool   PgxIFace
 	logger *logrus.Logger
 }
+
+func NewUserRepo(pool PgxIFace, logger *logrus.Logger) *UserRepo {
+	return &UserRepo{pool: pool, logger: logger}
+}
