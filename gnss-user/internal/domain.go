@@ -28,7 +28,7 @@ type CreateUserRequest struct {
 type Repository interface {
 	GetUserInfo(ctx context.Context, request UserInfoRequest) (UserInfoResponse, error)
 	CreateUser(ctx context.Context, request CreateUserRequest) error
-	ValidatePermissions(ctx context.Context, userId string) (bool, error)
+	ValidatePermissions(ctx context.Context, userId string, api string) (bool, error)
 	ResolveUserSignUp(ctx context.Context, userLogin string) error
 	ChangeUserPermissions(ctx context.Context, userLogin string, userRole string) error
 }
