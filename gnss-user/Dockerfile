@@ -14,8 +14,9 @@ FROM alpine:3.18
 
 RUN apk --no-cache add ca-certificates tzdata
 
-ENV AUTH_ADDR=:8001 \
+ENV USER_ADDR=:8002 \
     TZ=UTC \
+    PG_URL=https://gp.com \
 
 COPY --from=build /app/user /user
 

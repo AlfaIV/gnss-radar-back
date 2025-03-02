@@ -9,8 +9,12 @@ service UserService {
 
     rpc Login(LoginRequest) returns (User) {}
     rpc SignUp(SignUpRequest) returns (Status) {}
-    rpc GetUseInfo(UserId) returns (User) {}
-    rpc GetListUsers(google.protobuf.Empty) returns (UserList) {}
+    rpc GetUserInfoById(UserId) returns (User) {}
+    rpc GetListUsers(PaginatedRequest) returns (UserList) {}
+    rpc GetSignUpRequestions(PaginatedRequest) returns (UserList) {}
+    rpc ValidatePermissions(PermissionValidaton) returns (Status) {}
+    rpc ResolveUserSignUp(SignUpResolution) returns (google.protobuf.Empty) {}
+    rpc ChangeUserPermissions(PermissionChange) returns (google.protobuf.Empty) {}
 }
 
 message LoginRequest {
@@ -25,6 +29,7 @@ message SignUpRequest {
     string surname = 4;                 
     string password =  5;  
     string email = 6;
+    string role = 7;
 }
 
 message PaginatedRequest {
@@ -53,6 +58,21 @@ message UserList {
 
 message Status {
     bool is_ok = 1;
+}
+
+message PermissionValidaton {
+    string userId = 1;
+    string api = 2;
+}
+
+message SignUpResolution {
+    string userLogin = 1;
+    string resolution = 2;
+}
+
+message PermissionChange {
+    string userLogin = 1;
+    string userRole = 2;
 }
 
 // protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/user/user.proto

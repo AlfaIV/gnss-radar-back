@@ -8,6 +8,7 @@ type UserInfoRequest struct {
 }
 
 type UserInfoResponse struct {
+	Id string `json:"id"`
 	Login            string   `json:"login"`
 	Role             string   `json:"role"`
 	OrganizationName string   `json:"organizationName"`
@@ -24,6 +25,7 @@ type CreateUserRequest struct {
 	Surname          string `json:"surname"`
 	Password         string `json:"password"`
 	Email            string `json:"email"`
+	Role 			 string `json:"role"`
 }
 
 type PaginatedRequest struct {
@@ -50,6 +52,7 @@ type UserForAdmin struct {
 
 type Repository interface {
 	GetUserInfo(ctx context.Context, request UserInfoRequest) (UserInfoResponse, error)
+	GetUserInfoById(ctx context.Context, userId string) (UserInfoResponse, error)
 	CreateUser(ctx context.Context, request CreateUserRequest) error
 	ValidatePermissions(ctx context.Context, userId string, api string) (bool, error)
 	ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error

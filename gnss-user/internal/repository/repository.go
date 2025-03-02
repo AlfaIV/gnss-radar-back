@@ -75,15 +75,59 @@ func (ur *UserRepo) GetUserInfo(ctx context.Context, request user_domain.UserInf
 	return UserInfo, nil
 }
 
+func (ur *UserRepo) GetUserInfoById(ctx context.Context, userId string) (user_domain.UserInfoResponse, error) {
+	userQuery := `
+        SELECT 
+            password, 
+            login, 
+            email, 
+            first_name, 
+            second_name, 
+            role, 
+            organization_name 
+        FROM user 
+        WHERE id = $1;
+    `
+	var hashedPassword string
+	var UserInfo user_domain.UserInfoResponse
+
+	err := ur.pool.QueryRow(ctx, userQuery, userId).Scan(
+		&hashedPassword,
+		&UserInfo.Login,
+		&UserInfo.Email,
+		&UserInfo.Name,
+		&UserInfo.Surname,
+		&UserInfo.Role,
+		&UserInfo.OrganizationName,
+	)
+	if err != nil {
+		return UserInfo, errors.Wrapf(err, "failed to get user info for user with id %s", userId)
+	}
+
+	apiQuery := `
+        SELECT COALESCE(array_agg(api), '{}'::text[]) 
+        FROM role_api 
+        WHERE role = $1;
+    `
+	var apis []string
+	if err := ur.pool.QueryRow(ctx, apiQuery, UserInfo.Role).Scan(&apis); err != nil {
+		return UserInfo, errors.Wrapf(err, "failed to get APIs for role %s", UserInfo.Role)
+	}
+
+	UserInfo.Api = apis
+
+	return UserInfo, nil
+}
+
 func (ur *UserRepo) CreateUser(ctx context.Context, request user_domain.CreateUserRequest) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), 8)
 	if err != nil {
 		return errors.Wrapf(err, "failed to generate hashed password for %s", request.Login)
 	}
 
-	createUserQuery := "insert into user (login, email, password, first_name, second_name, organization_name) values ($1, $2, $3, $4, $5, $6)"
+	createUserQuery := "insert into user (login, email, password, first_name, second_name, organization_name, role) values ($1, $2, $3, $4, $5, $6, $7)"
 
-	if _, err := ur.pool.Query(ctx, createUserQuery, request.Login, request.Email, hashedPassword, request.Name, request.Surname, request.OrganizationName); err != nil {
+	if _, err := ur.pool.Query(ctx, createUserQuery, request.Login, request.Email, hashedPassword, request.Name, request.Surname, request.OrganizationName, request.Role); err != nil {
 		return errors.Wrapf(err, "failed to create account for %s", request.Login)
 	}
 
