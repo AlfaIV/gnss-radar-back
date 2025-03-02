@@ -2,6 +2,7 @@ DROP EXTENSION IF EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 create type user_role as enum ('ADMIN', 'SUPERVISOR', 'USER');
+create type user_status as enum ('APPROVED', 'DECLINED', 'PENDING');
 
 DROP TABLE IF EXISTS profile CASCADE;
 CREATE TABLE IF NOT EXISTS profile (
@@ -14,7 +15,8 @@ CREATE TABLE IF NOT EXISTS profile (
     email TEXT NOT NULL UNIQUE DEFAULT '',
     organization_name TEXT NOT NULL DEFAULT '',
     first_name TEXT NOT NULL DEFAULT '',
-    second_name TEXT NOT NULL DEFAULT ''
+    second_name TEXT NOT NULL DEFAULT '',
+    status user_status NOT NULL DEFAULT 'PENDING'
 );
 
 DROP TABLE IF EXISTS role_api CASCADE;
