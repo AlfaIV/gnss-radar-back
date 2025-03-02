@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+option go_package = "gnss-radar/api/proto/user";
+
+import "google/protobuf/empty.proto";
+
+
+service UserService {
+
+    rpc Login(LoginRequest) returns (User) {}
+    rpc SignUp(SignUpRequest) returns (Status) {}
+    rpc GetUserInfoById(UserId) returns (User) {}
+    rpc GetListUsers(PaginatedRequest) returns (UserList) {}
+    rpc GetSignUpRequestions(PaginatedRequest) returns (UserList) {}
+    rpc ValidatePermissions(PermissionValidaton) returns (Status) {}
+    rpc ResolveUserSignUp(SignUpResolution) returns (google.protobuf.Empty) {}
+    rpc ChangeUserPermissions(PermissionChange) returns (google.protobuf.Empty) {}
+}
+
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message SignUpRequest {
+    string login = 1;
+    string organization_name = 2;
+    string name = 3;           
+    string surname = 4;                 
+    string password =  5;  
+    string email = 6;
+    string role = 7;
+}
+
+message PaginatedRequest {
+    uint64 page = 1;
+    uint64 size = 2;
+}
+
+message UserId {
+    string id = 1;
+}
+
+message User {
+    string id = 1;
+    string login = 2;
+    string role = 3;
+    string organization_name = 4;       
+    string name = 5;         
+    string surname = 6;      
+    string email = 7;       
+    repeated string api = 8;
+}
+
+message UserList {
+    repeated User users = 1; 
+}
+
+message Status {
+    bool is_ok = 1;
+}
+
+message PermissionValidaton {
+    string userId = 1;
+    string api = 2;
+}
+
+message SignUpResolution {
+    string userLogin = 1;
+    string resolution = 2;
+}
+
+message PermissionChange {
+    string userLogin = 1;
+    string userRole = 2;
+}
+
+// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/user/user.proto
