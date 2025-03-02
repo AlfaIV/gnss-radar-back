@@ -143,7 +143,7 @@ func (ur *UserRepo) ChangeUserPermissions(ctx context.Context, userLogin string,
 }
 
 func (ur *UserRepo) GetSignUpRequestions(ctx context.Context, params user_domain.PaginatedRequest) ([]user_domain.UserSignUpRequestion, error) {
-    query := `
+	query := `
         SELECT 
             login, 
             email, 
@@ -156,45 +156,45 @@ func (ur *UserRepo) GetSignUpRequestions(ctx context.Context, params user_domain
         LIMIT $1 OFFSET $2;
     `
 
-    offset := (params.Page - 1) * params.Size
+	offset := (params.Page - 1) * params.Size
 
-    rows, err := ur.pool.Query(
-        ctx,
-        query,
-        params.Size,
-        offset,
-    )
-    if err != nil {
-        return nil, errors.Wrap(err, "failed to get requestions")
-    }
-    defer rows.Close()
+	rows, err := ur.pool.Query(
+		ctx,
+		query,
+		params.Size,
+		offset,
+	)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get requestions")
+	}
+	defer rows.Close()
 
-    var users []user_domain.UserSignUpRequestion
+	var users []user_domain.UserSignUpRequestion
 
-    for rows.Next() {
-        var user user_domain.UserSignUpRequestion
-        err := rows.Scan(
-            &user.Login,
-            &user.Email,
-            &user.Name,
-            &user.Surname,
+	for rows.Next() {
+		var user user_domain.UserSignUpRequestion
+		err := rows.Scan(
+			&user.Login,
+			&user.Email,
+			&user.Name,
+			&user.Surname,
 			&user.OrganizationName,
-        )
-        if err != nil {
-            return nil, errors.Wrap(err, "failed to scan row")
-        }
-        users = append(users, user)
-    }
+		)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to scan row")
+		}
+		users = append(users, user)
+	}
 
-    if err := rows.Err(); err != nil {
-        return nil, errors.Wrap(err, "error during rows iteration")
-    }
+	if err := rows.Err(); err != nil {
+		return nil, errors.Wrap(err, "error during rows iteration")
+	}
 
-    return users, nil
+	return users, nil
 }
 
 func (ur *UserRepo) GetUserForAdmin(ctx context.Context, params user_domain.PaginatedRequest) ([]user_domain.UserForAdmin, error) {
-    query := `
+	query := `
         SELECT 
             login, 
             email, 
@@ -208,40 +208,40 @@ func (ur *UserRepo) GetUserForAdmin(ctx context.Context, params user_domain.Pagi
         LIMIT $1 OFFSET $2;
     `
 
-    offset := (params.Page - 1) * params.Size
+	offset := (params.Page - 1) * params.Size
 
-    rows, err := ur.pool.Query(
-        ctx,
-        query,
-        params.Size,
-        offset,
-    )
-    if err != nil {
-        return nil, errors.Wrap(err, "failed to get requestions")
-    }
-    defer rows.Close()
+	rows, err := ur.pool.Query(
+		ctx,
+		query,
+		params.Size,
+		offset,
+	)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get requestions")
+	}
+	defer rows.Close()
 
-    var users []user_domain.UserForAdmin
+	var users []user_domain.UserForAdmin
 
-    for rows.Next() {
-        var user user_domain.UserForAdmin
-        err := rows.Scan(
-            &user.Login,
-            &user.Email,
-            &user.Name,
-            &user.Surname,
+	for rows.Next() {
+		var user user_domain.UserForAdmin
+		err := rows.Scan(
+			&user.Login,
+			&user.Email,
+			&user.Name,
+			&user.Surname,
 			&user.OrganizationName,
 			&user.Role,
-        )
-        if err != nil {
-            return nil, errors.Wrap(err, "failed to scan row")
-        }
-        users = append(users, user)
-    }
+		)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to scan row")
+		}
+		users = append(users, user)
+	}
 
-    if err := rows.Err(); err != nil {
-        return nil, errors.Wrap(err, "error during rows iteration")
-    }
+	if err := rows.Err(); err != nil {
+		return nil, errors.Wrap(err, "error during rows iteration")
+	}
 
-    return users, nil
+	return users, nil
 }

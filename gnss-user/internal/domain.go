@@ -45,7 +45,7 @@ type UserForAdmin struct {
 	Email            string `json:"email"`
 	Login            string `json:"login"`
 	OrganizationName string `json:"organizationName"`
-	Role			 string `json:"role"`
+	Role             string `json:"role"`
 }
 
 type Repository interface {
