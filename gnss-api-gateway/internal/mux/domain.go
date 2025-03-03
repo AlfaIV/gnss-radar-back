@@ -7,6 +7,7 @@ import (
 	middlewarecustom "gnss-radar/gnss-api-gateway/internal/mux/middleware"
 	user_domain_gateway "gnss-radar/gnss-api-gateway/internal/user"
 	user_handler "gnss-radar/gnss-api-gateway/internal/user/delivery"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -32,6 +33,11 @@ func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, log
 	mux.Use(middleware.Recover())
 	mux.Use(middleware.CORSWithConfig(config.CORS))
 	mux.Use(middleware.RequestID())
+
+	// Проверка на то, жив ли сервер
+	mux.GET("/healthcheck", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{"status": "OK"})
+	})
 
 	base := mux.Group("/api/v1")
 

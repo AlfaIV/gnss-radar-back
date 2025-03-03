@@ -1,4 +1,4 @@
-package auth_server
+package user_server
 
 import (
 	"context"
@@ -6,10 +6,10 @@ import (
 
 	user_domain "gnss-radar/gnss-user/internal"
 
-	google_proto "github.com/golang/protobuf/ptypes/empty"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type UserServiceServer struct {
@@ -146,20 +146,20 @@ func (s *UserServiceServer) ValidatePermissions(ctx context.Context, req *proto.
 	return &proto.Status{IsOk: result}, nil
 }
 
-func (s *UserServiceServer) ResolveUserSignUp(ctx context.Context, req *proto.SignUpResolution) (*google_proto.Empty, error) {
+func (s *UserServiceServer) ResolveUserSignUp(ctx context.Context, req *proto.SignUpResolution) (*emptypb.Empty, error) {
 	err := s.repo.ResolveUserSignUp(ctx, req.UserLogin, req.Resolution)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "[USER]: %v", err)
 	}
 
-	return &google_proto.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
-func (s *UserServiceServer) ChangeUserPermissions(ctx context.Context, req *proto.PermissionChange) (*google_proto.Empty, error) {
-	err := s.repo.ResolveUserSignUp(ctx, req.UserLogin, req.UserRole)
+func (s *UserServiceServer) ChangeUserPermissions(ctx context.Context, req *proto.PermissionChange) (*emptypb.Empty, error) {
+	err := s.repo.ChangeUserPermissions(ctx, req.UserLogin, req.UserRole)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "[USER]: %v", err)
 	}
 
-	return &google_proto.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }

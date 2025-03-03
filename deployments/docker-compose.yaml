@@ -41,6 +41,10 @@ services:
   gnss-api-gateway:
     image: gateway-image:latest
     container_name: gateway
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
     networks:
       - gnss-radar-net
 
@@ -50,6 +54,13 @@ services:
     depends_on:
       service-redis-auth:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=:8001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+      start_interval: 5s
     networks:
       - gnss-radar-net
       - gnss-auth-subnet
@@ -62,6 +73,13 @@ services:
     depends_on:
       service-postgres-user:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=:8002"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+      start_interval: 5s
     networks:
       - gnss-radar-net
       - gnss-user-subnet

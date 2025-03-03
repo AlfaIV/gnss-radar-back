@@ -1,9 +1,14 @@
 package main
 
 import (
+	"context"
 	"gnss-radar/gnss-api-gateway/internal/config"
 	"gnss-radar/gnss-api-gateway/internal/mux"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	auth_proto "gnss-radar/api/proto/auth"
 	auth_handler "gnss-radar/gnss-api-gateway/internal/auth/delivery"
@@ -67,6 +72,28 @@ func main() {
 		User: userHandler,
 	}, logger)
 
-	e.Logger.Fatal(e.Start(os.Getenv("GATEWAY_ADDR")))
+	server := &http.Server{
+		Addr:    os.Getenv("GATEWAY_ADDR"),
+		Handler: e,
+	}
+
+	// Плавная остановка
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Fatalf("[GATEWAY]: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	logger.Info("[GATEWAY]: Shutting down...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		logger.Errorf("[GATEWAY]: %v", err)
+	}
 
 }
