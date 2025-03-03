@@ -26,7 +26,7 @@ func NewUserServer(repo user_domain.Repository, logger *logrus.Logger) UserServi
 func (s *UserServiceServer) Login(ctx context.Context, req *proto.LoginRequest) (*proto.User, error) {
 
 	userInfoReq := user_domain.UserInfoRequest{
-		Login:    req.Username,
+		Login:    req.Login,
 		Password: req.Password,
 	}
 
@@ -37,7 +37,7 @@ func (s *UserServiceServer) Login(ctx context.Context, req *proto.LoginRequest) 
 	}
 
 	return &proto.User{
-		Id: userInfo.Id,
+		Id:               userInfo.Id,
 		Login:            userInfo.Login,
 		Role:             userInfo.Role,
 		OrganizationName: userInfo.OrganizationName,
@@ -74,7 +74,7 @@ func (s *UserServiceServer) GetUserInfoById(ctx context.Context, req *proto.User
 	}
 
 	return &proto.User{
-		Id: userInfo.Id,
+		Id:               userInfo.Id,
 		Login:            userInfo.Login,
 		Role:             userInfo.Role,
 		OrganizationName: userInfo.OrganizationName,
@@ -141,7 +141,6 @@ func (s *UserServiceServer) ValidatePermissions(ctx context.Context, req *proto.
 		return nil, status.Errorf(codes.Internal, "[USER]: %v", err)
 	}
 
-
 	return &proto.Status{IsOk: result}, nil
 }
 
@@ -151,7 +150,6 @@ func (s *UserServiceServer) ResolveUserSignUp(ctx context.Context, req *proto.Si
 		return nil, status.Errorf(codes.Internal, "[USER]: %v", err)
 	}
 
-
 	return &google_proto.Empty{}, nil
 }
 
@@ -160,7 +158,6 @@ func (s *UserServiceServer) ChangeUserPermissions(ctx context.Context, req *prot
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "[USER]: %v", err)
 	}
-
 
 	return &google_proto.Empty{}, nil
 }

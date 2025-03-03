@@ -8,7 +8,7 @@ type UserInfoRequest struct {
 }
 
 type UserInfoResponse struct {
-	Id string `json:"id"`
+	Id               string   `json:"id"`
 	Login            string   `json:"login"`
 	Role             string   `json:"role"`
 	OrganizationName string   `json:"organizationName"`
@@ -25,7 +25,7 @@ type CreateUserRequest struct {
 	Surname          string `json:"surname"`
 	Password         string `json:"password"`
 	Email            string `json:"email"`
-	Role 			 string `json:"role"`
+	Role             string `json:"role"`
 }
 
 type PaginatedRequest struct {

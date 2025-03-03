@@ -14,6 +14,8 @@ FROM alpine:3.18
 
 RUN apk --no-cache add ca-certificates tzdata
 
+#Потом на CICD прокину
+
 ENV USER_ADDR=:8002 \
     TZ=UTC \
     PG_URL=https://gp.com \
