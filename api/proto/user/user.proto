@@ -18,7 +18,7 @@ service UserService {
 }
 
 message LoginRequest {
-    string username = 1;
+    string login = 1;
     string password = 2;
 }
 
@@ -48,8 +48,9 @@ message User {
     string organization_name = 4;       
     string name = 5;         
     string surname = 6;      
-    string email = 7;       
-    repeated string api = 8;
+    string email = 7;
+    string status = 8;
+    repeated string api = 9;
 }
 
 message UserList {
