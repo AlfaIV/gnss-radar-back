@@ -1,48 +1,76 @@
 version: '3.8'
 services:
-  redis:
-    image: "redis:latest"
-    ports:
-      - "5002:6379"
-    networks:
-      - gnss-radar-net
-
-  postgres:
-    image: "postgres:latest"
-    environment:
-      POSTGRES_DB: "gnss"
-      POSTGRES_PASSWORD: "admin"
-      POSTGRES_USER: "admin"
+  service-redis-auth:
+    image: redis:7
+    container_name: db-redis-auth
+    restart: always
     volumes:
-      - ./scripts/sql/init:/docker-entrypoint-initdb.d
-    ports:
-      - "5431:5432"
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - gnss-auth-subnet
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  service-postgres-user:
+    image: "postgres:14"
+    container_name: db-postgres-user
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_USER_DB}
+      POSTGRES_USER: ${POSTGRES_USER_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_USER_PASSWORD}
+    volumes:
+    #Миграции и инициализация
+      - type: bind
+        source: ~/postgres-migrations/user
+        target: /docker-entrypoint-initdb.d/migration_a.sql
+      - type: bind
+        source: ~/postgres-data
+        target: /var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER_USER} -d ${POSTGRES_USER_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gnss-user-subnet
+
+  gnss-api-gateway:
+    image: gateway-image:latest
+    container_name: gateway
     networks:
       - gnss-radar-net
 
-  nginx:
-    image: "alfaiv/gnss-radar:latest"
-    ports:
-      - "1000:80"
+  gnss-auth:
+    image: auth-image:latest
+    container_name: auth
     depends_on:
-      - app
+      service-redis-auth:
+        condition: service_healthy
     networks:
       - gnss-radar-net
+      - gnss-auth-subnet
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "5000"
-      - "5001"
+  gnss-user:
+    image: user-image:latest
+    container_name: user
+    environment:
+      PG_ADDR: ${DATABASE_USER_URL}
     depends_on:
-      - redis
-      - postgres
+      service-postgres-user:
+        condition: service_healthy
     networks:
       - gnss-radar-net
+      - gnss-user-subnet
 
 networks:
   gnss-radar-net:
     driver: bridge
     external: true
+  gnss-user-subnet:
+    driver: bridge
+  gnss-auth-subnet:
+    driver: bridge

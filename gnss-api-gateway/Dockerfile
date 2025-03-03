@@ -17,8 +17,8 @@ RUN apk --no-cache add ca-certificates tzdata
 
 ENV GATEWAY_ADDR=:8000 \
     TZ=UTC \
-    AUTH_ADDR=:8001 \
-    USER_ADDR=:8002 \
+    AUTH_ADDR=gnss-auth:8001 \
+    USER_ADDR=gnss-user:8002 
 
 COPY --from=build /app/gateway /gateway
 COPY --from=build /source/config /config/

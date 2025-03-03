@@ -17,13 +17,11 @@ RUN apk --no-cache add ca-certificates tzdata
 #Потом на CICD прокину
 
 ENV USER_ADDR=:8002 \
-    TZ=UTC \
-    PG_URL=https://gp.com \
-
+    TZ=UTC
 COPY --from=build /app/user /user
 
 RUN adduser -D -g '' appuser && \
-    chown -R appuser:appuser /auth
+    chown -R appuser:appuser /user
 
 USER appuser
 

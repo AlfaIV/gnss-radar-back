@@ -1,8 +1,9 @@
-KEEP_IMAGES = nginx postgres redis
+KEEP_IMAGES = postgres redis
 
 build-images:
 	docker build -t gateway-image -f gnss-api-gateway/Dockerfile .
 	docker build -t auth-image -f gnss-auth/Dockerfile .
+	docker build -t user-image -f gnss-user/Dockerfile .
 
 docker-clear:
 	@echo "Остановка всех запущенных контейнеров..."
