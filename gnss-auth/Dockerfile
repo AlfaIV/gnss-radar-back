@@ -15,8 +15,8 @@ FROM alpine:3.18
 RUN apk --no-cache add ca-certificates tzdata
 
 ENV AUTH_ADDR=:8001 \
-    REDIS_ADDR=:6379 \
-    TZ=UTC \
+    REDIS_ADDR=db-redis-auth:6379 \
+    TZ=UTC 
 
 COPY --from=build /app/auth /auth
 

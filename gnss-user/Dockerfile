@@ -18,12 +18,12 @@ RUN apk --no-cache add ca-certificates tzdata
 
 ENV USER_ADDR=:8002 \
     TZ=UTC \
-    PG_URL=https://gp.com \
+    PG_URL=postgres://gnss_pg_user_admin:pish2052rl1gnssuser@service-postgres:5432/gnss_radar_user
 
 COPY --from=build /app/user /user
 
 RUN adduser -D -g '' appuser && \
-    chown -R appuser:appuser /auth
+    chown -R appuser:appuser /user
 
 USER appuser
 
