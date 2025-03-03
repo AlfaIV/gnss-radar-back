@@ -44,6 +44,7 @@ func (s *UserServiceServer) Login(ctx context.Context, req *proto.LoginRequest) 
 		Name:             userInfo.Name,
 		Surname:          userInfo.Surname,
 		Email:            userInfo.Email,
+		Status:           userInfo.Status,
 		Api:              userInfo.Api,
 	}, nil
 }
@@ -81,6 +82,7 @@ func (s *UserServiceServer) GetUserInfoById(ctx context.Context, req *proto.User
 		Name:             userInfo.Name,
 		Surname:          userInfo.Surname,
 		Email:            userInfo.Email,
+		Status:           userInfo.Status,
 		Api:              userInfo.Api,
 	}, nil
 }

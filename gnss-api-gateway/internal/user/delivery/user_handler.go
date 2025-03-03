@@ -12,8 +12,8 @@ import (
 )
 
 type UserHandler struct {
-	userUsecase    user_domain_gateway.Usecase
-	logger         *logrus.Logger
+	userUsecase user_domain_gateway.Usecase
+	logger      *logrus.Logger
 }
 
 func NewHandler(
@@ -21,8 +21,8 @@ func NewHandler(
 	logger *logrus.Logger,
 ) UserHandler {
 	return UserHandler{
-		userUsecase:    user,
-		logger:         logger,
+		userUsecase: user,
+		logger:      logger,
 	}
 }
 

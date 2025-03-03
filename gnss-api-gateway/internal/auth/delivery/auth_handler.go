@@ -12,9 +12,9 @@ import (
 )
 
 type AuthHandler struct {
-	userUsecase    user_domain_gateway.Usecase
-	authUsecase    auth_domain_gateway.Usecase
-	logger         *logrus.Logger
+	userUsecase user_domain_gateway.Usecase
+	authUsecase auth_domain_gateway.Usecase
+	logger      *logrus.Logger
 }
 
 func NewHandler(
@@ -23,9 +23,9 @@ func NewHandler(
 	logger *logrus.Logger,
 ) AuthHandler {
 	return AuthHandler{
-		userUsecase:    user,
-		authUsecase:    auth,
-		logger:         logger,
+		userUsecase: user,
+		authUsecase: auth,
+		logger:      logger,
 	}
 }
 
@@ -137,4 +137,3 @@ func (h *AuthHandler) Me(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, userInfo)
 }
-

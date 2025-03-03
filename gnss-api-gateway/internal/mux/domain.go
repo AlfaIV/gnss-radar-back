@@ -51,6 +51,5 @@ func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, log
 	user.PATCH("/resolveSignUp", handlers.User.ResolveUserSignUp)
 	user.PATCH("/givePermissions", handlers.User.GivePermissions)
 
-
 	return mux
 }

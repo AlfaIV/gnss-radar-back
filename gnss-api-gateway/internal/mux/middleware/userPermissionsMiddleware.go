@@ -31,7 +31,7 @@ func (mw *UserPermissionsMiddleware) Process(next echo.HandlerFunc) echo.Handler
 
 		fullPath := c.Path()
 		pathParts := strings.Split(fullPath, "/")
-		
+
 		var method string
 		for i := len(pathParts) - 1; i >= 0; i-- {
 			if pathParts[i] != "" {
@@ -39,7 +39,7 @@ func (mw *UserPermissionsMiddleware) Process(next echo.HandlerFunc) echo.Handler
 				break
 			}
 		}
-		
+
 		if method == "" {
 			mw.logger.Error("userPermissions middleware: empty method name")
 			return c.String(http.StatusBadRequest, "invalid endpoint")
@@ -51,7 +51,7 @@ func (mw *UserPermissionsMiddleware) Process(next echo.HandlerFunc) echo.Handler
 				"user_id": userID,
 				"method":  method,
 			}).Error("permission check failed: ", err)
-			
+
 			return c.String(http.StatusForbidden, "access denied")
 		}
 

@@ -25,27 +25,27 @@ func (uc *UserClient) Login(ctx context.Context, login string, password string) 
 	}
 
 	return user_domain_gateway.User{
-		Id: user.Id,
-		Name: user.Name,
-		Surname: user.Surname,
-		Email: user.Email,
-		Login: user.Login,
+		Id:               user.Id,
+		Name:             user.Name,
+		Surname:          user.Surname,
+		Email:            user.Email,
+		Login:            user.Login,
 		OrganizationName: user.OrganizationName,
-		Role: user.Role,
-		Status: user.Status,
-		Api: user.Api,
+		Role:             user.Role,
+		Status:           user.Status,
+		Api:              user.Api,
 	}, nil
 }
 
 func (uc *UserClient) SignUp(ctx context.Context, req user_domain_gateway.SignUpRequest) (bool, error) {
 	status, err := uc.client.SignUp(ctx, &proto.SignUpRequest{
-		Login: req.Login,
+		Login:            req.Login,
 		OrganizationName: req.OrganizationName,
-		Name: req.Name,
-		Surname: req.Surname,
-		Password: req.Password,
-		Email: req.Email,
-		Role: req.Role,
+		Name:             req.Name,
+		Surname:          req.Surname,
+		Password:         req.Password,
+		Email:            req.Email,
+		Role:             req.Role,
 	})
 	if err != nil {
 		return false, errors.Wrapf(err, "[GW USER] %v", err)
@@ -61,15 +61,15 @@ func (uc *UserClient) GetUserInfoById(ctx context.Context, userId string) (user_
 	}
 
 	return user_domain_gateway.User{
-		Id: user.Id,
-		Name: user.Name,
-		Surname: user.Surname,
-		Email: user.Email,
-		Login: user.Login,
+		Id:               user.Id,
+		Name:             user.Name,
+		Surname:          user.Surname,
+		Email:            user.Email,
+		Login:            user.Login,
 		OrganizationName: user.OrganizationName,
-		Role: user.Role,
-		Status: user.Status,
-		Api: user.Api,
+		Role:             user.Role,
+		Status:           user.Status,
+		Api:              user.Api,
 	}, nil
 }
 
@@ -81,14 +81,14 @@ func (uc *UserClient) GetListUsers(ctx context.Context, page uint64, size uint64
 
 	var userArray []user_domain_gateway.UserForAdmin
 
-	for _, u := range(users.Users) {
+	for _, u := range users.Users {
 		userArray = append(userArray, user_domain_gateway.UserForAdmin{
-			Name: u.Name,
-			Surname: u.Surname,
-			Email: u.Email,
-			Login: u.Login,
+			Name:             u.Name,
+			Surname:          u.Surname,
+			Email:            u.Email,
+			Login:            u.Login,
 			OrganizationName: u.OrganizationName,
-			Role: u.Role,
+			Role:             u.Role,
 		})
 	}
 
@@ -103,14 +103,14 @@ func (uc *UserClient) GetSignUpRequestions(ctx context.Context, page uint64, siz
 
 	var userArray []user_domain_gateway.UserForAdmin
 
-	for _, u := range(users.Users) {
+	for _, u := range users.Users {
 		userArray = append(userArray, user_domain_gateway.UserForAdmin{
-			Name: u.Name,
-			Surname: u.Surname,
-			Email: u.Email,
-			Login: u.Login,
+			Name:             u.Name,
+			Surname:          u.Surname,
+			Email:            u.Email,
+			Login:            u.Login,
 			OrganizationName: u.OrganizationName,
-			Role: u.Role,
+			Role:             u.Role,
 		})
 	}
 

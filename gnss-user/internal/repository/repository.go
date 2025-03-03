@@ -36,7 +36,8 @@ func (ur *UserRepo) GetUserInfo(ctx context.Context, request user_domain.UserInf
             first_name, 
             second_name, 
             role, 
-            organization_name 
+            organization_name ,
+			status
         FROM user 
         WHERE login = $1;
     `
@@ -51,6 +52,7 @@ func (ur *UserRepo) GetUserInfo(ctx context.Context, request user_domain.UserInf
 		&UserInfo.Surname,
 		&UserInfo.Role,
 		&UserInfo.OrganizationName,
+		&UserInfo.Status,
 	)
 	if err != nil {
 		return UserInfo, errors.Wrapf(err, "failed to get user info for user %s", request.Login)
@@ -84,7 +86,8 @@ func (ur *UserRepo) GetUserInfoById(ctx context.Context, userId string) (user_do
             first_name, 
             second_name, 
             role, 
-            organization_name 
+            organization_name,
+			status
         FROM user 
         WHERE id = $1;
     `
@@ -99,6 +102,7 @@ func (ur *UserRepo) GetUserInfoById(ctx context.Context, userId string) (user_do
 		&UserInfo.Surname,
 		&UserInfo.Role,
 		&UserInfo.OrganizationName,
+		&UserInfo.Status,
 	)
 	if err != nil {
 		return UserInfo, errors.Wrapf(err, "failed to get user info for user with id %s", userId)

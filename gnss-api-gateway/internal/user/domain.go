@@ -10,13 +10,13 @@ type User struct {
 	Login            string   `json:"login"`
 	OrganizationName string   `json:"organizationName"`
 	Role             string   `json:"role"`
-	Status			 string   `json:"status"`
+	Status           string   `json:"status"`
 	Api              []string `json:"api"`
 }
 
 type LoginRequest struct {
-	Login            string `json:"login"`
-	Password         string `json:"password"`
+	Login    string `json:"login"`
+	Password string `json:"password"`
 }
 
 type SignUpRequest struct {
@@ -35,7 +35,7 @@ type UserForAdmin struct {
 	Email            string `json:"email"`
 	Login            string `json:"login"`
 	OrganizationName string `json:"organizationName"`
-	Role			 string `json:"role"`
+	Role             string `json:"role"`
 }
 
 type UserListResponse struct {
@@ -43,13 +43,13 @@ type UserListResponse struct {
 }
 
 type SignUpResolutionRequest struct {
-	UserLogin string `json:"userLogin"`
+	UserLogin  string `json:"userLogin"`
 	Resolution string `json:"resolution"`
 }
 
 type PermissionChangeRequest struct {
 	UserLogin string `json:"userLogin"`
-	NewRole string `json:"newRole"`
+	NewRole   string `json:"newRole"`
 }
 
 type Usecase interface {

@@ -15,6 +15,7 @@ type UserInfoResponse struct {
 	Name             string   `json:"name"`
 	Surname          string   `json:"surname"`
 	Email            string   `json:"email"`
+	Status           string   `json:"status"`
 	Api              []string `json:"api"`
 }
 
