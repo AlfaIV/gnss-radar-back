@@ -57,6 +57,8 @@ services:
   gnss-user:
     image: user-image:latest
     container_name: user
+    environment:
+      PG_ADDR: ${DATABASE_USER_URL}
     depends_on:
       service-postgres-user:
         condition: service_healthy

@@ -17,9 +17,7 @@ RUN apk --no-cache add ca-certificates tzdata
 #Потом на CICD прокину
 
 ENV USER_ADDR=:8002 \
-    TZ=UTC \
-    PG_URL=postgres://gnss_pg_user_admin:pish2052rl1gnssuser@service-postgres:5432/gnss_radar_user
-
+    TZ=UTC
 COPY --from=build /app/user /user
 
 RUN adduser -D -g '' appuser && \
