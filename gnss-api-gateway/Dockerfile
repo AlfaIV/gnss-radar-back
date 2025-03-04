@@ -9,7 +9,7 @@ WORKDIR /source
 COPY .. .
 
 RUN go mod download && \
-    go build -ldflags="-s -w" -o /app/api-gateway ./gnss-api-gateway/cmd/main.go
+    go build -ldflags="-s -w" -o /app/gnss-api-gateway ./gnss-api-gateway/cmd/main.go
 FROM alpine:3.18
 
 RUN apk --no-cache add ca-certificates tzdata
@@ -19,7 +19,7 @@ ENV GATEWAY_ADDR=:8000 \
     AUTH_ADDR=gnss-auth:8001 \
     USER_ADDR=gnss-user:8002 
 
-COPY --from=build /app/gateway /gateway
+COPY --from=build /app/gnss-api-gateway /gateway
 COPY --from=build /source/config /config/
 
 RUN adduser -D -g '' appuser && \
