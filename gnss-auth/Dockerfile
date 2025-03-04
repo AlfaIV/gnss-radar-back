@@ -10,9 +10,14 @@ COPY .. .
 RUN go mod download && \
     go build -ldflags="-s -w" -o /app/auth ./gnss-auth/cmd/main.go
 
+
 FROM alpine:3.18
 
 RUN apk --no-cache add ca-certificates tzdata
+
+# Установка grpc_health_probe
+RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.37/grpc_health_probe-linux-amd64 && \
+    chmod +x /bin/grpc_health_probe
 
 ENV AUTH_ADDR=:8001 \
     REDIS_ADDR=db-redis-auth:6379 \
