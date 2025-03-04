@@ -2,6 +2,7 @@ package user_server
 
 import (
 	"context"
+	common_proto "gnss-radar/api/proto/common"
 	proto "gnss-radar/api/proto/user"
 
 	user_domain "gnss-radar/gnss-user/internal"
@@ -49,7 +50,7 @@ func (s *UserServiceServer) Login(ctx context.Context, req *proto.LoginRequest) 
 	}, nil
 }
 
-func (s *UserServiceServer) SignUp(ctx context.Context, req *proto.SignUpRequest) (*proto.Status, error) {
+func (s *UserServiceServer) SignUp(ctx context.Context, req *proto.SignUpRequest) (*common_proto.Status, error) {
 
 	createUserReq := user_domain.CreateUserRequest{
 		Login:            req.Login,
@@ -58,18 +59,19 @@ func (s *UserServiceServer) SignUp(ctx context.Context, req *proto.SignUpRequest
 		Surname:          req.Surname,
 		Password:         req.Password,
 		Email:            req.Email,
+		Role:             req.Role,
 	}
 
 	if err := s.repo.CreateUser(ctx, createUserReq); err != nil {
-		return &proto.Status{IsOk: false}, status.Errorf(codes.Internal, "[USER]: %v", err)
+		return &common_proto.Status{IsOk: false}, status.Errorf(codes.Internal, "[USER]: %v", err)
 	}
 
-	return &proto.Status{IsOk: true}, nil
+	return &common_proto.Status{IsOk: true}, nil
 }
 
-func (s *UserServiceServer) GetUserInfoById(ctx context.Context, req *proto.UserId) (*proto.User, error) {
+func (s *UserServiceServer) GetUserInfoById(ctx context.Context, req *common_proto.UserId) (*proto.User, error) {
 
-	userInfo, err := s.repo.GetUserInfoById(ctx, req.Id)
+	userInfo, err := s.repo.GetUserInfoById(ctx, req.UserId)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "[USER]: %v", err)
 	}
@@ -136,14 +138,14 @@ func (s *UserServiceServer) GetSignUpRequestions(ctx context.Context, req *proto
 	return &proto.UserList{Users: userList}, nil
 }
 
-func (s *UserServiceServer) ValidatePermissions(ctx context.Context, req *proto.PermissionValidaton) (*proto.Status, error) {
+func (s *UserServiceServer) ValidatePermissions(ctx context.Context, req *proto.PermissionValidaton) (*common_proto.Status, error) {
 
 	result, err := s.repo.ValidatePermissions(ctx, req.UserId, req.Api)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "[USER]: %v", err)
 	}
 
-	return &proto.Status{IsOk: result}, nil
+	return &common_proto.Status{IsOk: result}, nil
 }
 
 func (s *UserServiceServer) ResolveUserSignUp(ctx context.Context, req *proto.SignUpResolution) (*emptypb.Empty, error) {

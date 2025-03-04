@@ -3,6 +3,7 @@ syntax = "proto3";
 option go_package = "gnss-radar/api/proto/user";
 
 import "google/protobuf/empty.proto";
+import "api/proto/common/common.proto";
 
 
 service UserService {
@@ -37,10 +38,6 @@ message PaginatedRequest {
     uint64 size = 2;
 }
 
-message UserId {
-    string id = 1;
-}
-
 message User {
     string id = 1;
     string login = 2;
@@ -55,10 +52,6 @@ message User {
 
 message UserList {
     repeated User users = 1; 
-}
-
-message Status {
-    bool is_ok = 1;
 }
 
 message PermissionValidaton {

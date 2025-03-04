@@ -3,6 +3,7 @@ package auth_client
 import (
 	"context"
 	proto "gnss-radar/api/proto/auth"
+	common_proto "gnss-radar/api/proto/common"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -27,7 +28,7 @@ func (ac *AuthClient) CheckSession(ctx context.Context, sessionId string) (bool,
 }
 
 func (ac *AuthClient) CreateSession(ctx context.Context, userId string) (string, error) {
-	sessionId, err := ac.client.CreateSession(ctx, &proto.UserId{UserId: userId})
+	sessionId, err := ac.client.CreateSession(ctx, &common_proto.UserId{UserId: userId})
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to create session for user %s", userId)
 	}

@@ -20,7 +20,7 @@ ENV GATEWAY_ADDR=:8000 \
     USER_ADDR=gnss-user:8002 
 
 COPY --from=build /app/gnss-api-gateway /gateway
-COPY --from=build /source/config /config/
+COPY --from=build /source/gnss-api-gateway/config /config/
 
 RUN adduser -D -g '' appuser && \
     chown -R appuser:appuser /gateway /config

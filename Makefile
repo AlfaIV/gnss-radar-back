@@ -1,9 +1,9 @@
 KEEP_IMAGES = postgres redis
 
 build-images:
-	docker build -t gateway-image -f gnss-api-gateway/Dockerfile .
-	docker build -t auth-image -f gnss-auth/Dockerfile .
-	docker build -t user-image -f gnss-user/Dockerfile .
+	docker build -t gateway-image -f ./gnss-api-gateway/Dockerfile .
+	docker build -t auth-image -f ./gnss-auth/Dockerfile .
+	docker build -t user-image -f ./gnss-user/Dockerfile .
 
 docker-clear:
 	@echo "Остановка всех запущенных контейнеров..."
@@ -36,9 +36,9 @@ start-networks:
 	fi
 
 start-services:
-	docker compose -f deployments/docker-compose.yml up -d
+	docker compose -f ./deployments/docker-compose.yaml up -d
 
 stop-services:
-	docker compose -f deployments/docker-compose.yml down
+	docker compose -f ./deployments/docker-compose.yaml down
 
-deploy: docker-clear build-images start-networks start-services
+deploy: build-images start-networks start-services

@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS profile (
 );
 
 DROP TABLE IF EXISTS role_api CASCADE;
-CREATE TABLE IF NOT EXISTS profile (
+CREATE TABLE IF NOT EXISTS role_api (
     role user_role NOT NULL DEFAULT 'ADMIN',
     api TEXT NOT NULL,
     description TEXT DEFAULT ''

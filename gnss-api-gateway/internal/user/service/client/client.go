@@ -2,6 +2,7 @@ package user_client
 
 import (
 	"context"
+	common_proto "gnss-radar/api/proto/common"
 	proto "gnss-radar/api/proto/user"
 	user_domain_gateway "gnss-radar/gnss-api-gateway/internal/user"
 
@@ -55,7 +56,7 @@ func (uc *UserClient) SignUp(ctx context.Context, req user_domain_gateway.SignUp
 }
 
 func (uc *UserClient) GetUserInfoById(ctx context.Context, userId string) (user_domain_gateway.User, error) {
-	user, err := uc.client.GetUserInfoById(ctx, &proto.UserId{Id: userId})
+	user, err := uc.client.GetUserInfoById(ctx, &common_proto.UserId{UserId: userId})
 	if err != nil {
 		return user_domain_gateway.User{}, errors.Wrapf(err, "[GW USER] %v", err)
 	}
@@ -117,7 +118,7 @@ func (uc *UserClient) GetSignUpRequestions(ctx context.Context, page uint64, siz
 	return user_domain_gateway.UserListResponse{Users: userArray}, nil
 }
 
-//Только для миддлваря
+// Только для миддлваря
 func (uc *UserClient) ValidatePermissions(ctx context.Context, userId string, api string) (bool, error) {
 	status, err := uc.client.ValidatePermissions(ctx, &proto.PermissionValidaton{UserId: userId, Api: api})
 	if err != nil {
