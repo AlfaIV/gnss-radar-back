@@ -5,10 +5,10 @@ ENV CGO_ENABLED=0 \
     GOARCH=amd64
 
 WORKDIR /source
-COPY . .
+COPY .. .
 
 RUN go mod download && \
-    go build -ldflags="-s -w" -o /app/user ./cmd/main.go
+    go build -ldflags="-s -w" -o /app/user ./gnss-user/cmd/main.go
 
 FROM alpine:3.18
 

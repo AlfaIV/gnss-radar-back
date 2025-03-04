@@ -6,11 +6,10 @@ ENV CGO_ENABLED=0 \
     GOARCH=amd64
 
 WORKDIR /source
-COPY . .
+COPY .. .
 
 RUN go mod download && \
-    go build -ldflags="-s -w" -o /app/gateway ./cmd/main.go
-
+    go build -ldflags="-s -w" -o /app/api-gateway ./gnss-api-gateway/cmd/main.go
 FROM alpine:3.18
 
 RUN apk --no-cache add ca-certificates tzdata
