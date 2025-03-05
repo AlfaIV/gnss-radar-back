@@ -1,4 +1,3 @@
-# Stage 1: Build
 FROM golang:1.23.0-alpine AS build
 
 ENV CGO_ENABLED=0 \
@@ -8,11 +7,23 @@ ENV CGO_ENABLED=0 \
 WORKDIR /source
 COPY .. .
 
-RUN go mod download && \
-    go build -ldflags="-s -w" -o /app/gnss-api-gateway ./gnss-api-gateway/cmd/main.go
-FROM alpine:3.18
-
 RUN apk --no-cache add ca-certificates tzdata
+
+RUN apk add --no-cache \
+    protobuf-dev \
+    protobuf \
+    make
+
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+RUN make generate
+
+RUN go mod download && \
+    go mod tidy && \
+    go build -ldflags="-s -w" -o /app/gnss-api-gateway ./gnss-api-gateway/cmd/main.go
+
+FROM alpine:3.18
 
 ENV GATEWAY_ADDR=:8000 \
     TZ=UTC \

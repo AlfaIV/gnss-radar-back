@@ -22,13 +22,9 @@ PROTO_ROOT = api/proto
 GO_OUT = .
 
 generate:
-	find $(PROTO_ROOT) -name '*.proto' -exec sh -c ' \
-		protoc \
-			--proto_path=$(PROTO_ROOT) \
-			--go_out=$(GO_OUT) --go_opt=paths=source_relative \
-			--go-grpc_out=$(GO_OUT) --go-grpc_opt=paths=source_relative \
-			"$$1" \
-	' _ {} \;
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/auth/auth.proto
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/common/common.proto
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/user/user.proto
 
 start-networks:
 	@if [ -z "$$(docker network ls --filter name=gnss-radar-net -q)" ]; then \
