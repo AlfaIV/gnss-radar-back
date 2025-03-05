@@ -40,6 +40,7 @@ type UserSignUpRequestion struct {
 	Email            string `json:"email"`
 	Login            string `json:"login"`
 	OrganizationName string `json:"organizationName"`
+	Role             string `json:"role"`
 }
 
 type UserForAdmin struct {

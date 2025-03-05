@@ -132,6 +132,7 @@ func (s *UserServiceServer) GetSignUpRequestions(ctx context.Context, req *proto
 			Name:             user.Name,
 			Surname:          user.Surname,
 			Email:            user.Email,
+			Role:             user.Role,
 		})
 	}
 

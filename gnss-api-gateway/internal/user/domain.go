@@ -43,7 +43,7 @@ type UserListResponse struct {
 }
 
 type SignUpResolutionRequest struct {
-	UserLogin  string `json:"userLogin"`
+	UserLogin  string `json:"login"`
 	Resolution string `json:"resolution"`
 }
 

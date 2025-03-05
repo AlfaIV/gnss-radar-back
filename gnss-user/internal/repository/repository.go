@@ -2,6 +2,7 @@ package statistics_repository
 
 import (
 	"context"
+	"fmt"
 	user_domain "gnss-radar/gnss-user/internal"
 
 	"github.com/jackc/pgx/v5"
@@ -140,12 +141,13 @@ func (ur *UserRepo) CreateUser(ctx context.Context, request user_domain.CreateUs
 }
 
 func (ur *UserRepo) ValidatePermissions(ctx context.Context, userId string, api string) (bool, error) {
+
 	validatePermissionsQuery := `
         SELECT EXISTS(
             SELECT 1
             FROM profile p
             INNER JOIN role_api ra ON p.role = ra.role
-            WHERE p.login = $1 
+            WHERE p.id = $1 
             AND ra.api = $2
         );
     `
@@ -169,8 +171,11 @@ func (ur *UserRepo) ValidatePermissions(ctx context.Context, userId string, api 
 }
 
 func (ur *UserRepo) ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error {
+
+	//validate status
+	fmt.Println(userLogin, resolution)
 	resolutionQuery := `
-	UPDATE profile SET status = 1$ WHERE login = 2$;
+	UPDATE profile SET status = $1 WHERE login = $2;
     `
 
 	if _, err := ur.pool.Query(ctx, resolutionQuery, resolution, userLogin); err != nil {
@@ -182,7 +187,7 @@ func (ur *UserRepo) ResolveUserSignUp(ctx context.Context, userLogin string, res
 
 func (ur *UserRepo) ChangeUserPermissions(ctx context.Context, userLogin string, userRole string) error {
 	resolutionQuery := `
-	UPDATE profile SET role = 1$ WHERE login = 2$;
+	UPDATE profile SET role = $1 WHERE login = $2;
     `
 	if _, err := ur.pool.Query(ctx, resolutionQuery, userRole, userLogin); err != nil {
 		return errors.Wrapf(err, "failed to change permissions for %s", userLogin)
@@ -198,7 +203,8 @@ func (ur *UserRepo) GetSignUpRequestions(ctx context.Context, params user_domain
             email, 
             first_name, 
             second_name,
-			organization_name
+			organization_name,
+			role
         FROM profile
         WHERE status = 'PENDING'
         ORDER BY created_at DESC
@@ -228,6 +234,7 @@ func (ur *UserRepo) GetSignUpRequestions(ctx context.Context, params user_domain
 			&user.Name,
 			&user.Surname,
 			&user.OrganizationName,
+			&user.Role,
 		)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to scan row")
