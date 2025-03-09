@@ -29,8 +29,6 @@ services:
       - type: bind
         source: ~/postgres-data
         target: /var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER_USER} -d ${POSTGRES_USER_DB}" ]
       interval: 10s
@@ -38,6 +36,50 @@ services:
       retries: 5
     networks:
       - gnss-user-subnet
+
+  service-postgres-measurements:
+    image: "postgres:14"
+    container_name: db-postgres-measurements
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_MEASUREMENTS_DB}
+      POSTGRES_USER: ${POSTGRES_MEASUREMENTS_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_MEASUREMENTS_PASSWORD}
+    volumes:
+      - type: bind
+        source: ~/postgres-migrations/measurements/initdb.sql
+        target: /docker-entrypoint-initdb.d/migration_a.sql
+      - type: bind
+        source: ~/postgres-measurements-data
+        target: /var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER_USER} -d ${POSTGRES_USER_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gnss-measurements-subnet
+
+  minio-s3:
+    container_name: s3
+    image: minio/minio
+    ports:
+      - 9001:9001
+    volumes:
+      - type: bind
+        source: ~/minio-data
+        target: /data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server --console-address ":9001" --address ":9002" /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9002/minio/health/live"]
+      interval: 5s
+      retries: 3
+      timeout: 5s
+    networks:
+      - gnss-measurements-subnet
 
   gnss-api-gateway:
     image: gateway-image:latest
@@ -88,6 +130,25 @@ services:
       - gnss-radar-net
       - gnss-user-subnet
 
+  gnss-measurements:
+    image: measurements-image:latest
+    container_name: measurements
+    environment:
+      PG_ADDR: ${DATABASE_MEASUREMENTS_URL}
+    depends_on:
+      service-postgres-measurements:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=:8003"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+      start_interval: 5s
+    networks:
+      - gnss-radar-net
+      - gnss-measurements-subnet
+
 networks:
   gnss-radar-net:
     driver: bridge
@@ -95,4 +156,6 @@ networks:
   gnss-user-subnet:
     driver: bridge
   gnss-auth-subnet:
+    driver: bridge
+  gnss-measurements-subnet:
     driver: bridge
