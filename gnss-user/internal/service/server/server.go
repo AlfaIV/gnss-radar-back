@@ -89,7 +89,7 @@ func (s *UserServiceServer) GetUserInfoById(ctx context.Context, req *common_pro
 	}, nil
 }
 
-func (s *UserServiceServer) GetListUsers(ctx context.Context, req *proto.PaginatedRequest) (*proto.UserList, error) {
+func (s *UserServiceServer) GetListUsers(ctx context.Context, req *common_proto.PaginatedRequest) (*proto.UserList, error) {
 
 	users, err := s.repo.GetUserForAdmin(ctx, user_domain.PaginatedRequest{
 		Page: req.Page,
@@ -114,7 +114,7 @@ func (s *UserServiceServer) GetListUsers(ctx context.Context, req *proto.Paginat
 	return &proto.UserList{Users: userList}, nil
 }
 
-func (s *UserServiceServer) GetSignUpRequestions(ctx context.Context, req *proto.PaginatedRequest) (*proto.UserList, error) {
+func (s *UserServiceServer) GetSignUpRequestions(ctx context.Context, req *common_proto.PaginatedRequest) (*proto.UserList, error) {
 
 	users, err := s.repo.GetSignUpRequestions(ctx, user_domain.PaginatedRequest{
 		Page: req.Page,

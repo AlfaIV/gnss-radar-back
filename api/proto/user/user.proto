@@ -33,11 +33,6 @@ message SignUpRequest {
     string role = 7;
 }
 
-message PaginatedRequest {
-    uint64 page = 1;
-    uint64 size = 2;
-}
-
 message User {
     string id = 1;
     string login = 2;

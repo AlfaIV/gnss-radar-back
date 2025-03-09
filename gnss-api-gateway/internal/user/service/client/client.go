@@ -75,7 +75,7 @@ func (uc *UserClient) GetUserInfoById(ctx context.Context, userId string) (user_
 }
 
 func (uc *UserClient) GetListUsers(ctx context.Context, page uint64, size uint64) (user_domain_gateway.UserListResponse, error) {
-	users, err := uc.client.GetListUsers(ctx, &proto.PaginatedRequest{Page: page, Size: size})
+	users, err := uc.client.GetListUsers(ctx, &common_proto.PaginatedRequest{Page: page, Size: size})
 	if err != nil {
 		return user_domain_gateway.UserListResponse{}, errors.Wrapf(err, "[GW USER] %v", err)
 	}
@@ -97,7 +97,7 @@ func (uc *UserClient) GetListUsers(ctx context.Context, page uint64, size uint64
 }
 
 func (uc *UserClient) GetSignUpRequestions(ctx context.Context, page uint64, size uint64) (user_domain_gateway.UserListResponse, error) {
-	users, err := uc.client.GetSignUpRequestions(ctx, &proto.PaginatedRequest{Page: page, Size: size})
+	users, err := uc.client.GetSignUpRequestions(ctx, &common_proto.PaginatedRequest{Page: page, Size: size})
 	if err != nil {
 		return user_domain_gateway.UserListResponse{}, errors.Wrapf(err, "[GW USER] %v", err)
 	}

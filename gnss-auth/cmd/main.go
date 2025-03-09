@@ -50,11 +50,11 @@ func main() {
 
 	// Создание gRPC сервера
 	server := grpc.NewServer()
-	
+
 	// Регистрация health check сервиса
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(server, healthServer)
-	
+
 	// Установка начального статуса
 	healthServer.SetServingStatus("auth.Service", grpc_health_v1.HealthCheckResponse_SERVING)
 
@@ -68,10 +68,10 @@ func main() {
 		<-sigCh
 
 		logger.Info("[AUTH]: Starting graceful shutdown...")
-		
+
 		// Пометить сервис как NOT_SERVING
 		healthServer.SetServingStatus("auth.Service", grpc_health_v1.HealthCheckResponse_NOT_SERVING)
-		
+
 		// Остановка сервера с таймаутом
 		stopped := make(chan struct{})
 		go func() {
@@ -84,11 +84,11 @@ func main() {
 			server.Stop()
 		case <-stopped:
 		}
-		
+
 		// Закрытие соединений
 		rdb.Close()
 		lis.Close()
-		
+
 		logger.Info("Server stopped gracefully")
 		os.Exit(0)
 	}()
