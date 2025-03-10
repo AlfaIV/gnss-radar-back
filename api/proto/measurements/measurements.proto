@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option go_package = "gnss-radar/api/proto/measurements";
+
+import "google/protobuf/empty.proto";
+import "api/proto/common/common.proto";
+
+service Measurements {
+    rpc GetEphemeris(PaginatedRequest) returns (Ephemeris) {}
+    rpc LoadEphemeris(EphemerisToLoad) returns (google.protobuf.Empty) {}
+}
+
+message EphemerisFileMeta {
+    string Name = 1;
+    string Datetime = 2;
+}
+
+message Ephemeris {
+    repeated EphemerisFileMeta Ephemeris = 1;
+    uint64 Total = 2;
+}
+
+message EphemerisToLoad {
+    string Name = 1;
+    bytes Payload = 2;
+}
+
+// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/measurements/measurements.proto

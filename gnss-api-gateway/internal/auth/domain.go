@@ -1,7 +1,8 @@
-package auth_domain
+package auth_domain_gateway
 
 import (
 	"context"
+	"time"
 )
 
 type Usecase interface {
@@ -12,3 +13,4 @@ type Usecase interface {
 }
 
 const CookieName = "SessionID"
+const CookieTTL = 24 * 14 * time.Hour

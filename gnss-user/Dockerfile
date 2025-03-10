@@ -5,22 +5,38 @@ ENV CGO_ENABLED=0 \
     GOARCH=amd64
 
 WORKDIR /source
-COPY . .
+COPY .. .
+
+RUN apk --no-cache add ca-certificates tzdata
+
+RUN apk add --no-cache \
+    protobuf-dev \
+    protobuf \
+    make
+
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+RUN make generate
 
 RUN go mod download && \
-    go build -ldflags="-s -w" -o /app/user ./cmd/main.go
+    go mod tidy && \
+    go build -ldflags="-s -w" -o /app/user ./gnss-user/cmd/main.go
 
 FROM alpine:3.18
 
 RUN apk --no-cache add ca-certificates tzdata
 
-ENV AUTH_ADDR=:8001 \
-    TZ=UTC \
+# Установка grpc_health_probe
+RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.37/grpc_health_probe-linux-amd64 && \
+    chmod +x /bin/grpc_health_probe
 
+ENV USER_ADDR=:8002 \
+    TZ=UTC
 COPY --from=build /app/user /user
 
 RUN adduser -D -g '' appuser && \
-    chown -R appuser:appuser /auth
+    chown -R appuser:appuser /user
 
 USER appuser
 

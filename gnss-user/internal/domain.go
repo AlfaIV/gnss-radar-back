@@ -8,12 +8,14 @@ type UserInfoRequest struct {
 }
 
 type UserInfoResponse struct {
+	Id               string   `json:"id"`
 	Login            string   `json:"login"`
 	Role             string   `json:"role"`
 	OrganizationName string   `json:"organizationName"`
 	Name             string   `json:"name"`
 	Surname          string   `json:"surname"`
 	Email            string   `json:"email"`
+	Status           string   `json:"status"`
 	Api              []string `json:"api"`
 }
 
@@ -24,6 +26,7 @@ type CreateUserRequest struct {
 	Surname          string `json:"surname"`
 	Password         string `json:"password"`
 	Email            string `json:"email"`
+	Role             string `json:"role"`
 }
 
 type PaginatedRequest struct {
@@ -37,6 +40,7 @@ type UserSignUpRequestion struct {
 	Email            string `json:"email"`
 	Login            string `json:"login"`
 	OrganizationName string `json:"organizationName"`
+	Role             string `json:"role"`
 }
 
 type UserForAdmin struct {
@@ -50,8 +54,9 @@ type UserForAdmin struct {
 
 type Repository interface {
 	GetUserInfo(ctx context.Context, request UserInfoRequest) (UserInfoResponse, error)
+	GetUserInfoById(ctx context.Context, userId string) (UserInfoResponse, error)
 	CreateUser(ctx context.Context, request CreateUserRequest) error
-	ValidatePermissions(ctx context.Context, userId string, api string) (bool, error)
+	ValidatePermissions(ctx context.Context, userId string, api string) error
 	ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error
 	ChangeUserPermissions(ctx context.Context, userLogin string, userRole string) error
 	GetSignUpRequestions(ctx context.Context, params PaginatedRequest) ([]UserSignUpRequestion, error)

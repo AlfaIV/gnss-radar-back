@@ -1,30 +1,78 @@
 package mux
 
 import (
-	auth_domain "gnss-radar/gnss-api-gateway/internal/auth"
+	auth_domain_gateway "gnss-radar/gnss-api-gateway/internal/auth"
+	auth_handler "gnss-radar/gnss-api-gateway/internal/auth/delivery"
 	"gnss-radar/gnss-api-gateway/internal/config"
+	measurements_handler "gnss-radar/gnss-api-gateway/internal/measurements/delivery"
 	middlewarecustom "gnss-radar/gnss-api-gateway/internal/mux/middleware"
+	user_domain_gateway "gnss-radar/gnss-api-gateway/internal/user"
+	user_handler "gnss-radar/gnss-api-gateway/internal/user/delivery"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 )
 
-func Setup(config *config.Config, authUsecase auth_domain.Usecase, logger *logrus.Logger) *echo.Echo {
+type Handlers struct {
+	Auth         auth_handler.AuthHandler
+	User         user_handler.UserHandler
+	Measurements measurements_handler.MeasurementsHandler
+}
+
+type ServiceUsecase struct {
+	Auth auth_domain_gateway.Usecase
+	User user_domain_gateway.Usecase
+}
+
+func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, logger *logrus.Logger) *echo.Echo {
 	mux := echo.New()
 
-	userIDMiddleware := middlewarecustom.NewUserIDMW(authUsecase, logger)
+	userIDMiddleware := middlewarecustom.NewUserIDMW(service.Auth, logger)
+	userPermissionsMiddleware := middlewarecustom.NewUserPermissionsMiddleware(service.User, logger)
 
 	mux.Use(middleware.Recover())
 	mux.Use(middleware.CORSWithConfig(config.CORS))
 	mux.Use(middleware.RequestID())
 
+	// Проверка на то, жив ли сервер
+	mux.GET("/healthcheck", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{"status": "OK"})
+	})
+
 	base := mux.Group("/api/v1")
 
-	_ = base.Group("/auth")
+	auth := base.Group("/auth")
+	auth.POST("/login", handlers.Auth.Login) // api/v1/auth/login
+	auth.POST("/signup", handlers.Auth.Signup)
+	auth.DELETE("/logout", handlers.Auth.Logout)
+	auth.GET("/me", handlers.Auth.Me)
 
 	user := base.Group("/user")
-	user.Use(userIDMiddleware.Process)
+	user.Use(
+		userIDMiddleware.Process,
+		userPermissionsMiddleware.Process,
+	)
+	user.GET("/getListUsers", handlers.User.GetListUsers)
+	user.GET("/getSignUpRequestions", handlers.User.GetSignUpRequestions)
+	user.PATCH("/resolveSignUp", handlers.User.ResolveUserSignUp)
+	user.PATCH("/givePermissions", handlers.User.GivePermissions)
+
+	measurements := base.Group("/measurements")
+	measurements.Use(
+		userIDMiddleware.Process,
+		userPermissionsMiddleware.Process,
+	)
+	measurements.GET("/getEphemeris", handlers.Measurements.GetEphemeris)
+	measurements.POST("/uploadEphemeris", handlers.Measurements.UploadEphemeris)
+
+	// satellites := base.Group("/satellites")
+	// satellites.Use(
+	// 	userIDMiddleware.Process,
+	// 	userPermissionsMiddleware.Process,
+	// )
+	// satellites.GET("/getSatellitesPosition", handlers.Measurements.GetEphemeris)
 
 	return mux
 }

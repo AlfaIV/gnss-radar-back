@@ -1,8 +1,10 @@
-KEEP_IMAGES = nginx postgres redis
+KEEP_IMAGES = postgres redis
 
 build-images:
-	docker build -t gateway-image -f gnss-api-gateway/Dockerfile .
-	docker build -t auth-image -f gnss-auth/Dockerfile .
+	docker build -t gateway-image -f ./gnss-api-gateway/Dockerfile .
+	docker build -t auth-image -f ./gnss-auth/Dockerfile .
+	docker build -t user-image -f ./gnss-user/Dockerfile .
+	docker build -t measurements-image -f ./gnss-measurements/Dockerfile .
 
 docker-clear:
 	@echo "Остановка всех запущенных контейнеров..."
@@ -21,13 +23,10 @@ PROTO_ROOT = api/proto
 GO_OUT = .
 
 generate:
-	find $(PROTO_ROOT) -name '*.proto' -exec sh -c ' \
-		protoc \
-			--proto_path=$(PROTO_ROOT) \
-			--go_out=$(GO_OUT) --go_opt=paths=source_relative \
-			--go-grpc_out=$(GO_OUT) --go-grpc_opt=paths=source_relative \
-			"$$1" \
-	' _ {} \;
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/auth/auth.proto
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/common/common.proto
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/user/user.proto
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/measurements/measurements.proto
 
 start-networks:
 	@if [ -z "$$(docker network ls --filter name=gnss-radar-net -q)" ]; then \
@@ -35,9 +34,12 @@ start-networks:
 	fi
 
 start-services:
-	docker compose -f deployments/docker-compose.yml up -d
+	docker compose -f ./deployments/docker-compose.yaml up -d
 
 stop-services:
-	docker compose -f deployments/docker-compose.yml down
+	docker compose -f ./deployments/docker-compose.yaml down
 
-deploy: docker-clear build-images start-networks start-services
+deploy: build-images start-networks start-services
+
+reload: stop-services start-services
+	docker restart ui

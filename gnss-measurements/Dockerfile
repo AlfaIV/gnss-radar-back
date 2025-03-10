@@ -6,6 +6,7 @@ ENV CGO_ENABLED=0 \
 
 WORKDIR /source
 COPY .. .
+
 RUN apk --no-cache add ca-certificates tzdata
 
 RUN apk add --no-cache \
@@ -20,8 +21,7 @@ RUN make generate
 
 RUN go mod download && \
     go mod tidy && \
-    go build -ldflags="-s -w" -o /app/auth ./gnss-auth/cmd/main.go
-
+    go build -ldflags="-s -w" -o /app/measurements ./gnss-measurements/cmd/main.go
 
 FROM alpine:3.18
 
@@ -31,17 +31,17 @@ RUN apk --no-cache add ca-certificates tzdata
 RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.37/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 
-ENV AUTH_ADDR=:8001 \
-    REDIS_ADDR=db-redis-auth:6379 \
-    TZ=UTC 
-
-COPY --from=build /app/auth /auth
+ENV MEASUREMENTS_ADDR=:8003 \
+    TZ=UTC \
+    MINIO_API_ADDR=s3:9002
+    
+COPY --from=build /app/measurements /measurements
 
 RUN adduser -D -g '' appuser && \
-    chown -R appuser:appuser /auth
+    chown -R appuser:appuser /measurements
 
 USER appuser
 
-EXPOSE 8001
+EXPOSE 8003
 
-CMD ["/auth"]
+CMD ["/measurements"]

@@ -2,6 +2,7 @@ package statistics_repository
 
 import (
 	"context"
+	"fmt"
 	user_domain "gnss-radar/gnss-user/internal"
 
 	"github.com/jackc/pgx/v5"
@@ -29,21 +30,24 @@ func NewUserRepo(pool PgxIFace, logger *logrus.Logger) *UserRepo {
 
 func (ur *UserRepo) GetUserInfo(ctx context.Context, request user_domain.UserInfoRequest) (user_domain.UserInfoResponse, error) {
 	userQuery := `
-        SELECT 
+        SELECT
+			id,
             password, 
             login, 
             email, 
             first_name, 
             second_name, 
             role, 
-            organization_name 
-        FROM user 
+            organization_name ,
+			status
+        FROM profile 
         WHERE login = $1;
     `
-	var hashedPassword string
+	var hashedPassword []byte
 	var UserInfo user_domain.UserInfoResponse
 
 	err := ur.pool.QueryRow(ctx, userQuery, request.Login).Scan(
+		&UserInfo.Id,
 		&hashedPassword,
 		&UserInfo.Login,
 		&UserInfo.Email,
@@ -51,6 +55,7 @@ func (ur *UserRepo) GetUserInfo(ctx context.Context, request user_domain.UserInf
 		&UserInfo.Surname,
 		&UserInfo.Role,
 		&UserInfo.OrganizationName,
+		&UserInfo.Status,
 	)
 	if err != nil {
 		return UserInfo, errors.Wrapf(err, "failed to get user info for user %s", request.Login)
@@ -75,53 +80,97 @@ func (ur *UserRepo) GetUserInfo(ctx context.Context, request user_domain.UserInf
 	return UserInfo, nil
 }
 
+func (ur *UserRepo) GetUserInfoById(ctx context.Context, userId string) (user_domain.UserInfoResponse, error) {
+	userQuery := `
+        SELECT
+			id,
+            login, 
+            email, 
+            first_name, 
+            second_name, 
+            role, 
+            organization_name,
+			status
+        FROM profile 
+        WHERE id = $1;
+    `
+	var UserInfo user_domain.UserInfoResponse
+
+	err := ur.pool.QueryRow(ctx, userQuery, userId).Scan(
+		&UserInfo.Id,
+		&UserInfo.Login,
+		&UserInfo.Email,
+		&UserInfo.Name,
+		&UserInfo.Surname,
+		&UserInfo.Role,
+		&UserInfo.OrganizationName,
+		&UserInfo.Status,
+	)
+	if err != nil {
+		return UserInfo, errors.Wrapf(err, "failed to get user info for user with id %s", userId)
+	}
+
+	apiQuery := `
+        SELECT COALESCE(array_agg(api), '{}'::text[]) 
+        FROM role_api 
+        WHERE role = $1;
+    `
+	var apis []string
+	if err := ur.pool.QueryRow(ctx, apiQuery, UserInfo.Role).Scan(&apis); err != nil {
+		return UserInfo, errors.Wrapf(err, "failed to get APIs for role %s", UserInfo.Role)
+	}
+
+	UserInfo.Api = apis
+
+	return UserInfo, nil
+}
+
 func (ur *UserRepo) CreateUser(ctx context.Context, request user_domain.CreateUserRequest) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), 8)
 	if err != nil {
 		return errors.Wrapf(err, "failed to generate hashed password for %s", request.Login)
 	}
 
-	createUserQuery := "insert into user (login, email, password, first_name, second_name, organization_name) values ($1, $2, $3, $4, $5, $6)"
+	createUserQuery := "insert into profile (login, email, password, first_name, second_name, organization_name, role) values ($1, $2, $3, $4, $5, $6, $7);"
 
-	if _, err := ur.pool.Query(ctx, createUserQuery, request.Login, request.Email, hashedPassword, request.Name, request.Surname, request.OrganizationName); err != nil {
+	if _, err := ur.pool.Query(ctx, createUserQuery, request.Login, request.Email, hashedPassword, request.Name, request.Surname, request.OrganizationName, request.Role); err != nil {
 		return errors.Wrapf(err, "failed to create account for %s", request.Login)
 	}
 
 	return nil
 }
 
-func (ur *UserRepo) ValidatePermissions(ctx context.Context, userId string, api string) (bool, error) {
+func (ur *UserRepo) ValidatePermissions(ctx context.Context, userId string, api string) error {
+
 	validatePermissionsQuery := `
         SELECT EXISTS(
             SELECT 1
-            FROM user u
-            INNER JOIN role_api ra ON u.role = ra.role
-            WHERE u.login = $1 
+            FROM profile p
+            INNER JOIN role_api ra ON p.role = ra.role
+            WHERE p.id = $1 
             AND ra.api = $2
         );
     `
 
-	var exists bool
-	err := ur.pool.QueryRow(
+	_, err := ur.pool.Query(
 		ctx,
 		validatePermissionsQuery,
 		userId,
 		api,
-	).Scan(&exists)
-
+	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return false, nil
-		}
-		return false, errors.Wrapf(err, "failed to validate permissions for user %s", userId)
+		return errors.Wrapf(err, "failed to validate permissions for user %s", userId)
 	}
 
-	return exists, nil
+	return nil
 }
 
 func (ur *UserRepo) ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error {
+
+	//validate status
+	fmt.Println(userLogin, resolution)
 	resolutionQuery := `
-	UPDATE user SET status = 1$ WHERE login = 2$;
+	UPDATE profile SET status = $1 WHERE login = $2;
     `
 
 	if _, err := ur.pool.Query(ctx, resolutionQuery, resolution, userLogin); err != nil {
@@ -133,7 +182,7 @@ func (ur *UserRepo) ResolveUserSignUp(ctx context.Context, userLogin string, res
 
 func (ur *UserRepo) ChangeUserPermissions(ctx context.Context, userLogin string, userRole string) error {
 	resolutionQuery := `
-	UPDATE user SET role = 1$ WHERE login = 2$;
+	UPDATE profile SET role = $1 WHERE login = $2;
     `
 	if _, err := ur.pool.Query(ctx, resolutionQuery, userRole, userLogin); err != nil {
 		return errors.Wrapf(err, "failed to change permissions for %s", userLogin)
@@ -149,8 +198,9 @@ func (ur *UserRepo) GetSignUpRequestions(ctx context.Context, params user_domain
             email, 
             first_name, 
             second_name,
-			organization_name
-        FROM user
+			organization_name,
+			role
+        FROM profile
         WHERE status = 'PENDING'
         ORDER BY created_at DESC
         LIMIT $1 OFFSET $2;
@@ -179,6 +229,7 @@ func (ur *UserRepo) GetSignUpRequestions(ctx context.Context, params user_domain
 			&user.Name,
 			&user.Surname,
 			&user.OrganizationName,
+			&user.Role,
 		)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to scan row")
@@ -202,7 +253,7 @@ func (ur *UserRepo) GetUserForAdmin(ctx context.Context, params user_domain.Pagi
             second_name,
 			organization_name,
 			role
-        FROM user
+        FROM profile
         WHERE status <> 'PENDING'
         ORDER BY created_at DESC
         LIMIT $1 OFFSET $2;

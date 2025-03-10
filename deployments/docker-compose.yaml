@@ -1,48 +1,178 @@
 version: '3.8'
 services:
-  redis:
-    image: "redis:latest"
-    ports:
-      - "5002:6379"
-    networks:
-      - gnss-radar-net
-
-  postgres:
-    image: "postgres:latest"
-    environment:
-      POSTGRES_DB: "gnss"
-      POSTGRES_PASSWORD: "admin"
-      POSTGRES_USER: "admin"
+  service-redis-auth:
+    image: redis:7
+    container_name: db-redis-auth
+    restart: always
     volumes:
-      - ./scripts/sql/init:/docker-entrypoint-initdb.d
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - gnss-auth-subnet
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  service-postgres-user:
+    image: "postgres:14"
+    container_name: db-postgres-user
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_USER_DB}
+      POSTGRES_USER: ${POSTGRES_USER_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_USER_PASSWORD}
+    volumes:
+      - type: bind
+        source: ~/postgres-migrations/user/initdb.sql
+        target: /docker-entrypoint-initdb.d/migration_a.sql
+      - type: bind
+        source: ~/postgres-data
+        target: /var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER_USER} -d ${POSTGRES_USER_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gnss-user-subnet
+
+  service-postgres-measurements:
+    image: "postgres:14"
+    container_name: db-postgres-measurements
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_MEASUREMENTS_DB}
+      POSTGRES_USER: ${POSTGRES_MEASUREMENTS_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_MEASUREMENTS_PASSWORD}
+    volumes:
+      - type: bind
+        source: ~/postgres-migrations/measurements/initdb.sql
+        target: /docker-entrypoint-initdb.d/migration_a.sql
+      - type: bind
+        source: ~/postgres-measurements-data
+        target: /var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER_USER} -d ${POSTGRES_USER_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gnss-measurements-subnet
+
+  minio-s3:
+    container_name: s3
+    image: minio/minio
     ports:
-      - "5431:5432"
+      - 9001:9001
+    volumes:
+      - type: bind
+        source: ~/minio-data
+        target: /data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server --console-address ":9001" --address ":9002" /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9002/minio/health/live"]
+      interval: 5s
+      retries: 3
+      timeout: 5s
+    networks:
+      - gnss-measurements-subnet
+  create-buckets:
+    container_name: s3-creator
+    image: minio/mc
+    depends_on:
+      minio-s3:
+        condition: service_healthy
+    environment:
+      MC_HOST_gnss: http://${MINIO_ROOT_USER}:${MINIO_ROOT_PASSWORD}@s3:9002
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set gnss http://s3:9002 \$${MINIO_ROOT_USER} \$${MINIO_ROOT_PASSWORD};
+      /usr/bin/mc mb --ignore-existing gnss/ephemeris;
+      exit 0;
+      "
+    networks:
+      - gnss-measurements-subnet
+
+  gnss-api-gateway:
+    image: gateway-image:latest
+    container_name: gateway
+    # healthcheck:
+    #   test: ["CMD", "curl", "--fail", "--silent", "--show-error", "--output", "/dev/null", "http://localhost:8000/health"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
     networks:
       - gnss-radar-net
 
-  nginx:
-    image: "alfaiv/gnss-radar:latest"
-    ports:
-      - "1000:80"
+  gnss-auth:
+    image: auth-image:latest
+    container_name: auth
     depends_on:
-      - app
+      service-redis-auth:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=:8001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+      start_interval: 5s
     networks:
       - gnss-radar-net
+      - gnss-auth-subnet
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "5000"
-      - "5001"
+  gnss-user:
+    image: user-image:latest
+    container_name: user
+    environment:
+      PG_ADDR: ${DATABASE_USER_URL}
     depends_on:
-      - redis
-      - postgres
+      service-postgres-user:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=:8002"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+      start_interval: 5s
     networks:
       - gnss-radar-net
+      - gnss-user-subnet
+
+  gnss-measurements:
+    image: measurements-image:latest
+    container_name: measurements
+    environment:
+      PG_ADDR: ${DATABASE_MEASUREMENTS_URL}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      EPHEMERIS_BUCKET_NAME: "ephemeris"
+    depends_on:
+      service-postgres-measurements:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=:8003"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+      start_interval: 5s
+    networks:
+      - gnss-radar-net
+      - gnss-measurements-subnet
 
 networks:
   gnss-radar-net:
     driver: bridge
     external: true
+  gnss-user-subnet:
+    driver: bridge
+  gnss-auth-subnet:
+    driver: bridge
+  gnss-measurements-subnet:
+    driver: bridge
