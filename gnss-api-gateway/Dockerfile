@@ -27,8 +27,9 @@ FROM alpine:3.18
 
 ENV GATEWAY_ADDR=:8000 \
     TZ=UTC \
-    AUTH_ADDR=gnss-auth:8001 \
-    USER_ADDR=gnss-user:8002 
+    AUTH_ADDR=auth:8001 \
+    USER_ADDR=user:8002 \
+    MEASUREMENTS_ADDR=measurements:8003
 
 COPY --from=build /app/gnss-api-gateway /gateway
 COPY --from=build /source/gnss-api-gateway/config /config/

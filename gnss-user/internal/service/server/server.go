@@ -50,7 +50,7 @@ func (s *UserServiceServer) Login(ctx context.Context, req *proto.LoginRequest) 
 	}, nil
 }
 
-func (s *UserServiceServer) SignUp(ctx context.Context, req *proto.SignUpRequest) (*common_proto.Status, error) {
+func (s *UserServiceServer) SignUp(ctx context.Context, req *proto.SignUpRequest) (*emptypb.Empty, error) {
 
 	createUserReq := user_domain.CreateUserRequest{
 		Login:            req.Login,
@@ -63,10 +63,10 @@ func (s *UserServiceServer) SignUp(ctx context.Context, req *proto.SignUpRequest
 	}
 
 	if err := s.repo.CreateUser(ctx, createUserReq); err != nil {
-		return &common_proto.Status{IsOk: false}, status.Errorf(codes.Internal, "[USER]: %v", err)
+		return &emptypb.Empty{}, status.Errorf(codes.Internal, "[USER]: %v", err)
 	}
 
-	return &common_proto.Status{IsOk: true}, nil
+	return &emptypb.Empty{}, nil
 }
 
 func (s *UserServiceServer) GetUserInfoById(ctx context.Context, req *common_proto.UserId) (*proto.User, error) {
@@ -139,14 +139,14 @@ func (s *UserServiceServer) GetSignUpRequestions(ctx context.Context, req *commo
 	return &proto.UserList{Users: userList}, nil
 }
 
-func (s *UserServiceServer) ValidatePermissions(ctx context.Context, req *proto.PermissionValidaton) (*common_proto.Status, error) {
+func (s *UserServiceServer) ValidatePermissions(ctx context.Context, req *proto.PermissionValidaton) (*emptypb.Empty, error) {
 
-	result, err := s.repo.ValidatePermissions(ctx, req.UserId, req.Api)
+	err := s.repo.ValidatePermissions(ctx, req.UserId, req.Api)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "[USER]: %v", err)
 	}
 
-	return &common_proto.Status{IsOk: result}, nil
+	return &emptypb.Empty{}, nil
 }
 
 func (s *UserServiceServer) ResolveUserSignUp(ctx context.Context, req *proto.SignUpResolution) (*emptypb.Empty, error) {

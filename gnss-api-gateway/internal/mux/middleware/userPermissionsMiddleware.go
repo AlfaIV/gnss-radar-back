@@ -45,8 +45,8 @@ func (mw *UserPermissionsMiddleware) Process(next echo.HandlerFunc) echo.Handler
 			return c.String(http.StatusBadRequest, "invalid endpoint")
 		}
 
-		status, err := mw.userUsecase.ValidatePermissions(c.Request().Context(), userID, method)
-		if err != nil || !status {
+		err := mw.userUsecase.ValidatePermissions(c.Request().Context(), userID, method)
+		if err != nil {
 			mw.logger.WithFields(logrus.Fields{
 				"user_id": userID,
 				"method":  method,

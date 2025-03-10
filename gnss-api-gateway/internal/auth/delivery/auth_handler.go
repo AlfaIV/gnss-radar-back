@@ -85,15 +85,10 @@ func (h *AuthHandler) Signup(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	isOk, err := h.userUsecase.SignUp(ctx, user)
+	err := h.userUsecase.SignUp(ctx, user)
 	if err != nil {
 		h.logger.Error("[GW]: ", err)
 		return c.String(http.StatusInternalServerError, "failed to create account")
-	}
-
-	if !isOk {
-		h.logger.Error("[GW]: ", err)
-		return c.String(http.StatusUnauthorized, "failed to create account")
 	}
 
 	return c.NoContent(http.StatusOK)

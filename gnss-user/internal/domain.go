@@ -56,7 +56,7 @@ type Repository interface {
 	GetUserInfo(ctx context.Context, request UserInfoRequest) (UserInfoResponse, error)
 	GetUserInfoById(ctx context.Context, userId string) (UserInfoResponse, error)
 	CreateUser(ctx context.Context, request CreateUserRequest) error
-	ValidatePermissions(ctx context.Context, userId string, api string) (bool, error)
+	ValidatePermissions(ctx context.Context, userId string, api string) error
 	ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error
 	ChangeUserPermissions(ctx context.Context, userLogin string, userRole string) error
 	GetSignUpRequestions(ctx context.Context, params PaginatedRequest) ([]UserSignUpRequestion, error)

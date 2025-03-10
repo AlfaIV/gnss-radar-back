@@ -4,6 +4,7 @@ import (
 	auth_domain_gateway "gnss-radar/gnss-api-gateway/internal/auth"
 	auth_handler "gnss-radar/gnss-api-gateway/internal/auth/delivery"
 	"gnss-radar/gnss-api-gateway/internal/config"
+	measurements_handler "gnss-radar/gnss-api-gateway/internal/measurements/delivery"
 	middlewarecustom "gnss-radar/gnss-api-gateway/internal/mux/middleware"
 	user_domain_gateway "gnss-radar/gnss-api-gateway/internal/user"
 	user_handler "gnss-radar/gnss-api-gateway/internal/user/delivery"
@@ -17,6 +18,7 @@ import (
 type Handlers struct {
 	Auth auth_handler.AuthHandler
 	User user_handler.UserHandler
+	Measurements measurements_handler.MeasurementsHandler
 }
 
 type ServiceUsecase struct {

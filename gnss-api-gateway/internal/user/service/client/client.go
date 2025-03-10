@@ -38,8 +38,8 @@ func (uc *UserClient) Login(ctx context.Context, login string, password string) 
 	}, nil
 }
 
-func (uc *UserClient) SignUp(ctx context.Context, req user_domain_gateway.SignUpRequest) (bool, error) {
-	status, err := uc.client.SignUp(ctx, &proto.SignUpRequest{
+func (uc *UserClient) SignUp(ctx context.Context, req user_domain_gateway.SignUpRequest) error {
+	_, err := uc.client.SignUp(ctx, &proto.SignUpRequest{
 		Login:            req.Login,
 		OrganizationName: req.OrganizationName,
 		Name:             req.Name,
@@ -49,10 +49,10 @@ func (uc *UserClient) SignUp(ctx context.Context, req user_domain_gateway.SignUp
 		Role:             req.Role,
 	})
 	if err != nil {
-		return false, errors.Wrapf(err, "[GW USER] %v", err)
+		return errors.Wrapf(err, "[GW USER] %v", err)
 	}
 
-	return status.IsOk, nil
+	return nil
 }
 
 func (uc *UserClient) GetUserInfoById(ctx context.Context, userId string) (user_domain_gateway.User, error) {
@@ -119,13 +119,13 @@ func (uc *UserClient) GetSignUpRequestions(ctx context.Context, page uint64, siz
 }
 
 // Только для миддлваря
-func (uc *UserClient) ValidatePermissions(ctx context.Context, userId string, api string) (bool, error) {
-	status, err := uc.client.ValidatePermissions(ctx, &proto.PermissionValidaton{UserId: userId, Api: api})
+func (uc *UserClient) ValidatePermissions(ctx context.Context, userId string, api string) error {
+	_, err := uc.client.ValidatePermissions(ctx, &proto.PermissionValidaton{UserId: userId, Api: api})
 	if err != nil {
-		return false, errors.Wrapf(err, "[GW USER] %v", err)
+		return errors.Wrapf(err, "[GW USER] %v", err)
 	}
 
-	return status.IsOk, nil
+	return nil
 }
 
 func (uc *UserClient) ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error {

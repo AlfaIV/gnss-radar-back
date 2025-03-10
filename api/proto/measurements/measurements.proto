@@ -22,7 +22,6 @@ message Ephemeris {
 message EphemerisToLoad {
     string Name = 1;
     bytes Payload = 2;
-    string ContentType = 3;
 }
 
 // protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/measurements/measurements.proto

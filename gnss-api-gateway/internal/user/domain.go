@@ -54,11 +54,11 @@ type PermissionChangeRequest struct {
 
 type Usecase interface {
 	Login(ctx context.Context, login string, password string) (User, error)
-	SignUp(ctx context.Context, req SignUpRequest) (bool, error)
+	SignUp(ctx context.Context, req SignUpRequest) error
 	GetUserInfoById(ctx context.Context, userId string) (User, error)
 	GetListUsers(ctx context.Context, page uint64, size uint64) (UserListResponse, error)
 	GetSignUpRequestions(ctx context.Context, page uint64, size uint64) (UserListResponse, error)
-	ValidatePermissions(ctx context.Context, userId string, api string) (bool, error)
+	ValidatePermissions(ctx context.Context, userId string, api string) error
 	ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error
 	ChangeUserPermissions(ctx context.Context, userLogin string, role string) error
 }

@@ -140,7 +140,7 @@ func (ur *UserRepo) CreateUser(ctx context.Context, request user_domain.CreateUs
 	return nil
 }
 
-func (ur *UserRepo) ValidatePermissions(ctx context.Context, userId string, api string) (bool, error) {
+func (ur *UserRepo) ValidatePermissions(ctx context.Context, userId string, api string) error {
 
 	validatePermissionsQuery := `
         SELECT EXISTS(
@@ -152,22 +152,17 @@ func (ur *UserRepo) ValidatePermissions(ctx context.Context, userId string, api 
         );
     `
 
-	var exists bool
-	err := ur.pool.QueryRow(
+	_, err := ur.pool.Query(
 		ctx,
 		validatePermissionsQuery,
 		userId,
 		api,
-	).Scan(&exists)
-
+	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return false, nil
-		}
-		return false, errors.Wrapf(err, "failed to validate permissions for user %s", userId)
+		return errors.Wrapf(err, "failed to validate permissions for user %s", userId)
 	}
 
-	return exists, nil
+	return nil
 }
 
 func (ur *UserRepo) ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error {
