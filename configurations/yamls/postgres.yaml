@@ -1,8 +1,0 @@
-port: 5432
-host: postgres
-user: admin
-password: admin
-dbname: gnss
-sslmode: disable
-max_open_conns: 10
-timer: 10
