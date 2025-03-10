@@ -25,5 +25,5 @@ type EphemerisToLoad struct {
 
 type Repository interface {
 	UploadEphemeris(ctx context.Context, req EphemerisToLoad) error
-	GetEphemeris(ctx context.Context, req PaginatedRequest) ([]EphemerisFileMeta, error)
+	GetEphemeris(ctx context.Context, req PaginatedRequest) ([]EphemerisFileMeta, uint64, error)
 }

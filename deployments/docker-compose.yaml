@@ -80,6 +80,22 @@ services:
       timeout: 5s
     networks:
       - gnss-measurements-subnet
+  create-buckets:
+    container_name: s3-creator
+    image: minio/mc
+    depends_on:
+      minio-s3:
+        condition: service_healthy
+    environment:
+      MC_HOST_gnss: http://${MINIO_ROOT_USER}:${MINIO_ROOT_PASSWORD}@s3:9002
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set gnss http://s3:9002 \$${MINIO_ROOT_USER} \$${MINIO_ROOT_PASSWORD};
+      /usr/bin/mc mb --ignore-existing gnss/ephemeris;
+      exit 0;
+      "
+    networks:
+      - gnss-measurements-subnet
 
   gnss-api-gateway:
     image: gateway-image:latest

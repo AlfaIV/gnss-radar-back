@@ -41,7 +41,5 @@ stop-services:
 
 deploy: build-images start-networks start-services
 
-reload: 
-	stop-services 
-	start-services
+reload: stop-services start-services
 	docker restart ui

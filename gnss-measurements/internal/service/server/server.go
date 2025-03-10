@@ -31,7 +31,7 @@ func NewMeasurementsServer(repo measurements_domain.Repository, logger *logrus.L
 
 func (s *MeasurementsServiceServer) GetEphemeris(ctx context.Context, in *common_proto.PaginatedRequest) (*proto.Ephemeris, error) {
 
-	fileMetas, err := s.repo.GetEphemeris(ctx, measurements_domain.PaginatedRequest{Page: in.Page, Size: in.Size})
+	fileMetas, total, err := s.repo.GetEphemeris(ctx, measurements_domain.PaginatedRequest{Page: in.Page, Size: in.Size})
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "[MEASUREMENTS]: %v", err)
 	}
@@ -46,10 +46,11 @@ func (s *MeasurementsServiceServer) GetEphemeris(ctx context.Context, in *common
 
 	return &proto.Ephemeris{
 		Ephemeris: ephemeris,
+		Total:     total,
 	}, nil
 }
 
-func (s *MeasurementsServiceServer) UploadAvatar(ctx context.Context, in *proto.EphemerisToLoad) (*google_proto.Empty, error) {
+func (s *MeasurementsServiceServer) LoadEphemeris(ctx context.Context, in *proto.EphemerisToLoad) (*google_proto.Empty, error) {
 	payload := in.GetPayload()
 	contentType := http.DetectContentType(payload)
 

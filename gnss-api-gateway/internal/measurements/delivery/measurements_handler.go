@@ -12,7 +12,7 @@ import (
 
 type MeasurementsHandler struct {
 	measurementsUsecase measurements_domain_gateway.Usecase
-	logger      *logrus.Logger
+	logger              *logrus.Logger
 }
 
 func NewHandler(
@@ -21,7 +21,7 @@ func NewHandler(
 ) MeasurementsHandler {
 	return MeasurementsHandler{
 		measurementsUsecase: measurements,
-		logger:      logger,
+		logger:              logger,
 	}
 }
 
@@ -63,13 +63,17 @@ func (h *MeasurementsHandler) GetEphemeris(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Incorrect size param")
 	}
 
-	ephemeris, err := h.measurementsUsecase.GetEphemeris(c.Request().Context(), uint64(page), uint64(size))
+	ephemeris, total, err := h.measurementsUsecase.GetEphemeris(c.Request().Context(), uint64(page), uint64(size))
 	if err != nil {
 		h.logger.Error("[GW]:", err)
 		return c.String(http.StatusUnauthorized, "invalid data")
 	}
 
-	return c.JSON(http.StatusOK, ephemeris)
+	return c.JSON(http.StatusOK, measurements_domain_gateway.GetEphemerisResponse{
+		Ephemeris: ephemeris,
+		Total:     total,
+		Page:      uint64(page),
+	})
 }
 
 func (h *MeasurementsHandler) UploadEphemeris(c echo.Context) error {
@@ -88,7 +92,7 @@ func (h *MeasurementsHandler) UploadEphemeris(c echo.Context) error {
 		h.logger.Error("Load Ephemeris: failed to form file from provided name: ", err)
 		return c.JSON(http.StatusBadRequest, "Failed to upload ephemeris")
 	}
-	
+
 	file, err := fileHeader.Open()
 	if err != nil {
 		h.logger.Error("Load Ephemeris: failed to open file: ", err)

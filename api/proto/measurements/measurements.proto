@@ -17,6 +17,7 @@ message EphemerisFileMeta {
 
 message Ephemeris {
     repeated EphemerisFileMeta Ephemeris = 1;
+    uint64 Total = 2;
 }
 
 message EphemerisToLoad {

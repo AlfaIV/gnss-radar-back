@@ -20,22 +20,22 @@ func NewMeasurementsClient(client proto.MeasurementsClient, logger *logrus.Logge
 	return MeasurementsClient{client: client, logger: logger}
 }
 
-func (mc *MeasurementsClient) GetEphemeris(ctx context.Context, page uint64, size uint64) ([]measurements_domain_gateway.EphemerisFileMeta, error) {
+func (mc *MeasurementsClient) GetEphemeris(ctx context.Context, page uint64, size uint64) ([]measurements_domain_gateway.EphemerisFileMeta, uint64, error) {
 	ephemeris, err := mc.client.GetEphemeris(ctx, &common_proto.PaginatedRequest{Page: page, Size: size})
 	if err != nil {
-		return []measurements_domain_gateway.EphemerisFileMeta{}, errors.Wrapf(err, "[GW USER] %v", err)
+		return []measurements_domain_gateway.EphemerisFileMeta{}, 0, errors.Wrapf(err, "[GW USER] %v", err)
 	}
 
 	var ephemerisArray []measurements_domain_gateway.EphemerisFileMeta
 
 	for _, eph := range ephemeris.Ephemeris {
 		ephemerisArray = append(ephemerisArray, measurements_domain_gateway.EphemerisFileMeta{
-			Name:             eph.Name,
-			Datetime:         eph.Datetime,
+			Name:     eph.Name,
+			Datetime: eph.Datetime,
 		})
 	}
 
-	return ephemerisArray, nil
+	return ephemerisArray, ephemeris.GetTotal(), nil
 }
 
 func (mc *MeasurementsClient) LoadEphemeris(ctx context.Context, file io.Reader, name string) error {
@@ -45,7 +45,7 @@ func (mc *MeasurementsClient) LoadEphemeris(ctx context.Context, file io.Reader,
 	}
 
 	_, err = mc.client.LoadEphemeris(ctx, &proto.EphemerisToLoad{
-		Name: name,
+		Name:    name,
 		Payload: payload,
 	})
 	if err != nil {

@@ -16,8 +16,8 @@ import (
 )
 
 type Handlers struct {
-	Auth auth_handler.AuthHandler
-	User user_handler.UserHandler
+	Auth         auth_handler.AuthHandler
+	User         user_handler.UserHandler
 	Measurements measurements_handler.MeasurementsHandler
 }
 
@@ -58,6 +58,21 @@ func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, log
 	user.GET("/getSignUpRequestions", handlers.User.GetSignUpRequestions)
 	user.PATCH("/resolveSignUp", handlers.User.ResolveUserSignUp)
 	user.PATCH("/givePermissions", handlers.User.GivePermissions)
+
+	measurements := base.Group("/measurements")
+	measurements.Use(
+		userIDMiddleware.Process,
+		userPermissionsMiddleware.Process,
+	)
+	measurements.GET("/getEphemeris", handlers.Measurements.GetEphemeris)
+	measurements.POST("/uploadEphemeris", handlers.Measurements.UploadEphemeris)
+
+	// satellites := base.Group("/satellites")
+	// satellites.Use(
+	// 	userIDMiddleware.Process,
+	// 	userPermissionsMiddleware.Process,
+	// )
+	// satellites.GET("/getSatellitesPosition", handlers.Measurements.GetEphemeris)
 
 	return mux
 }

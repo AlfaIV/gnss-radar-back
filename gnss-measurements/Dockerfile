@@ -32,7 +32,9 @@ RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health
     chmod +x /bin/grpc_health_probe
 
 ENV MEASUREMENTS_ADDR=:8003 \
-    TZ=UTC
+    TZ=UTC \
+    MINIO_API_ADDR=s3:9002
+    
 COPY --from=build /app/measurements /measurements
 
 RUN adduser -D -g '' appuser && \
@@ -42,4 +44,4 @@ USER appuser
 
 EXPOSE 8003
 
-CMD ["/user"]
+CMD ["/measurements"]

@@ -4,6 +4,7 @@ import (
 	"context"
 	measurements_domain "gnss-radar/gnss-measurements/internal"
 	"os"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -29,44 +30,55 @@ func NewMeasurementsRepo(pool PgxIFace, m *minio.Client, logger *logrus.Logger) 
 	return &MeasurementsRepo{pool: pool, minio: m, logger: logger}
 }
 
-func (mr *MeasurementsRepo) GetEphemeris(ctx context.Context, req measurements_domain.PaginatedRequest) ([]measurements_domain.EphemerisFileMeta, error) {
+func (mr *MeasurementsRepo) GetEphemeris(ctx context.Context, req measurements_domain.PaginatedRequest) ([]measurements_domain.EphemerisFileMeta, uint64, error) {
+
+	var total uint64
+
+	countQuery := `SELECT COUNT(*) FROM file_meta;`
+	err := mr.pool.QueryRow(ctx, countQuery).Scan(&total)
+	if err != nil {
+		return nil, 0, errors.Wrap(err, "failed to get total count")
+	}
+
 	fileMetaQuery := `
-        SELECT
+		SELECT
 			filename,
 			created_at
-        FROM file_meta 
-        ORDER BY created_at
+		FROM file_meta 
+		ORDER BY created_at
 		LIMIT $1
 		OFFSET $2;
-    `
+	`
 	var ephemeris []measurements_domain.EphemerisFileMeta
 
 	offset := (req.Page - 1) * req.Size
 
 	rows, err := mr.pool.Query(ctx, fileMetaQuery, req.Size, offset)
 	if err != nil {
-		return ephemeris, errors.Wrap(err, "failed to get ephemeris info")
+		return ephemeris, total, errors.Wrap(err, "failed to get ephemeris info")
 	}
 
 	defer rows.Close()
 
 	for rows.Next() {
+		var timeStamp time.Time
 		var fileMeta measurements_domain.EphemerisFileMeta
 		err := rows.Scan(
 			&fileMeta.Name,
-			&fileMeta.Datetime,
+			&timeStamp,
 		)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to scan row")
+			return nil, total, errors.Wrap(err, "failed to scan row")
 		}
+		fileMeta.Datetime = timeStamp.Format("2006-01-02 15:04:05")
 		ephemeris = append(ephemeris, fileMeta)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, errors.Wrap(err, "error during rows iteration")
+		return nil, total, errors.Wrap(err, "error during rows iteration")
 	}
 
-	return ephemeris, nil
+	return ephemeris, total, nil
 }
 
 func (mr MeasurementsRepo) UploadEphemeris(ctx context.Context, req measurements_domain.EphemerisToLoad) error {
