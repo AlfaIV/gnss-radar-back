@@ -4,6 +4,7 @@ build-images:
 	docker build -t gateway-image -f ./gnss-api-gateway/Dockerfile .
 	docker build -t auth-image -f ./gnss-auth/Dockerfile .
 	docker build -t user-image -f ./gnss-user/Dockerfile .
+	docker build -t measurements-image -f ./gnss-measurements/Dockerfile .
 
 docker-clear:
 	@echo "Остановка всех запущенных контейнеров..."
@@ -39,3 +40,8 @@ stop-services:
 	docker compose -f ./deployments/docker-compose.yaml down
 
 deploy: build-images start-networks start-services
+
+reload: 
+	stop-services 
+	start-services
+	docker restart ui

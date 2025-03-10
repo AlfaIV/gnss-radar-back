@@ -84,8 +84,6 @@ services:
   gnss-api-gateway:
     image: gateway-image:latest
     container_name: gateway
-    ports:
-      - "8000:8000"
     # healthcheck:
     #   test: ["CMD", "curl", "--fail", "--silent", "--show-error", "--output", "/dev/null", "http://localhost:8000/health"]
     #   interval: 10s
@@ -135,6 +133,9 @@ services:
     container_name: measurements
     environment:
       PG_ADDR: ${DATABASE_MEASUREMENTS_URL}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      EPHEMERIS_BUCKET_NAME: "ephemeris"
     depends_on:
       service-postgres-measurements:
         condition: service_healthy
