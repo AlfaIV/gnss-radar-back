@@ -254,7 +254,7 @@ func (ur *UserRepo) GetUserForAdmin(ctx context.Context, params user_domain.Pagi
 			organization_name,
 			role
         FROM profile
-        WHERE status <> 'PENDING'
+        WHERE status = 'APPROVED'
         ORDER BY created_at DESC
         LIMIT $1 OFFSET $2;
     `
