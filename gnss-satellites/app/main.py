@@ -1,9 +1,10 @@
+import json
+import os
 from fastapi import FastAPI
 
 from app.api.v1.routes import routers as v1_routers
 from app.core.config import configs
 from app.core.container import Container
-
 
 class AppCreator:
     def __init__(self):
@@ -21,7 +22,18 @@ class AppCreator:
 
         self.app.include_router(v1_routers, prefix=configs.API_V1_STR)
 
+    def generate_doc(self):
+        """Генерация JSON-схемы OpenAPI."""
+        openapi_schema = self.app.openapi()
+        doc_path = os.path.join(configs.PROJECT_ROOT, "docs")
+        os.makedirs(doc_path, exist_ok=True)  # Создаем папку, если её нет
+        with open(f"{doc_path}/api-schemas.json", "w") as file:
+            json.dump(openapi_schema, file, indent=2)
+        print(f"API схема загружена в {doc_path}")
 
 app_creator = AppCreator()
 app = app_creator.app
 container = app_creator.container
+
+# Генерация документации
+app_creator.generate_doc()

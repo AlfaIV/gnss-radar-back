@@ -1,9 +1,10 @@
 from fastapi import APIRouter
 
 from app.api.v1.endpoints.satellities import router as satellities_router
+from app.api.v1.endpoints.processing import router as processing_router
 
 routers = APIRouter()
-router_list = [satellities_router]
+router_list = [satellities_router, processing_router]
 
 for router in router_list:
     router.tags = routers.tags.append("v1")

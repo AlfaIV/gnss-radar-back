@@ -1,6 +1,7 @@
 from dependency_injector import containers, providers
 
 from app.services.sattelites_positions import SatellitesPositions
+from app.services.signal_processing import SignalProcessing
 
 
 class Container(containers.DeclarativeContainer):
@@ -11,3 +12,4 @@ class Container(containers.DeclarativeContainer):
     )
 
     satellite_services = providers.Singleton(SatellitesPositions)
+    signal_services = providers.Singleton(SignalProcessing)

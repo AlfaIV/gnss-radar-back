@@ -1,0 +1,355 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "measurement-services",
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/satellites/now": {
+      "post": {
+        "tags": [
+          "v1",
+          "satellites"
+        ],
+        "summary": "Post Sattelites",
+        "operationId": "post_sattelites_api_v1_satellites_now_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RadarPositionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SatellitesPositionResponce"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/satellites/time": {
+      "post": {
+        "tags": [
+          "v1",
+          "satellites"
+        ],
+        "summary": "Post Time Sattelites",
+        "operationId": "post_time_sattelites_api_v1_satellites_time_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RadarPositionGeograthRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SatellitesTimeResponce"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Ephemeris": {
+        "properties": {
+          "Group": {
+            "type": "string",
+            "title": "Group"
+          },
+          "Name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "Longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "Latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "Height": {
+            "type": "number",
+            "title": "Height"
+          }
+        },
+        "type": "object",
+        "required": [
+          "Group",
+          "Name",
+          "Longitude",
+          "Latitude",
+          "Height"
+        ],
+        "title": "Ephemeris"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "RadarPositionGeograthRequest": {
+        "properties": {
+          "radar_latitude": {
+            "type": "number",
+            "title": "Radar Latitude"
+          },
+          "radar_longitude": {
+            "type": "number",
+            "title": "Radar Longitude"
+          },
+          "radar_height": {
+            "type": "number",
+            "title": "Radar Height"
+          }
+        },
+        "type": "object",
+        "required": [
+          "radar_latitude",
+          "radar_longitude",
+          "radar_height"
+        ],
+        "title": "RadarPositionGeograthRequest"
+      },
+      "RadarPositionRequest": {
+        "properties": {
+          "radar_x": {
+            "type": "number",
+            "title": "Radar X"
+          },
+          "radar_y": {
+            "type": "number",
+            "title": "Radar Y"
+          },
+          "radar_z": {
+            "type": "number",
+            "title": "Radar Z"
+          }
+        },
+        "type": "object",
+        "required": [
+          "radar_x",
+          "radar_y",
+          "radar_z"
+        ],
+        "title": "RadarPositionRequest"
+      },
+      "SatellitePosition": {
+        "properties": {
+          "Group": {
+            "type": "string",
+            "title": "Group"
+          },
+          "Name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "Azimuth": {
+            "type": "number",
+            "title": "Azimuth"
+          },
+          "Elevation": {
+            "type": "number",
+            "title": "Elevation"
+          },
+          "Range": {
+            "type": "number",
+            "title": "Range"
+          }
+        },
+        "type": "object",
+        "required": [
+          "Group",
+          "Name",
+          "Azimuth",
+          "Elevation",
+          "Range"
+        ],
+        "title": "SatellitePosition"
+      },
+      "SatelliteTime": {
+        "properties": {
+          "Group": {
+            "type": "string",
+            "title": "Group"
+          },
+          "Name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "Time": {
+            "items": {
+              "$ref": "#/components/schemas/VisionTime"
+            },
+            "type": "array",
+            "title": "Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "Group",
+          "Name",
+          "Time"
+        ],
+        "title": "SatelliteTime"
+      },
+      "SatellitesPositionResponce": {
+        "properties": {
+          "Satellites": {
+            "items": {
+              "$ref": "#/components/schemas/SatellitePosition"
+            },
+            "type": "array",
+            "title": "Satellites"
+          },
+          "Ephemerises": {
+            "items": {
+              "$ref": "#/components/schemas/Ephemeris"
+            },
+            "type": "array",
+            "title": "Ephemerises"
+          }
+        },
+        "type": "object",
+        "required": [
+          "Satellites",
+          "Ephemerises"
+        ],
+        "title": "SatellitesPositionResponce"
+      },
+      "SatellitesTimeResponce": {
+        "properties": {
+          "Satellites": {
+            "items": {
+              "$ref": "#/components/schemas/SatelliteTime"
+            },
+            "type": "array",
+            "title": "Satellites"
+          }
+        },
+        "type": "object",
+        "required": [
+          "Satellites"
+        ],
+        "title": "SatellitesTimeResponce"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VisionTime": {
+        "properties": {
+          "Begin": {
+            "type": "number",
+            "title": "Begin"
+          },
+          "End": {
+            "type": "number",
+            "title": "End"
+          }
+        },
+        "type": "object",
+        "required": [
+          "Begin",
+          "End"
+        ],
+        "title": "VisionTime"
+      }
+    }
+  }
+}
