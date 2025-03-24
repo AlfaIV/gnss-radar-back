@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import BaseModel
 
 
@@ -32,16 +30,6 @@ class TLE:
     @line2.setter
     def line2(self, value):
         self._line2 = value
-
-
-class SatellitePosition(BaseModel):
-    Azimuth: int
-    Elevation: int
-    Range: int
-
-
-class SatellitesPosition(BaseModel):
-    Satellites: List[SatellitePosition]
 
 
 class RadarPosition(BaseModel):

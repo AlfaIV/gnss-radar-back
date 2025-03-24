@@ -16,15 +16,15 @@ from astropy.time import Time
 from sgp4.api import Satrec, SGP4_ERRORS
 
 from app.core.config import configs
-from app.entities.sattellites import TLE, SatellitePosition
+from app.entities.sattellites import TLE
 from app.schemas.sattelites_position import (
     RadarPositionRequest,
     SatellitesPositionResponce,
     SatellitesTimeResponce,
     RadarPositionGeograthRequest,
     VisionTime,
-    SatelliteTime
-    
+    SatelliteTime,
+    SatellitePosition,
 )
 
 
@@ -61,7 +61,7 @@ class SatellitesPositions:
         }
 
         satellite_positions = []
-        ephemerises = []
+        # ephemerises = []
 
         for satellite in self.satellites:
             sattelite_props = self.get_sattelite_positions(
@@ -73,29 +73,29 @@ class SatellitesPositions:
             satellite_name = " ".join(parts[1:])
 
             satellite_positions.append(
-                {
-                    "Group": grouping,
-                    "Name": satellite_name,
-                    "Azimuth": sattelite_props["Azimuth"],
-                    "Elevation": sattelite_props["Elevation"],
-                    "Range": sattelite_props["Range"],
-                }
+                SatellitePosition(
+                    Group = grouping,
+                    Name = satellite_name,
+                    Azimuth = sattelite_props["Azimuth"],
+                    Elevation = sattelite_props["Elevation"],
+                    Range = sattelite_props["Range"],
+                )
             )
 
             # ephemerises.append(
-            #     {
-            #         "Group": grouping,
-            #         "Name": satellite_name,
-            #         "Longitude": sattelite_props["Longitude"],
-            #         "Latitude": sattelite_props["Latitude"],
-            #         "Height": sattelite_props["Height"],
-            #     }
+            #     Ephemeris(
+            #         Group = grouping,
+            #         Name = satellite_name,
+            #         Longitude = sattelite_props["Longitude"],
+            #         Latitude = sattelite_props["Latitude"],
+            #         Height = sattelite_props["Height"],
+            #     )
             # )
 
-        return {
-            "Satellites": satellite_positions,
+        return SatellitesPositionResponce(
+            Satellites = satellite_positions,
             # "Ephemerises": ephemerises,
-        }
+        )
 
     def get_sattelite_positions(
         self, current_time: datetime, satellite: object, observer: RadarPositionRequest
