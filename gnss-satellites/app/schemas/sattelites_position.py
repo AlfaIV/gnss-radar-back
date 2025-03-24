@@ -41,7 +41,7 @@ class SatelliteTime(BaseModel):
 
 class SatellitesPositionResponce(BaseModel):
     Satellites: List[SatellitePosition]
-    Ephemerises: List[Ephemeris]
+    # Ephemerises: List[Ephemeris]
 
 
 class SatellitesTimeResponce(BaseModel):

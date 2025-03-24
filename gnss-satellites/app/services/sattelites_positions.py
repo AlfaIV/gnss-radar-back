@@ -54,11 +54,6 @@ class SatellitesPositions:
         self, radar: RadarPositionRequest
     ) -> SatellitesPositionResponce:
         current_time = Time.now()
-        # radar_position = {
-        #     'radar_x': 2842957.63,
-        #     'radar_y': 2160952.62,
-        #     'radar_z': 5265993.63,
-        # }
         radar_position = {
             "radar_x": radar.radar_x,
             "radar_y": radar.radar_y,
@@ -87,19 +82,19 @@ class SatellitesPositions:
                 }
             )
 
-            ephemerises.append(
-                {
-                    "Group": grouping,
-                    "Name": satellite_name,
-                    "Longitude": sattelite_props["Longitude"],
-                    "Latitude": sattelite_props["Latitude"],
-                    "Height": sattelite_props["Height"],
-                }
-            )
+            # ephemerises.append(
+            #     {
+            #         "Group": grouping,
+            #         "Name": satellite_name,
+            #         "Longitude": sattelite_props["Longitude"],
+            #         "Latitude": sattelite_props["Latitude"],
+            #         "Height": sattelite_props["Height"],
+            #     }
+            # )
 
         return {
             "Satellites": satellite_positions,
-            "Ephemerises": ephemerises,
+            # "Ephemerises": ephemerises,
         }
 
     def get_sattelite_positions(
