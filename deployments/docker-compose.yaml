@@ -166,6 +166,13 @@ services:
       - gnss-radar-net
       - gnss-measurements-subnet
 
+  gnss-satellites:
+    image: satellites-image:latest
+    container_name: satellites
+    environment:
+    networks:
+      - gnss-measurements-subnet
+
 networks:
   gnss-radar-net:
     driver: bridge

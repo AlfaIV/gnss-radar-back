@@ -33,7 +33,8 @@ RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health
 
 ENV MEASUREMENTS_ADDR=:8003 \
     TZ=UTC \
-    MINIO_API_ADDR=s3:9002
+    MINIO_API_ADDR=s3:9002 \
+    SATELLITES_ADDR=satellites:8010
     
 COPY --from=build /app/measurements /measurements
 

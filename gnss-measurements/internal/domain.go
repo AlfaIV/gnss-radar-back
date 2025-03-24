@@ -23,7 +23,20 @@ type EphemerisToLoad struct {
 	ContentType string
 }
 
+type SatelliteData struct {
+	Group string
+	Name string
+	Azumuth float64
+	Range float64
+	Elevation float64
+}
+
+type Satellites struct {
+	Satellites []SatelliteData
+}
+
 type Repository interface {
 	UploadEphemeris(ctx context.Context, req EphemerisToLoad) error
 	GetEphemeris(ctx context.Context, req PaginatedRequest) ([]EphemerisFileMeta, uint64, error)
+	GetSatellitesCoordinates(ctx context.Context) (Satellites, error)
 }

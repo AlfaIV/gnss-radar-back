@@ -1,8 +1,12 @@
 package statistics_repository
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
 	measurements_domain "gnss-radar/gnss-measurements/internal"
+	"net/http"
 	"os"
 	"time"
 
@@ -12,6 +16,12 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
+
+type RadarRequest struct {
+    RadarX float64 `json:"radar_x"`
+    RadarY float64 `json:"radar_y"`
+    RadarZ float64 `json:"radar_z"`
+}
 
 type PgxIFace interface {
 	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
@@ -81,7 +91,7 @@ func (mr *MeasurementsRepo) GetEphemeris(ctx context.Context, req measurements_d
 	return ephemeris, total, nil
 }
 
-func (mr MeasurementsRepo) UploadEphemeris(ctx context.Context, req measurements_domain.EphemerisToLoad) error {
+func (mr *MeasurementsRepo) UploadEphemeris(ctx context.Context, req measurements_domain.EphemerisToLoad) error {
 	bucketName := os.Getenv("EPHEMERIS_BUCKET_NAME")
 	if _, err := mr.minio.PutObject(
 		ctx,
@@ -110,4 +120,51 @@ func (mr MeasurementsRepo) UploadEphemeris(ctx context.Context, req measurements
 	}
 
 	return nil
+}
+
+func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measurements_domain.Satellites, error) {
+    requestBody := RadarRequest{
+        RadarX: 56.4475,
+        RadarY: 37.423056,
+        RadarZ: 500,
+    }
+
+    jsonBody, err := json.Marshal(requestBody)
+    if err != nil {
+        return measurements_domain.Satellites{}, err
+    }
+
+	satellites_addr := os.Getenv("SATELLITES_ADDR")
+
+	url := fmt.Sprintf("http://%s/api/v1/satellites/now", satellites_addr)
+
+    req, err := http.NewRequestWithContext(
+        ctx,
+        "POST",
+        url,
+        bytes.NewBuffer(jsonBody),
+    )
+    if err != nil {
+        return measurements_domain.Satellites{}, err
+    }
+    
+    req.Header.Set("Content-Type", "application/json")
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return measurements_domain.Satellites{}, err
+    }
+    defer resp.Body.Close()
+
+    if resp.StatusCode != http.StatusOK {
+        return measurements_domain.Satellites{}, fmt.Errorf("API returned status: %d", resp.StatusCode)
+    }
+
+    var result measurements_domain.Satellites
+    if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+        return measurements_domain.Satellites{}, err
+    }
+
+    return result, nil
 }
