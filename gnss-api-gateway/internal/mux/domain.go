@@ -67,12 +67,12 @@ func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, log
 	measurements.GET("/getEphemeris", handlers.Measurements.GetEphemeris)
 	measurements.POST("/uploadEphemeris", handlers.Measurements.UploadEphemeris)
 
-	// satellites := base.Group("/satellites")
-	// satellites.Use(
-	// 	userIDMiddleware.Process,
-	// 	userPermissionsMiddleware.Process,
-	// )
-	// satellites.GET("/getSatellitesPosition", handlers.Measurements.GetEphemeris)
+	satellites := base.Group("/satellites")
+	satellites.Use(
+		userIDMiddleware.Process,
+		userPermissionsMiddleware.Process,
+	)
+	satellites.GET("/getSatellitesPosition", handlers.Measurements.GetSatellitesPosition)
 
 	return mux
 }

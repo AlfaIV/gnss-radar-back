@@ -69,3 +69,26 @@ func (s *MeasurementsServiceServer) LoadEphemeris(ctx context.Context, in *proto
 
 	return &google_proto.Empty{}, nil
 }
+
+func (s *MeasurementsServiceServer) GetSatellitesPosition(ctx context.Context, in *google_proto.Empty) (*proto.Satellites, error) {
+
+	satellites, err := s.repo.GetSatellitesCoordinates(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var satArray []*proto.Satellite
+	for _, sat := range satellites.Satellites {
+		satArray = append(satArray, &proto.Satellite{
+			Name:     sat.Name,
+			Group: sat.Group,
+			Azimuth: sat.Azumuth,
+			Elevation: sat.Elevation,
+			Range: sat.Range,
+		})
+	}
+
+	return &proto.Satellites{
+		Satellites: satArray,
+	}, nil
+}

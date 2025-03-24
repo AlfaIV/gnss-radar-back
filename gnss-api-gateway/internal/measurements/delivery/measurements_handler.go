@@ -108,3 +108,22 @@ func (h *MeasurementsHandler) UploadEphemeris(c echo.Context) error {
 
 	return c.NoContent(http.StatusOK)
 }
+
+func (h *MeasurementsHandler) GetSatellitesPosition(c echo.Context) error {
+
+	ctx := c.Request().Context()
+
+	_, err := mwutils.GetUserID(ctx)
+	if err != nil {
+		h.logger.Error("[GW]: ", err)
+
+		return c.String(http.StatusUnauthorized, "No session id provided")
+	}
+
+	satellites, err := h.measurementsUsecase.GetSatellitesPosition(ctx)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return c.JSON(http.StatusOK, satellites)
+}

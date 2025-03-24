@@ -7,6 +7,8 @@ import (
 	measurements_domain_gateway "gnss-radar/gnss-api-gateway/internal/measurements"
 	"io"
 
+	google_proto "github.com/golang/protobuf/ptypes/empty"
+
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -53,4 +55,25 @@ func (mc *MeasurementsClient) LoadEphemeris(ctx context.Context, file io.Reader,
 	}
 
 	return nil
+}
+
+func (mc *MeasurementsClient) GetSatellitesPosition(ctx context.Context) (measurements_domain_gateway.Satellites, error) {
+	s, err := mc.client.GetSatellitesPosition(ctx, &google_proto.Empty{})
+	if err != nil {
+		return measurements_domain_gateway.Satellites{}, errors.Wrapf(err, "[GW MEASUREMENTS] %v", err)
+	}
+
+	var satellites []measurements_domain_gateway.SatelliteData
+
+	for _, sat := range s.GetSatellites() {
+		satellites = append(satellites, measurements_domain_gateway.SatelliteData{
+			Group: sat.GetGroup(),
+			Name: sat.GetName(),
+			Azumuth: sat.GetAzimuth(),
+			Elevation: sat.GetElevation(),
+			Range: sat.GetRange(),
+		})
+	}
+
+	return measurements_domain_gateway.Satellites{Satellites: satellites}, nil
 }
