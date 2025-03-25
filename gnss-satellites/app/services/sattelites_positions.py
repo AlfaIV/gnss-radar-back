@@ -72,25 +72,26 @@ class SatellitesPositions:
             grouping = parts[0]
             satellite_name = " ".join(parts[1:])
 
-            satellite_positions.append(
-                SatellitePosition(
-                    Group = grouping,
-                    Name = satellite_name,
-                    Azimuth = sattelite_props["Azimuth"],
-                    Elevation = sattelite_props["Elevation"],
-                    Range = sattelite_props["Range"],
+            if sattelite_props["Elevation"] > 0:
+                satellite_positions.append(
+                    SatellitePosition(
+                        Group = grouping,
+                        Name = satellite_name,
+                        Azimuth = sattelite_props["Azimuth"],
+                        Elevation = sattelite_props["Elevation"],
+                        Range = sattelite_props["Range"],
+                    )
                 )
-            )
 
-            # ephemerises.append(
-            #     Ephemeris(
-            #         Group = grouping,
-            #         Name = satellite_name,
-            #         Longitude = sattelite_props["Longitude"],
-            #         Latitude = sattelite_props["Latitude"],
-            #         Height = sattelite_props["Height"],
-            #     )
-            # )
+                # ephemerises.append(
+                #     Ephemeris(
+                #         Group = grouping,
+                #         Name = satellite_name,
+                #         Longitude = sattelite_props["Longitude"],
+                #         Latitude = sattelite_props["Latitude"],
+                #         Height = sattelite_props["Height"],
+                #     )
+                # )
 
         return SatellitesPositionResponce(
             Satellites = satellite_positions,
