@@ -51,28 +51,24 @@ class SatellitesPositions:
             )
 
     def get_sattelites_positions(
-        self, radar: RadarPositionRequest
+        self, radar: RadarPositionGeograthRequest
     ) -> SatellitesPositionResponce:
         current_time = Time.now()
-        radar_position = {
-            "radar_x": radar.radar_x,
-            "radar_y": radar.radar_y,
-            "radar_z": radar.radar_z,
-        }
+
+        elevation_mask = 0
 
         satellite_positions = []
-        # ephemerises = []
 
         for satellite in self.satellites:
             sattelite_props = self.get_sattelite_positions(
-                current_time, satellite["satrec"], radar_position
+                current_time, satellite["satrec"], radar
             )
             name = satellite["tle"].name.strip()
             parts = name.split()
             grouping = parts[0]
             satellite_name = " ".join(parts[1:])
 
-            if sattelite_props["Elevation"] > 0:
+            if sattelite_props["Elevation"] > elevation_mask:
                 satellite_positions.append(
                     SatellitePosition(
                         Group = grouping,
@@ -83,23 +79,12 @@ class SatellitesPositions:
                     )
                 )
 
-                # ephemerises.append(
-                #     Ephemeris(
-                #         Group = grouping,
-                #         Name = satellite_name,
-                #         Longitude = sattelite_props["Longitude"],
-                #         Latitude = sattelite_props["Latitude"],
-                #         Height = sattelite_props["Height"],
-                #     )
-                # )
-
         return SatellitesPositionResponce(
             Satellites = satellite_positions,
-            # "Ephemerises": ephemerises,
         )
 
     def get_sattelite_positions(
-        self, current_time: datetime, satellite: object, observer: RadarPositionRequest
+        self, current_time: datetime, satellite: object, observer: RadarPositionGeograthRequest
     ) -> SatellitePosition:
         error_code, teme_p, teme_v = satellite.sgp4(current_time.jd1, current_time.jd2)
         if error_code != 0:
@@ -113,18 +98,10 @@ class SatellitesPositions:
         location = itrs_geo.earth_location
         geo = location.geodetic
 
-        observer_x = observer["radar_x"]
-        observer_y = observer["radar_y"]
-        observer_z = observer["radar_z"]
-
-        observer_location = EarthLocation.from_geocentric(
-            observer_x, observer_y, observer_z, unit="m"
+        observer_location = EarthLocation.from_geodetic(
+            observer.radar_longitude * u.deg, observer.radar_latitude * u.deg, observer.radar_height * u.m
         )
         observer_itrs = observer_location.get_itrs(obstime=current_time)
-
-        # separation_angle = observer_itrs.separation(itrs_geo)
-
-        # print(f"Угол между наблюдателем и спутником: {separation_angle.to(u.deg):.2f} градусов")
 
         altaz_frame = AltAz(obstime=current_time, location=observer_location)
         satellite_altaz = itrs_geo.transform_to(altaz_frame)
@@ -137,10 +114,6 @@ class SatellitesPositions:
             + (itrs_geo.z - observer_itrs.z) ** 2
         )
         distance = Distance(value=distance_value, unit=u.m)
-
-        # print(f"Азимут: {azimuth.to(u.deg):.2f} градусов")
-        # print(f"Угол места: {elevation.to(u.deg):.2f} градусов")
-        # print(f"Дальность до спутника: {distance.to(u.km):.2f} километров")
 
         return {
             "Azimuth": round(azimuth.degree, 2),

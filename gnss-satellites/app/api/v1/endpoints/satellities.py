@@ -20,7 +20,7 @@ router = APIRouter(
 @router.post("/now", response_model=SatellitesPositionResponce)
 @inject
 def post_sattelites(
-    radar: RadarPositionRequest,
+    radar: RadarPositionGeograthRequest,
     service: SatellitesPositions = Depends(Provide[Container.satellite_services]),
 ):
     return service.get_sattelites_positions(radar)
