@@ -30,9 +30,8 @@ from app.schemas.sattelites_position import (
 
 class SatellitesPositions:
     def __init__(self):
-        tle_file = os.path.join(
-            configs.PROJECT_ROOT, "app", "services", "tle", "gps.tle"
-        )
+        tle_file = configs.TLE_PATH
+
         self.TLE_array = []
         with open(tle_file, "r") as file:
             for line in file:
