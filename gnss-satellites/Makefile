@@ -19,13 +19,20 @@ endif
 
 # Установка виртуального окружения и зависимостей
 setup:
-ifeq ($(SYSTEM),Windows)
-	python -m venv $(VENV)
-else
-	python3 -m venv $(VENV)
-endif
-	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements.txt
+	ifeq ($(SYSTEM),Windows)
+		python -m venv $(VENV)
+	else
+		python3 -m venv $(VENV)
+	endif
+		$(PIP) install --upgrade pip
+		$(PIP) install -r requirements.txt
+
+activate:
+	ifeq ($(SYSTEM),Windows)
+		./venv/Scripts/activate.ps1
+	else
+		source ./venv/bin/activate
+	endif
 
 # Запуск сервера FastAPI
 run:

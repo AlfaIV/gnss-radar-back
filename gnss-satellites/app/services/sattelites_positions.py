@@ -1,4 +1,3 @@
-import os
 from datetime import datetime,timedelta
 
 import numpy as np
@@ -27,9 +26,16 @@ from app.schemas.sattelites_position import (
     SatellitePosition,
 )
 
+from app.repositories import S3Repository
+
 
 class SatellitesPositions:
-    def __init__(self):
+    def __init__(self, s3_repository: S3Repository):
+
+        self.s3_repository =  s3_repository
+
+        print(f"Проверка S3: {self.s3_repository.check_s3_connection()}" )
+
         tle_file = configs.TLE_PATH
 
         self.TLE_array = []

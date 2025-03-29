@@ -65,6 +65,7 @@ services:
     image: minio/minio
     ports:
       - 9001:9001
+      - 9000:9002
     volumes:
       - type: bind
         source: .
