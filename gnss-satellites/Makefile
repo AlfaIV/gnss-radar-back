@@ -1,13 +1,29 @@
 # Переменные
 VENV = .venv
-PYTHON = $(VENV)/Script/python
-PIP = $(VENV)/Script/pip
 
-# Цели (targets)
+# Определение OS
+ifeq ($(OS),Windows_NT)
+    SYSTEM = Windows
+else
+    SYSTEM = Linux
+endif
+
+# Установка путей в зависимости от ОС
+ifeq ($(SYSTEM),Windows)
+    PYTHON = $(VENV)/Scripts/python.exe
+    PIP = $(VENV)/Scripts/pip.exe
+else
+    PYTHON = $(VENV)/bin/python
+    PIP = $(VENV)/bin/pip
+endif
 
 # Установка виртуального окружения и зависимостей
 setup:
+ifeq ($(SYSTEM),Windows)
 	python -m venv $(VENV)
+else
+	python3 -m venv $(VENV)
+endif
 	$(PIP) install --upgrade pip
 	$(PIP) install -r requirements.txt
 
