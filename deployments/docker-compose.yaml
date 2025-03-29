@@ -67,7 +67,7 @@ services:
       - 9001:9001
     volumes:
       - type: bind
-        source: ~/minio-data
+        source: .
         target: /data
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
@@ -169,7 +169,6 @@ services:
   gnss-satellites:
     image: satellites-image:latest
     container_name: satellites
-    environment:
     networks:
       - gnss-measurements-subnet
 

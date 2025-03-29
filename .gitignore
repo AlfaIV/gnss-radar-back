@@ -1,3 +1,7 @@
 .idea
 *.pb.go
 .env
+__pycache__
+venv
+.ruff_cache
+.mypy_cache
