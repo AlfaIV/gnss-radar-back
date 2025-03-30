@@ -29,11 +29,11 @@ services:
       - type: bind
         source: ~/postgres-data
         target: /var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER_USER} -d ${POSTGRES_USER_DB}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER_USER} -d ${POSTGRES_USER_DB}" ]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
     networks:
       - gnss-user-subnet
 
@@ -52,13 +52,36 @@ services:
       - type: bind
         source: ~/postgres-measurements-data
         target: /var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER_USER} -d ${POSTGRES_USER_DB}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER_USER} -d ${POSTGRES_USER_DB}" ]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
     networks:
       - gnss-measurements-subnet
+
+  service-postgres-tasks:
+    image: "postgres:14"
+    container_name: db-postgres-tasks
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_TASKS_DB}
+      POSTGRES_USER: ${POSTGRES_TASKS_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_TASKS_PASSWORD}
+    volumes:
+      - type: bind
+        source: ~/postgres-migrations/tasks/initdb.sql
+        target: /docker-entrypoint-initdb.d/migration_a.sql
+      - type: bind
+        source: ~/postgres-tasks-data
+        target: /var/lib/postgresql/data
+    # healthcheck:
+    #   test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_TASKS_USER} -d ${POSTGRES_TASKS_DB}" ]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+    networks:
+      - gnss-tasks-subnet
 
   minio-s3:
     container_name: s3
@@ -73,19 +96,19 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     command: server --console-address ":9001" --address ":9002" /data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9002/minio/health/live"]
-      interval: 5s
-      retries: 3
-      timeout: 5s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:9002/minio/health/live"]
+    #   interval: 5s
+    #   retries: 3
+    #   timeout: 5s
     networks:
       - gnss-measurements-subnet
+      - gnss-radar-net
   create-buckets:
     container_name: s3-creator
     image: minio/mc
     depends_on:
-      minio-s3:
-        condition: service_healthy
+      - minio-s3
     environment:
       MC_HOST_gnss: http://${MINIO_ROOT_USER}:${MINIO_ROOT_PASSWORD}@s3:9002
     entrypoint: >
@@ -112,15 +135,14 @@ services:
     image: auth-image:latest
     container_name: auth
     depends_on:
-      service-redis-auth:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "grpc_health_probe", "-addr=:8001"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
-      start_interval: 5s
+      - service-redis-auth
+    # healthcheck:
+    #   test: ["CMD", "grpc_health_probe", "-addr=:8001"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 15s
+    #   start_interval: 5s
     networks:
       - gnss-radar-net
       - gnss-auth-subnet
@@ -131,15 +153,14 @@ services:
     environment:
       PG_ADDR: ${DATABASE_USER_URL}
     depends_on:
-      service-postgres-user:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "grpc_health_probe", "-addr=:8002"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
-      start_interval: 5s
+      - service-postgres-user
+    # healthcheck:
+    #   test: ["CMD", "grpc_health_probe", "-addr=:8002"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 15s
+    #   start_interval: 5s
     networks:
       - gnss-radar-net
       - gnss-user-subnet
@@ -153,23 +174,39 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       EPHEMERIS_BUCKET_NAME: "ephemeris"
     depends_on:
-      service-postgres-measurements:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "grpc_health_probe", "-addr=:8003"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
-      start_interval: 5s
+      - service-postgres-measurements
+    # healthcheck:
+    #   test: ["CMD", "grpc_health_probe", "-addr=:8003"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 15s
+    #   start_interval: 5s
     networks:
       - gnss-radar-net
       - gnss-measurements-subnet
 
+  gnss-tasks:
+    image: tasks-image:latest
+    container_name: tasks
+    environment:
+      PG_ADDR: ${DATABASE_TASKS_URL}
+    depends_on:
+      - service-postgres-tasks
+    # healthcheck:
+    #   test: ["CMD", "grpc_health_probe", "-addr=:8004"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 15s
+    #   start_interval: 5s
+    networks:
+      - gnss-radar-net
+      - gnss-user-subnet
+
   gnss-satellites:
     image: satellites-image:latest
     container_name: satellites
-    environment:
     networks:
       - gnss-measurements-subnet
 
@@ -183,3 +220,5 @@ networks:
     driver: bridge
   gnss-measurements-subnet:
     driver: bridge
+  gnss-tasks-subnet:
+    driver: brigde

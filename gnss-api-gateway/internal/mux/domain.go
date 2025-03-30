@@ -6,6 +6,7 @@ import (
 	"gnss-radar/gnss-api-gateway/internal/config"
 	measurements_handler "gnss-radar/gnss-api-gateway/internal/measurements/delivery"
 	middlewarecustom "gnss-radar/gnss-api-gateway/internal/mux/middleware"
+	tasks_handler "gnss-radar/gnss-api-gateway/internal/tasks/delivery"
 	user_domain_gateway "gnss-radar/gnss-api-gateway/internal/user"
 	user_handler "gnss-radar/gnss-api-gateway/internal/user/delivery"
 	"net/http"
@@ -19,6 +20,7 @@ type Handlers struct {
 	Auth         auth_handler.AuthHandler
 	User         user_handler.UserHandler
 	Measurements measurements_handler.MeasurementsHandler
+	Tasks 		 tasks_handler.TasksHandler
 }
 
 type ServiceUsecase struct {
@@ -73,6 +75,16 @@ func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, log
 		userPermissionsMiddleware.Process,
 	)
 	satellites.GET("/getSatellitesPosition", handlers.Measurements.GetSatellitesPosition)
+
+	tasks := base.Group("/tasks")
+	tasks.Use(
+		userIDMiddleware.Process,
+		userPermissionsMiddleware.Process,
+	)
+	tasks.GET("/getTasks", handlers.Tasks.GetTasks)
+	tasks.POST("/createTask", handlers.Tasks.CreateTask)
+	tasks.POST("/updateTask", handlers.Tasks.UpdateTask)
+	tasks.DELETE("/deleteTask", handlers.Tasks.DeleteTask)
 
 	return mux
 }

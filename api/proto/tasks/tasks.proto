@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option go_package = "gnss-radar/api/proto/tasks";
+
+import "google/protobuf/empty.proto";
+import "api/proto/common/common.proto";
+
+service Tasks {
+    rpc CreateTask(Task) returns (google.protobuf.Empty) {}
+    rpc GetTasks(PaginatedRequest) returns (TasksArray) {}
+    rpc UpdateTask(Task) returns (google.protobuf.Empty) {}
+    rpc DeleteTask(TaskId) returns (google.protobuf.Empty) {}
+}
+
+message Task {
+    string Id = 1;
+    string Name = 2;
+    string Description = 3;
+    string DateTimeStart = 4;
+    string DateTimeEnd = 5;
+    string CreatorId = 6;
+    repeated string Satellites = 7;
+}
+
+message TaskId {
+    string TaskId = 1;
+}
+
+message TasksArray {
+    repeated Task Tasks = 1;
+}
+
+// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative api/proto/tasks/tasks.proto
