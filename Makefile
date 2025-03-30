@@ -5,6 +5,7 @@ build-images:
 	docker build -t auth-image -f ./gnss-auth/Dockerfile .
 	docker build -t user-image -f ./gnss-user/Dockerfile .
 	docker build -t measurements-image -f ./gnss-measurements/Dockerfile .
+	docker build -t tasks-image -f ./gnss-tasks/Dockerfile .
 	docker build -t satellites-image -f ./gnss-satellites/Dockerfile .
 
 docker-clear:
