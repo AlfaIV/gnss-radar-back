@@ -1,4 +1,4 @@
-package statistics_repository
+package user_repository
 
 import (
 	"context"

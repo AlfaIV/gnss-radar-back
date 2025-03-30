@@ -21,25 +21,19 @@ RUN make generate
 
 RUN go mod download && \
     go mod tidy && \
-    go build -ldflags="-s -w" -o /app/gnss-api-gateway ./gnss-api-gateway/cmd/main.go
+    go build -ldflags="-s -w" -o /app/gnss-tasks ./gnss-tasks/cmd/main.go
 
 FROM alpine:3.18
 
-ENV GATEWAY_ADDR=:8000 \
-    TZ=UTC \
-    AUTH_ADDR=auth:8001 \
-    USER_ADDR=user:8002 \
-    MEASUREMENTS_ADDR=measurements:8003 \
-    TASKS_ADDR=tasks:8004
-
-COPY --from=build /app/gnss-api-gateway /gateway
-COPY --from=build /source/gnss-api-gateway/config /config/
+ENV TASKS_ADDR=:8004 \
+    TZ=UTC 
+COPY --from=build /app/gnss-tasks /tasks
 
 RUN adduser -D -g '' appuser && \
-    chown -R appuser:appuser /gateway /config
+    chown -R appuser:appuser /gateway /tasks
 
 USER appuser
 
-EXPOSE 8000
+EXPOSE 8004
 
-CMD ["/gateway"]
+CMD ["/tasks"]
