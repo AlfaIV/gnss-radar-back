@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS task (
     time_start timestamptz NOT NULL DEFAULT now(),
     time_end timestamptz NOT NULL DEFAULT now(),
     description TEXT NOT NULL DEFAULT '',
+    is_all boolean NOT NULL,
     creator_id UUID NOT NULL
 );
 

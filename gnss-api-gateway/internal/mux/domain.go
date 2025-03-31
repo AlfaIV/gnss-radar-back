@@ -83,8 +83,8 @@ func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, log
 	)
 	tasks.GET("/getTasks", handlers.Tasks.GetTasks)
 	tasks.POST("/createTask", handlers.Tasks.CreateTask)
-	tasks.POST("/updateTask", handlers.Tasks.UpdateTask)
-	tasks.DELETE("/deleteTask", handlers.Tasks.DeleteTask)
+	tasks.PUT("/updateTask", handlers.Tasks.UpdateTask)
+	tasks.POST("/deleteTask", handlers.Tasks.DeleteTask)
 
 	return mux
 }

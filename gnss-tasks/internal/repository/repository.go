@@ -31,7 +31,6 @@ func NewTaskRepo(pool PgxIFace, logger *logrus.Logger) *TaskRepo {
 
 type processedSatellite struct {
 	name  string
-	isAll bool
 }
 
 func satelliteWorker(ctx context.Context, wg *sync.WaitGroup, in <-chan string, out chan<- processedSatellite) {
@@ -43,7 +42,6 @@ func satelliteWorker(ctx context.Context, wg *sync.WaitGroup, in <-chan string, 
 		default:
 			out <- processedSatellite{
 				name:  strings.TrimSpace(name),
-				isAll: strings.ToUpper(name) == "ALL",
 			}
 		}
 	}
@@ -87,13 +85,14 @@ func (tr *TaskRepo) CreateTask(ctx context.Context, r tasks_domain.Task) error {
 	var taskId string
 	err = tx.QueryRow(
 		ctx,
-		`INSERT INTO task(name, description, time_start, time_end, creator_id)
-         VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+		`INSERT INTO task(name, description, time_start, time_end, creator_id, is_all)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
 		r.Name,
 		r.Description,
 		startTime,
 		endTime,
 		r.CreatorId,
+		r.IsAll,
 	).Scan(&taskId)
 
 	if err != nil {
@@ -101,7 +100,7 @@ func (tr *TaskRepo) CreateTask(ctx context.Context, r tasks_domain.Task) error {
 		return errors.Wrap(err, "failed to create task")
 	}
 
-	if len(r.Satellites) > 0 {
+	if !r.IsAll && len(r.Satellites) > 0 {
 		inputChan := make(chan string, len(r.Satellites))
 		resultChan := make(chan processedSatellite)
 
@@ -129,27 +128,18 @@ func (tr *TaskRepo) CreateTask(ctx context.Context, r tasks_domain.Task) error {
 			}
 		}()
 
-		hasAll := false
 		unique := make(map[string]struct{})
 
 		for res := range resultChan {
-			if res.isAll {
-				hasAll = true
-				break
-			}
 			if res.name != "" {
 				unique[res.name] = struct{}{}
 			}
 		}
 
 		var satellites []string
-		if hasAll {
-			satellites = []string{"ALL"}
-		} else {
 			for name := range unique {
 				satellites = append(satellites, name)
 			}
-		}
 
 		if len(satellites) > 0 {
 			batch := &pgx.Batch{}
@@ -182,6 +172,7 @@ func (tr *TaskRepo) GetTasks(ctx context.Context, size uint64, page uint64) ([]t
 			t.id::text,
             t.name,
             t.description,
+			t.is_all,
             TO_CHAR(t.time_start AT TIME ZONE 'Europe/Moscow', 'YYYY-MM-DD"T"HH24:MI:SS'),
             TO_CHAR(t.time_end AT TIME ZONE 'Europe/Moscow', 'YYYY-MM-DD"T"HH24:MI:SS'),
             t.creator_id::text,
@@ -208,6 +199,7 @@ func (tr *TaskRepo) GetTasks(ctx context.Context, size uint64, page uint64) ([]t
 			&task.Id,
 			&task.Name,
 			&task.Description,
+			&task.IsAll,
 			&task.DateTimeStart,
 			&task.DateTimeEnd,
 			&task.CreatorId,
@@ -271,6 +263,7 @@ func (tr *TaskRepo) UpdateTask(ctx context.Context, r tasks_domain.Task) error {
             description = $2,
             time_start = $3,
             time_end = $4,
+			is_all = $5,
         WHERE id = $6
     `
 
@@ -280,6 +273,7 @@ func (tr *TaskRepo) UpdateTask(ctx context.Context, r tasks_domain.Task) error {
 		r.Description,
 		startTime,
 		endTime,
+		r.IsAll,
 		r.Id,
 	)
 
@@ -287,10 +281,11 @@ func (tr *TaskRepo) UpdateTask(ctx context.Context, r tasks_domain.Task) error {
 		return errors.Wrap(err, "failed to update task")
 	}
 
-	if r.Satellites != nil {
-		if _, err := tx.Exec(ctx, "DELETE FROM task_satellites WHERE task_id = $1", r.Id); err != nil {
-			return errors.Wrap(err, "failed to delete old satellites")
-		}
+	if _, err := tx.Exec(ctx, "DELETE FROM task_satellites WHERE task_id = $1", r.Id); err != nil {
+		return errors.Wrap(err, "failed to delete old satellites")
+	}
+
+	if !r.IsAll && len(r.Satellites) > 0 {
 
 		inputChan := make(chan string, len(r.Satellites))
 		resultChan := make(chan processedSatellite)
@@ -319,7 +314,6 @@ func (tr *TaskRepo) UpdateTask(ctx context.Context, r tasks_domain.Task) error {
 			}
 		}()
 
-		hasAll := false
 		unique := make(map[string]struct{})
 
 	loop:
@@ -329,10 +323,6 @@ func (tr *TaskRepo) UpdateTask(ctx context.Context, r tasks_domain.Task) error {
 				if !ok {
 					break loop
 				}
-				if res.isAll {
-					hasAll = true
-					break loop
-				}
 				unique[res.name] = struct{}{}
 			case <-ctx.Done():
 				return ctx.Err()
@@ -340,13 +330,9 @@ func (tr *TaskRepo) UpdateTask(ctx context.Context, r tasks_domain.Task) error {
 		}
 
 		var satellitesToInsert []string
-		if hasAll {
-			satellitesToInsert = []string{"ALL"}
-		} else {
 			for name := range unique {
 				satellitesToInsert = append(satellitesToInsert, name)
 			}
-		}
 
 		if len(satellitesToInsert) > 0 {
 			batch := &pgx.Batch{}

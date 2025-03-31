@@ -12,6 +12,7 @@ type Task struct {
 	DateTimeStart string   `json:"datetimeStart"`
 	DateTimeEnd   string   `json:"datetimeEnd"`
 	CreatorId     string   `json:"creatorId"`
+	IsAll 		  bool     `json:"isAll"`
 	Satellites    []string `json:"satellites"`
 }
 
@@ -23,6 +24,7 @@ type GetTaskResponseEntity struct {
 	DateTimeEnd   string   `json:"datetimeEnd"`
 	CreatorId     string   `json:"creatorId"`
 	Satellites    []string `json:"satellites"`
+	IsAll         bool     `json:"isAll"`
 	user_domain_gateway.UserData
 }
 

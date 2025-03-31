@@ -32,6 +32,7 @@ func (s *TasksServiceServer) CreateTask(ctx context.Context, r *proto.Task) (*em
 		DateTimeStart: r.GetDateTimeStart(),
 		DateTimeEnd:   r.GetDateTimeEnd(),
 		CreatorId:     r.GetCreatorId(),
+		IsAll:         r.GetIsAll(),
 		Satellites:    r.GetSatellites(),
 	})
 
@@ -73,6 +74,7 @@ func (s *TasksServiceServer) UpdateTask(ctx context.Context, r *proto.Task) (*em
 		Description:   r.GetDescription(),
 		DateTimeStart: r.GetDateTimeStart(),
 		DateTimeEnd:   r.GetDateTimeEnd(),
+		IsAll:         r.GetIsAll(),
 		Satellites:    r.GetSatellites(),
 	})
 	if err != nil {

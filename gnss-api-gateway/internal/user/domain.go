@@ -53,7 +53,7 @@ type PermissionChangeRequest struct {
 }
 
 type UserData struct {
-	UserName             string `json:"name"`
+	UserName         string `json:"userName"`
 	Surname          string `json:"surname"`
 	Email            string `json:"email"`
 	OrganizationName string `json:"organizationName"`

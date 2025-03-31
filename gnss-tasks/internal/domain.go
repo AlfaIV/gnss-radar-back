@@ -9,6 +9,7 @@ type Task struct {
 	DateTimeStart string
 	DateTimeEnd   string
 	CreatorId     string
+	IsAll         bool
 	Satellites    []string
 }
 

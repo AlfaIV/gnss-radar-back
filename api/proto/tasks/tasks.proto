@@ -20,6 +20,7 @@ message Task {
     string DateTimeEnd = 5;
     string CreatorId = 6;
     repeated string Satellites = 7;
+    bool IsAll = 8;
 }
 
 message TaskId {

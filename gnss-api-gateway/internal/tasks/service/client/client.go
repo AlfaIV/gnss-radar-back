@@ -26,6 +26,8 @@ func (tc *TasksClient) CreateTask(ctx context.Context, task tasks_domain_gateway
 		DateTimeStart: task.DateTimeStart,
 		DateTimeEnd: task.DateTimeEnd,
 		CreatorId: task.CreatorId,
+		IsAll: task.IsAll,
+		Satellites: task.Satellites,
 	})
 	if err != nil {
 		return errors.Wrap(err, "failed to create task")
@@ -64,6 +66,8 @@ func (tc *TasksClient) UpdateTask(ctx context.Context, task tasks_domain_gateway
 		DateTimeStart: task.DateTimeStart,
 		DateTimeEnd: task.DateTimeEnd,
 		CreatorId: task.CreatorId,
+		IsAll: task.IsAll,
+		Satellites: task.Satellites,
 	}); err != nil {
 		return errors.Wrap(err, "failed to update task")
 	}
