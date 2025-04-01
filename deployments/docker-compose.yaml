@@ -8,11 +8,11 @@ services:
       - /etc/localtime:/etc/localtime:ro
     networks:
       - gnss-auth-subnet
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+    # healthcheck:
+    #   test: ["CMD", "redis-cli", "ping"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
 
   service-postgres-user:
     image: "postgres:14"
