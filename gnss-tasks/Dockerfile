@@ -1,4 +1,4 @@
-FROM golang:1.23.0-alpine AS build
+FROM --platform=linux/amd64 golang:1.23.0-alpine AS build
 
 ENV CGO_ENABLED=0 \
     GOOS=linux \
@@ -23,14 +23,14 @@ RUN go mod download && \
     go mod tidy && \
     go build -ldflags="-s -w" -o /app/tasks ./gnss-tasks/cmd/main.go
 
-FROM alpine:3.18
+FROM debian:bookworm-slim
 
 ENV TASKS_ADDR=:8004 \
     TZ=UTC 
 COPY --from=build /app/tasks /tasks
 
-RUN adduser -D -g '' appuser && \
-    chown -R appuser:appuser /tasks 
+RUN useradd -u 1001 -m appuser && \
+    chown -R adduser:appuser /tasks
 
 USER appuser
 

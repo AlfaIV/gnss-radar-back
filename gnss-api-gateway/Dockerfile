@@ -1,4 +1,4 @@
-FROM golang:1.23.0-alpine AS build
+FROM --platform=linux/amd64 golang:1.23.0-alpine AS build
 
 ENV CGO_ENABLED=0 \
     GOOS=linux \
@@ -23,7 +23,7 @@ RUN go mod download && \
     go mod tidy && \
     go build -ldflags="-s -w" -o /app/gnss-api-gateway ./gnss-api-gateway/cmd/main.go
 
-FROM alpine:3.18
+FROM debian:bookworm-slim
 
 ENV GATEWAY_ADDR=:8000 \
     TZ=UTC \
@@ -35,8 +35,8 @@ ENV GATEWAY_ADDR=:8000 \
 COPY --from=build /app/gnss-api-gateway /gateway
 COPY --from=build /source/gnss-api-gateway/config /config/
 
-RUN adduser -D -g '' appuser && \
-    chown -R appuser:appuser /gateway /config
+RUN useradd -u 1001 -m appuser && \
+    chown -R adduser:appuser /gateway /config
 
 USER appuser
 

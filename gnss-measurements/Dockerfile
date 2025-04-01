@@ -1,4 +1,4 @@
-FROM golang:1.23.0-alpine AS build
+FROM --platform=linux/amd64 golang:1.23.0-alpine AS build
 
 ENV CGO_ENABLED=0 \
     GOOS=linux \
@@ -23,7 +23,7 @@ RUN go mod download && \
     go mod tidy && \
     go build -ldflags="-s -w" -o /app/measurements ./gnss-measurements/cmd/main.go
 
-FROM alpine:3.18
+FROM debian:bookworm-slim
 
 RUN apk --no-cache add ca-certificates tzdata
 
@@ -38,8 +38,8 @@ ENV MEASUREMENTS_ADDR=:8003 \
     
 COPY --from=build /app/measurements /measurements
 
-RUN adduser -D -g '' appuser && \
-    chown -R appuser:appuser /measurements
+RUN useradd -u 1001 -m appuser && \
+    chown -R adduser:appuser /measurements
 
 USER appuser
 
