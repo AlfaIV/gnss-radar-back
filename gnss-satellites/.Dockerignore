@@ -11,3 +11,9 @@ venv/
 .DS_Store
 .ruff_cache
 .mypy_cache
+gnss-auth/
+gnss-satellites/
+gnss-measurements/
+gnss-user/
+gnss-api-gateway/
+gnss-tasks/
