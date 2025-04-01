@@ -221,4 +221,4 @@ networks:
   gnss-measurements-subnet:
     driver: bridge
   gnss-tasks-subnet:
-    driver: brigde
+    driver: bridge
