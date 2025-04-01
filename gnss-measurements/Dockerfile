@@ -25,9 +25,13 @@ RUN go mod download && \
 
 FROM debian:bookworm-slim
 
-RUN apk --no-cache add ca-certificates tzdata
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    tzdata \
+    wget && \
+    rm -rf /var/lib/apt/lists/*
 
-# Установка grpc_health_probe
 RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.37/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 

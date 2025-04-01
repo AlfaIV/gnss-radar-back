@@ -25,6 +25,16 @@ RUN go mod download && \
 
 FROM debian:bookworm-slim
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    tzdata \
+    wget && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.37/grpc_health_probe-linux-amd64 && \
+    chmod +x /bin/grpc_health_probe
+
 ENV TASKS_ADDR=:8004 \
     TZ=UTC 
 COPY --from=build /app/tasks /tasks
