@@ -21,16 +21,16 @@ RUN make generate
 
 RUN go mod download && \
     go mod tidy && \
-    go build -ldflags="-s -w" -o /app/gnss-tasks ./gnss-tasks/cmd/main.go
+    go build -ldflags="-s -w" -o /app/tasks ./gnss-tasks/cmd/main.go
 
 FROM alpine:3.18
 
 ENV TASKS_ADDR=:8004 \
     TZ=UTC 
-COPY --from=build /app/gnss-tasks /tasks
+COPY --from=build /app/tasks /tasks
 
 RUN adduser -D -g '' appuser && \
-    chown -R appuser:appuser /gateway /tasks
+    chown -R appuser:appuser /tasks 
 
 USER appuser
 
