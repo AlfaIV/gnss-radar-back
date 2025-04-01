@@ -39,7 +39,7 @@ ENV MEASUREMENTS_ADDR=:8003 \
 COPY --from=build /app/measurements /measurements
 
 RUN useradd -u 1001 -m appuser && \
-    chown -R adduser:appuser /measurements
+    chown -R appuser:appuser /measurements
 
 USER appuser
 

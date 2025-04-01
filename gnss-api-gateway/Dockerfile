@@ -36,7 +36,7 @@ COPY --from=build /app/gnss-api-gateway /gateway
 COPY --from=build /source/gnss-api-gateway/config /config/
 
 RUN useradd -u 1001 -m appuser && \
-    chown -R adduser:appuser /gateway /config
+    chown -R appuser:appuser /gateway /config
 
 USER appuser
 

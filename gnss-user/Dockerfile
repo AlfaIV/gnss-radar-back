@@ -36,7 +36,7 @@ ENV USER_ADDR=:8002 \
 COPY --from=build /app/user /user
 
 RUN useradd -u 1001 -m appuser && \
-    chown -R adduser:appuser /user
+    chown -R appuser:appuser /user
 
 USER appuser
 

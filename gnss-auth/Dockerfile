@@ -37,7 +37,7 @@ ENV AUTH_ADDR=:8001 \
 COPY --from=build /app/auth /auth
 
 RUN useradd -u 1001 -m appuser && \
-    chown -R adduser:appuser /auth
+    chown -R appuser:appuser /auth
 
 USER appuser
 

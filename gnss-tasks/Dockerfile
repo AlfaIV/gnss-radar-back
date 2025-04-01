@@ -30,7 +30,7 @@ ENV TASKS_ADDR=:8004 \
 COPY --from=build /app/tasks /tasks
 
 RUN useradd -u 1001 -m appuser && \
-    chown -R adduser:appuser /tasks
+    chown -R appuser:appuser /tasks
 
 USER appuser
 
