@@ -263,7 +263,7 @@ func (tr *TaskRepo) UpdateTask(ctx context.Context, r tasks_domain.Task) error {
             description = $2,
             time_start = $3,
             time_end = $4,
-			is_all = $5,
+			is_all = $5
         WHERE id = $6
     `
 
@@ -364,7 +364,7 @@ func (tr *TaskRepo) DeleteTask(ctx context.Context, id string) error {
 	`
 
 	deleteTaskQuery := `
-		DELETE FROM task WHERE id=$1;
+		DELETE FROM task WHERE id = $1;
 	`
 	tx, err := tr.pool.Begin(ctx)
 	if err != nil {
