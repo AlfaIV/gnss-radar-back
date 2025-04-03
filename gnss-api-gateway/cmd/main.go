@@ -103,7 +103,7 @@ func main() {
 		Auth:         authHandler,
 		User:         userHandler,
 		Measurements: measurementsHandler,
-		Tasks: tasksHandler,
+		Tasks:        tasksHandler,
 	}, logger)
 
 	server := &http.Server{

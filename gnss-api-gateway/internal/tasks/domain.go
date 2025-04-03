@@ -12,7 +12,7 @@ type Task struct {
 	DateTimeStart string   `json:"datetimeStart"`
 	DateTimeEnd   string   `json:"datetimeEnd"`
 	CreatorId     string   `json:"creatorId"`
-	IsAll 		  bool     `json:"isAll"`
+	IsAll         bool     `json:"isAll"`
 	Satellites    []string `json:"satellites"`
 }
 

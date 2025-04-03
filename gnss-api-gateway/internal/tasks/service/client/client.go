@@ -21,13 +21,13 @@ func NewTasksClient(client proto.TasksClient, logger *logrus.Logger) TasksClient
 
 func (tc *TasksClient) CreateTask(ctx context.Context, task tasks_domain_gateway.Task) error {
 	_, err := tc.client.CreateTask(ctx, &proto.Task{
-		Name: task.Name,
-		Description: task.Description,
+		Name:          task.Name,
+		Description:   task.Description,
 		DateTimeStart: task.DateTimeStart,
-		DateTimeEnd: task.DateTimeEnd,
-		CreatorId: task.CreatorId,
-		IsAll: task.IsAll,
-		Satellites: task.Satellites,
+		DateTimeEnd:   task.DateTimeEnd,
+		CreatorId:     task.CreatorId,
+		IsAll:         task.IsAll,
+		Satellites:    task.Satellites,
 	})
 	if err != nil {
 		return errors.Wrap(err, "failed to create task")
@@ -44,15 +44,15 @@ func (tc *TasksClient) GetTasks(ctx context.Context, size uint64, page uint64) (
 
 	var tasks []tasks_domain_gateway.Task
 
-	for _, task := range(tasksArray.GetTasks()) {
+	for _, task := range tasksArray.GetTasks() {
 		tasks = append(tasks, tasks_domain_gateway.Task{
-			Id: task.GetId(),
-			Name: task.GetName(),
-			Description: task.GetDescription(),
+			Id:            task.GetId(),
+			Name:          task.GetName(),
+			Description:   task.GetDescription(),
 			DateTimeStart: task.GetDateTimeStart(),
-			DateTimeEnd: task.GetDateTimeEnd(),
-			CreatorId: task.GetCreatorId(),
-			Satellites: task.GetSatellites(),
+			DateTimeEnd:   task.GetDateTimeEnd(),
+			CreatorId:     task.GetCreatorId(),
+			Satellites:    task.GetSatellites(),
 		})
 	}
 
@@ -61,13 +61,13 @@ func (tc *TasksClient) GetTasks(ctx context.Context, size uint64, page uint64) (
 
 func (tc *TasksClient) UpdateTask(ctx context.Context, task tasks_domain_gateway.Task) error {
 	if _, err := tc.client.UpdateTask(ctx, &proto.Task{
-		Name: task.Name,
-		Description: task.Description,
+		Name:          task.Name,
+		Description:   task.Description,
 		DateTimeStart: task.DateTimeStart,
-		DateTimeEnd: task.DateTimeEnd,
-		CreatorId: task.CreatorId,
-		IsAll: task.IsAll,
-		Satellites: task.Satellites,
+		DateTimeEnd:   task.DateTimeEnd,
+		CreatorId:     task.CreatorId,
+		IsAll:         task.IsAll,
+		Satellites:    task.Satellites,
 	}); err != nil {
 		return errors.Wrap(err, "failed to update task")
 	}

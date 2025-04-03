@@ -42,7 +42,6 @@ func (h *TasksHandler) CreateTask(c echo.Context) error {
 		return c.String(http.StatusUnauthorized, "No session id provided")
 	}
 
-
 	task := tasks_domain_gateway.Task{}
 	if err := c.Bind(&task); err != nil {
 		h.logger.Error("[GW]:", err)
@@ -106,57 +105,57 @@ func (h *TasksHandler) GetTasks(c echo.Context) error {
 	tasksPtr := make([]*tasks_domain_gateway.GetTaskResponseEntity, len(tasks))
 	for i := range tasks {
 		tasksPtr[i] = &tasks_domain_gateway.GetTaskResponseEntity{
-			Id:               tasks[i].Id,
-			Name:            tasks[i].Name,
-			Description:     tasks[i].Description,
-			DateTimeStart:   tasks[i].DateTimeStart,
-			DateTimeEnd:     tasks[i].DateTimeEnd,
-			CreatorId:       tasks[i].CreatorId,
-			Satellites:      tasks[i].Satellites,
+			Id:            tasks[i].Id,
+			Name:          tasks[i].Name,
+			Description:   tasks[i].Description,
+			DateTimeStart: tasks[i].DateTimeStart,
+			DateTimeEnd:   tasks[i].DateTimeEnd,
+			CreatorId:     tasks[i].CreatorId,
+			Satellites:    tasks[i].Satellites,
 		}
 	}
-	
+
 	var wg sync.WaitGroup
 	errChan := make(chan error, len(tasks))
 	sem := make(chan struct{}, 10)
-	
+
 	for idx := range tasksPtr {
 		wg.Add(1)
 		sem <- struct{}{}
-		
+
 		go func(i int) {
 			defer func() {
 				<-sem
 				wg.Done()
 			}()
-	
+
 			data, err := h.userUsecase.GetUserInfoById(ctx, tasksPtr[i].CreatorId)
 			if err != nil {
 				errChan <- fmt.Errorf("task %d: %w", i, err)
 				return
 			}
-	
+
 			tasksPtr[i].UserName = data.Name
 			tasksPtr[i].Surname = data.Surname
 			tasksPtr[i].Email = data.Email
 			tasksPtr[i].OrganizationName = data.OrganizationName
 		}(idx)
 	}
-	
+
 	go func() {
 		wg.Wait()
 		close(errChan)
 	}()
-	
+
 	for err := range errChan {
 		h.logger.Error("[GW]: ", err)
 	}
-	
+
 	responseTasks := make([]tasks_domain_gateway.GetTaskResponseEntity, len(tasksPtr))
 	for i, taskPtr := range tasksPtr {
 		responseTasks[i] = *taskPtr
 	}
-	
+
 	return c.JSON(http.StatusOK, tasks_domain_gateway.GetTasksResponse{
 		Tasks: responseTasks,
 	})

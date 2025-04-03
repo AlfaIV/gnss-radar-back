@@ -30,7 +30,7 @@ func NewTaskRepo(pool PgxIFace, logger *logrus.Logger) *TaskRepo {
 }
 
 type processedSatellite struct {
-	name  string
+	name string
 }
 
 func satelliteWorker(ctx context.Context, wg *sync.WaitGroup, in <-chan string, out chan<- processedSatellite) {
@@ -41,7 +41,7 @@ func satelliteWorker(ctx context.Context, wg *sync.WaitGroup, in <-chan string, 
 			return
 		default:
 			out <- processedSatellite{
-				name:  strings.TrimSpace(name),
+				name: strings.TrimSpace(name),
 			}
 		}
 	}
@@ -137,9 +137,9 @@ func (tr *TaskRepo) CreateTask(ctx context.Context, r tasks_domain.Task) error {
 		}
 
 		var satellites []string
-			for name := range unique {
-				satellites = append(satellites, name)
-			}
+		for name := range unique {
+			satellites = append(satellites, name)
+		}
 
 		if len(satellites) > 0 {
 			batch := &pgx.Batch{}
@@ -330,9 +330,9 @@ func (tr *TaskRepo) UpdateTask(ctx context.Context, r tasks_domain.Task) error {
 		}
 
 		var satellitesToInsert []string
-			for name := range unique {
-				satellitesToInsert = append(satellitesToInsert, name)
-			}
+		for name := range unique {
+			satellitesToInsert = append(satellitesToInsert, name)
+		}
 
 		if len(satellitesToInsert) > 0 {
 			batch := &pgx.Batch{}

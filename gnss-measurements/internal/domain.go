@@ -26,7 +26,7 @@ type EphemerisToLoad struct {
 type SatelliteData struct {
 	Group     string
 	Name      string
-	Azumuth   float64
+	Azimuth   float64
 	Range     float64
 	Elevation float64
 }

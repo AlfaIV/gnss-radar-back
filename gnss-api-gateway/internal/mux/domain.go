@@ -20,7 +20,7 @@ type Handlers struct {
 	Auth         auth_handler.AuthHandler
 	User         user_handler.UserHandler
 	Measurements measurements_handler.MeasurementsHandler
-	Tasks 		 tasks_handler.TasksHandler
+	Tasks        tasks_handler.TasksHandler
 }
 
 type ServiceUsecase struct {
