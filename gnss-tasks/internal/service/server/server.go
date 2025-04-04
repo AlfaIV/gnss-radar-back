@@ -2,6 +2,7 @@ package tasks_server
 
 import (
 	"context"
+	"fmt"
 	common_proto "gnss-radar/api/proto/common"
 	proto "gnss-radar/api/proto/tasks"
 
@@ -62,6 +63,8 @@ func (s *TasksServiceServer) GetTasks(ctx context.Context, r *common_proto.Pagin
 			Satellites:    task.Satellites,
 			IsAll:         task.IsAll,
 		})
+
+		fmt.Println(task.IsAll)
 	}
 
 	return &proto.TasksArray{Tasks: taskList}, nil

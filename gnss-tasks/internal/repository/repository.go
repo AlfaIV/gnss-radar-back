@@ -2,6 +2,7 @@ package tasks_repository
 
 import (
 	"context"
+	"fmt"
 	tasks_domain "gnss-radar/gnss-tasks/internal"
 	"strings"
 	"sync"
@@ -205,6 +206,8 @@ func (tr *TaskRepo) GetTasks(ctx context.Context, size uint64, page uint64) ([]t
 			&task.CreatorId,
 			&satellites,
 		)
+
+		fmt.Println(task.IsAll)
 
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to scan task row")

@@ -2,6 +2,7 @@ package auth_client
 
 import (
 	"context"
+	"fmt"
 	common_proto "gnss-radar/api/proto/common"
 	proto "gnss-radar/api/proto/tasks"
 	tasks_domain_gateway "gnss-radar/gnss-api-gateway/internal/tasks"
@@ -56,6 +57,8 @@ func (tc *TasksClient) GetTasks(ctx context.Context, size uint64, page uint64) (
 			Satellites:    task.GetSatellites(),
 			IsAll:         task.GetIsAll(),
 		})
+
+		fmt.Println(task.GetIsAll())
 	}
 
 	return tasks, nil
