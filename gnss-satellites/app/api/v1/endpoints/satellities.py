@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 
 from app.core.container import Container
 from app.schemas.sattelites_position import (
-    RadarPositionRequest,
+    SatellitesTimeRequest,
     RadarPositionGeograthRequest,
     SatellitesPositionResponce,
     SatellitesTimeResponce,
@@ -28,7 +28,7 @@ def post_sattelites(
 @router.post("/time", response_model=SatellitesTimeResponce)
 @inject
 def post_time_sattelites(
-    radar: RadarPositionGeograthRequest,
+    radar: SatellitesTimeRequest,
     service: SatellitesPositions = Depends(Provide[Container.satellite_services]),
 ):
     return service.get_sattelites_times_vison(radar)
