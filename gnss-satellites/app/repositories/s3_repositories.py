@@ -1,6 +1,9 @@
 from typing import Callable
+from app.core.config import configs
 import boto3
-from botocore.exceptions import NoCredentialsError, EndpointConnectionError
+from botocore.exceptions import NoCredentialsError, EndpointConnectionError, ClientError
+from app.models.s3_models import S3_tle_model
+from fastapi import HTTPException, status
 
 class S3Repository:
     def __init__(self, get_session: Callable[[], boto3.client]):
@@ -19,3 +22,46 @@ class S3Repository:
         except Exception as e:
             print(f"❌ S3 error: {e}")
         return False
+    
+    def get_tle(self) -> S3_tle_model:
+        tle_name = 'gps_tle1'
+        encoding = 'utf-8'
+        try:
+            with self._get_session() as s3:
+                response = s3.get_object(
+                    Bucket = configs.S3_bucket,
+                    Key = tle_name
+                )
+                file_content = response['Body'].read()  
+                text_content = file_content.decode(encoding)
+                print(text_content)
+
+                return S3_tle_model(
+                    tle_file = text_content,
+                    tle_name = tle_name,
+                )
+        except ClientError as e:
+            raise HTTPException(
+                status_code=status.HTTP_204_NO_CONTENT,
+                detail=f"Error deceptions: {e}",
+                headers={"X-Error": "Custom header"},
+            )
+            
+    def upload_file(self) -> bool:
+        with self._get_session() as s3:
+            try:
+                if (self.check_s3_connection):
+                    s3.upload_file(
+                        Filename = configs.TLE_PATH,
+                        Bucket = configs.S3_bucket,
+                        Key='gps_tle'
+                    )
+            except ClientError as e:
+                raise HTTPException(
+                    status_code=status.HTTP_204_NO_CONTENT,
+                    detail=e,
+                    headers={"X-Error": "Custom header"},
+                )
+            return True
+            
+        

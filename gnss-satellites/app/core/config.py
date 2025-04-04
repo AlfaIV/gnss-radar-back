@@ -24,6 +24,7 @@ class Configs(BaseSettings):
     DATE_FORMAT: str = "%Y-%m-%d"
 
     TLE_PATH: str = os.path.join(PROJECT_ROOT, "app", "services", "tle", "gps.tle")
+    S3_bucket:str = 'ephemeris'
 
     class Config:
         case_sensitive = True
