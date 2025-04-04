@@ -114,6 +114,7 @@ func (h *TasksHandler) GetTasks(c echo.Context) error {
 			IsAll:         tasks[i].IsAll,
 			Satellites:    tasks[i].Satellites,
 		}
+		fmt.Println(tasks[i].IsAll)
 	}
 
 	var wg sync.WaitGroup
