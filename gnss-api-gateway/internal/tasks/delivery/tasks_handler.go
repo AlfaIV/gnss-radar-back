@@ -111,6 +111,7 @@ func (h *TasksHandler) GetTasks(c echo.Context) error {
 			DateTimeStart: tasks[i].DateTimeStart,
 			DateTimeEnd:   tasks[i].DateTimeEnd,
 			CreatorId:     tasks[i].CreatorId,
+			IsAll:         tasks[i].IsAll,
 			Satellites:    tasks[i].Satellites,
 		}
 	}
