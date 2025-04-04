@@ -50,6 +50,8 @@ func (h *TasksHandler) CreateTask(c echo.Context) error {
 
 	task.CreatorId = id
 
+	fmt.Println("Handler: ", task.IsAll)
+
 	err = h.taskUsecase.CreateTask(c.Request().Context(), task)
 	if err != nil {
 		h.logger.Error("[GW]:", err)
@@ -203,7 +205,7 @@ func (h *TasksHandler) DeleteTask(c echo.Context) error {
 
 	if err := h.taskUsecase.DeleteTask(c.Request().Context(), delTask.Id); err != nil {
 		h.logger.Error("[GW]: ", err)
-		return c.String(http.StatusBadRequest, "failed to delete task")
+		return c.String(http.StatusInternalServerError, "failed to delete task")
 	}
 
 	return c.NoContent(http.StatusOK)

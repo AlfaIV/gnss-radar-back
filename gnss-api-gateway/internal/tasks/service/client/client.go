@@ -2,6 +2,7 @@ package auth_client
 
 import (
 	"context"
+	"fmt"
 	common_proto "gnss-radar/api/proto/common"
 	proto "gnss-radar/api/proto/tasks"
 	tasks_domain_gateway "gnss-radar/gnss-api-gateway/internal/tasks"
@@ -20,6 +21,8 @@ func NewTasksClient(client proto.TasksClient, logger *logrus.Logger) TasksClient
 }
 
 func (tc *TasksClient) CreateTask(ctx context.Context, task tasks_domain_gateway.Task) error {
+
+	fmt.Println("Client: ", task.IsAll)
 	_, err := tc.client.CreateTask(ctx, &proto.Task{
 		Name:          task.Name,
 		Description:   task.Description,
@@ -78,7 +81,7 @@ func (tc *TasksClient) UpdateTask(ctx context.Context, task tasks_domain_gateway
 func (tc *TasksClient) DeleteTask(ctx context.Context, id string) error {
 	_, err := tc.client.DeleteTask(ctx, &proto.TaskId{TaskId: id})
 	if err != nil {
-		return errors.Wrapf(err, "failed to get delete task")
+		return errors.Wrapf(err, "failed to delete task")
 	}
 
 	return nil

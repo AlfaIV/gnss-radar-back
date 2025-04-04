@@ -2,6 +2,7 @@ package tasks_repository
 
 import (
 	"context"
+	"fmt"
 	tasks_domain "gnss-radar/gnss-tasks/internal"
 	"strings"
 	"sync"
@@ -48,6 +49,7 @@ func satelliteWorker(ctx context.Context, wg *sync.WaitGroup, in <-chan string, 
 }
 
 func (tr *TaskRepo) CreateTask(ctx context.Context, r tasks_domain.Task) error {
+	fmt.Println("Repo: ", r.IsAll)
 	loc, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
 		return errors.Wrap(err, "failed to load Moscow location")
@@ -366,17 +368,19 @@ func (tr *TaskRepo) DeleteTask(ctx context.Context, id string) error {
 	deleteTaskQuery := `
 		DELETE FROM task WHERE id = $1;
 	`
+
 	tx, err := tr.pool.Begin(ctx)
 	if err != nil {
 		return errors.Wrap(err, "failed to start transaction")
 	}
-	defer tx.Rollback(ctx)
 
-	if _, err = tx.Query(ctx, deleteTaskSatellitesQuery, id); err != nil {
+	if _, err = tx.Exec(ctx, deleteTaskSatellitesQuery, id); err != nil {
+		tx.Rollback(ctx)
 		return errors.Wrap(err, "Failed to delete satellites for task")
 	}
 
-	if _, err = tx.Query(ctx, deleteTaskQuery, id); err != nil {
+	if _, err = tx.Exec(ctx, deleteTaskQuery, id); err != nil {
+		tx.Rollback(ctx)
 		return errors.Wrap(err, "Failed to delete task")
 	}
 
@@ -385,5 +389,4 @@ func (tr *TaskRepo) DeleteTask(ctx context.Context, id string) error {
 	}
 
 	return nil
-
 }
