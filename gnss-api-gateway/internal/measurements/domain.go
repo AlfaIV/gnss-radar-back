@@ -25,7 +25,7 @@ type SatelliteData struct {
 }
 
 type Satellites struct {
-	Satellites []SatelliteData `json:"azimuth"`
+	Satellites []SatelliteData `json:"satellites"`
 }
 
 type Usecase interface {
