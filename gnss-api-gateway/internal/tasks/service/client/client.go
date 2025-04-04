@@ -2,7 +2,6 @@ package auth_client
 
 import (
 	"context"
-	"fmt"
 	common_proto "gnss-radar/api/proto/common"
 	proto "gnss-radar/api/proto/tasks"
 	tasks_domain_gateway "gnss-radar/gnss-api-gateway/internal/tasks"
@@ -22,7 +21,6 @@ func NewTasksClient(client proto.TasksClient, logger *logrus.Logger) TasksClient
 
 func (tc *TasksClient) CreateTask(ctx context.Context, task tasks_domain_gateway.Task) error {
 
-	fmt.Println("Client: ", task.IsAll)
 	_, err := tc.client.CreateTask(ctx, &proto.Task{
 		Name:          task.Name,
 		Description:   task.Description,

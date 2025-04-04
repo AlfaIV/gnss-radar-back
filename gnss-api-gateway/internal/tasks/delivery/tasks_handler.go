@@ -50,8 +50,6 @@ func (h *TasksHandler) CreateTask(c echo.Context) error {
 
 	task.CreatorId = id
 
-	fmt.Println("Handler: ", task.IsAll)
-
 	err = h.taskUsecase.CreateTask(c.Request().Context(), task)
 	if err != nil {
 		h.logger.Error("[GW]:", err)
