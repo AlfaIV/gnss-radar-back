@@ -54,6 +54,7 @@ func (tc *TasksClient) GetTasks(ctx context.Context, size uint64, page uint64) (
 			DateTimeEnd:   task.GetDateTimeEnd(),
 			CreatorId:     task.GetCreatorId(),
 			Satellites:    task.GetSatellites(),
+			IsAll:         task.GetIsAll(),
 		})
 	}
 
@@ -62,7 +63,7 @@ func (tc *TasksClient) GetTasks(ctx context.Context, size uint64, page uint64) (
 
 func (tc *TasksClient) UpdateTask(ctx context.Context, task tasks_domain_gateway.Task) error {
 	if _, err := tc.client.UpdateTask(ctx, &proto.Task{
-		Id:			   task.Id,
+		Id:            task.Id,
 		Name:          task.Name,
 		Description:   task.Description,
 		DateTimeStart: task.DateTimeStart,
