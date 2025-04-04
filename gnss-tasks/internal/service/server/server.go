@@ -2,7 +2,6 @@ package tasks_server
 
 import (
 	"context"
-	"fmt"
 	common_proto "gnss-radar/api/proto/common"
 	proto "gnss-radar/api/proto/tasks"
 
@@ -26,9 +25,6 @@ func NewTasksServer(repo tasks_domain.Repository, logger *logrus.Logger) TasksSe
 }
 
 func (s *TasksServiceServer) CreateTask(ctx context.Context, r *proto.Task) (*emptypb.Empty, error) {
-
-	fmt.Println("Service: ", r.GetIsAll())
-
 
 	err := s.repo.CreateTask(ctx, tasks_domain.Task{
 		Name:          r.GetName(),
@@ -64,6 +60,7 @@ func (s *TasksServiceServer) GetTasks(ctx context.Context, r *common_proto.Pagin
 			DateTimeEnd:   task.DateTimeEnd,
 			CreatorId:     task.CreatorId,
 			Satellites:    task.Satellites,
+			IsAll:         task.IsAll,
 		})
 	}
 

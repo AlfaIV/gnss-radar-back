@@ -2,7 +2,6 @@ package tasks_repository
 
 import (
 	"context"
-	"fmt"
 	tasks_domain "gnss-radar/gnss-tasks/internal"
 	"strings"
 	"sync"
@@ -49,7 +48,6 @@ func satelliteWorker(ctx context.Context, wg *sync.WaitGroup, in <-chan string, 
 }
 
 func (tr *TaskRepo) CreateTask(ctx context.Context, r tasks_domain.Task) error {
-	fmt.Println("Repo: ", r.IsAll)
 	loc, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
 		return errors.Wrap(err, "failed to load Moscow location")
@@ -186,7 +184,7 @@ func (tr *TaskRepo) GetTasks(ctx context.Context, size uint64, page uint64) ([]t
         LIMIT $1 OFFSET $2
     `
 
-	rows, err := tr.pool.Query(ctx, query, size, page-1)
+	rows, err := tr.pool.Query(ctx, query, size, (page-1)*size)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to query tasks")
 	}
