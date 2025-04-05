@@ -36,7 +36,9 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Setup
-        run: make -f /gnss-satellites/Makefile setup
+        working-directory: ./gnss-satellites
+        run: make setup
 
       - name: Run
-        run: make -f /gnss-satellites/Makefile run
+        working-directory: ./gnss-satellites
+        run: make run
