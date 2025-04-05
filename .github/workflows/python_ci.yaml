@@ -15,7 +15,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Ruff
+        run: pip install ruff
         
       - name: Run Ruff
         run: ruff check ./gnss-satellites/
@@ -24,10 +32,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
       - name: Setup
-        run: make setup
+        run: make -f /gnss-satellites/Makefile setup
 
       - name: Run
-        run: make run
+        run: make -f /gnss-satellites/Makefile run
