@@ -63,9 +63,3 @@ jobs:
 
       - name: Start services
         run: make start-services
-
-      - name: Wait for services
-        run: |
-          echo "Waiting for services to become healthy..."
-          timeout 180s bash -c 'while [[ $(docker compose ps --services --filter "status=running" | wc -l) -lt 7 ]]; do sleep 5; done'
-          docker compose ps
