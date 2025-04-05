@@ -33,6 +33,7 @@ jobs:
         run: |
           mkdir -p ./postgres-migrations/user
           echo "CREATE DATABASE IF NOT EXISTS gnss_user;" > ./postgres-migrations/user/initdb.sql
+          echo "CREATE DATABASE IF NOT EXISTS gnss_user;" > /home/runner/postgres-migrations/user/initdb.sql
           mkdir -p ./postgres-data
           mkdir -p ./postgres-measurements-data
 
