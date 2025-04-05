@@ -5,7 +5,7 @@ from app.core.config import Configs, configs
 
 class S3Database:
     def __init__(self, config: Configs = None):
-        self.config = config or configs()
+        self.config = config or configs
     
     def create_session(self):
         return boto3.client(

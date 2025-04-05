@@ -23,8 +23,8 @@ class S3Repository:
             print(f"❌ S3 error: {e}")
         return False
     
-    def get_tle(self) -> S3_tle_model:
-        tle_name = 'gps_tle'
+    def get_tle(self, tle_name: str) -> S3_tle_model:
+        # tle_name = 'gps_tle'
         encoding = 'utf-8'
         try:
             with self._get_session() as s3:

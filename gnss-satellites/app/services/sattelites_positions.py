@@ -23,7 +23,8 @@ class SatellitesPositions:
 
         self.s3_repository =  s3_repository
 
-        self.TLE_array = self.load_sattelites_tle()
+        self.tle_file = ""
+        self.TLE_array = []
 
         self.ts = load.timescale()
         self.time_step = timedelta(minutes=5)
@@ -34,7 +35,7 @@ class SatellitesPositions:
 
 
     def load_sattelites_tle(self) -> list:
-        file = self.s3_repository.get_tle().tle_file
+        file = self.s3_repository.get_tle(self.tle_file).tle_file
         
         try: 
             TLE_array = []
@@ -62,6 +63,10 @@ class SatellitesPositions:
     ) -> SatellitesPositionResponce:
 
         satellite_positions = []
+
+        if radar.tle_file != self.tle_file:
+            self.tle_file = radar.tle_file
+            self.TLE_array = self.load_sattelites_tle()
 
         for satellite in self.TLE_array:
             if radar.satellites_name:
@@ -132,6 +137,10 @@ class SatellitesPositions:
     def get_sattelites_times_vison(
         self, radar: SatellitesTimeRequest
     ) -> SatellitesTimeResponce:
+        
+        if radar.tle_file != self.tle_file:
+            self.tle_file = radar.tle_file
+            self.TLE_array = self.load_sattelites_tle()
         
         begin_time = datetime.fromtimestamp(radar.begin_time, tz=timezone.utc)
 
