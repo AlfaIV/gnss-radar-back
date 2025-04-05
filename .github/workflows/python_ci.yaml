@@ -1,0 +1,29 @@
+name: CICD_python
+
+on:
+  push:
+    paths:
+      - 'gnss-satellites/app/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Run Ruff
+        run: ruff check ./gnss-satellites/
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup
+        run: make setup
+
+      - name: Run
+        run: make run
