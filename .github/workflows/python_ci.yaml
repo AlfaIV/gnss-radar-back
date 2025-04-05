@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'gnss-satellites/app/**'
+      - '.github/workflows/python_ci.yaml'
 
 env:
   MINIO_ROOT_USER: minioadmin
