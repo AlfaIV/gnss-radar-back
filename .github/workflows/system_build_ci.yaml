@@ -45,6 +45,7 @@ jobs:
           cp ./scripts/sql/init/init_db.sql postgres-migrations/user/initdb.sql
           cp ./scripts/sql/init/init_db.sql /home/runner/postgres-migrations/tasks/initdb.sql
           cp ./scripts/sql/init/init_db.sql /home/runner/postgres-migrations/measurements/initdb.sql
+          cp ./scripts/sql/init/init_db.sql /home/runner/postgres-migrations/user/initdb.sql
 
       - name: Build Docker images
         run: make build-images
