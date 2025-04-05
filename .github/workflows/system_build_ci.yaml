@@ -31,17 +31,24 @@ jobs:
 
       - name: Prepare files
         run: |
+          # Создаем директории в рабочей директории репозитория
           mkdir -p ./postgres-migrations/user
           mkdir -p ./postgres-data
           mkdir -p ./postgres-measurements-data
+          
+          # Создаем инициализационные SQL-файлы
           echo "CREATE DATABASE IF NOT EXISTS gnss_user;" > ./postgres-migrations/user/initdb.sql
-          echo "CREATE DATABASE IF NOT EXISTS gnss_user;" > /home/runner/postgres-migrations/user/initdb.sql
+          echo "CREATE DATABASE IF NOT EXISTS gnss_measurements;" > ./postgres-migrations/measurements/initdb.sql
+
+          # Проверяем что файлы созданы
+          ls -la ./postgres-migrations/user/
+          cat ./postgres-migrations/user/initdb.sql
 
       - name: Build Docker images
         run: make build-images
 
-      - name: Generate gRPC code
-        run: make generate
+      # - name: Generate gRPC code
+      #   run: make generate
 
       - name: Start network
         run: make start-networks
