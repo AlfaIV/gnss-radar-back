@@ -36,26 +36,12 @@ jobs:
           mkdir -p postgres-migrations/measurements
           mkdir -p postgres-data
           mkdir -p postgres-measurements-data
+          mkdir -p /home/runner/postgres-migrations/tasks
           
-          # Создаем файл инициализации для user
-          cat <<EOF > postgres-migrations/user/initdb.sql
-          CREATE DATABASE IF NOT EXISTS gnss_user;
-          CREATE USER IF NOT EXISTS user WITH PASSWORD 'password123';
-          GRANT ALL PRIVILEGES ON DATABASE gnss_user TO user;
-          EOF
-          
-          # Создаем файл инициализации для measurements
-          cat <<EOF > postgres-migrations/measurements/initdb.sql
-          CREATE DATABASE IF NOT EXISTS gnss_measurements;
-          CREATE USER IF NOT EXISTS measurements WITH PASSWORD 'password123';
-          GRANT ALL PRIVILEGES ON DATABASE gnss_measurements TO measurements;
-          EOF
-          
-          # Проверяем создание файлов
-          ls -la postgres-migrations/user/
-          ls -la postgres-migrations/measurements/
-          cat postgres-migrations/user/initdb.sql
-          cat postgres-migrations/measurements/initdb.sql
+          cp ./scripts/sql/init/init_db.sql postgres-migrations/user/initdb.sql
+          cp ./scripts/sql/init/init_db.sql postgres-migrations/measurements/initdb.sql
+          cp ./scripts/sql/init/init_db.sql postgres-migrations/user/initdb.sql
+          cp ./scripts/sql/init/init_db.sql /home/runner/postgres-migrations/tasks/initdb.sql
 
       - name: Build Docker images
         run: make build-images
