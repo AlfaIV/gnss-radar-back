@@ -38,6 +38,7 @@ jobs:
           mkdir -p postgres-measurements-data
           mkdir -p /home/runner/postgres-migrations/tasks
           mkdir -p /home/runner/postgres-migrations/measurements/initdb.sql
+          mkdir -p /home/runner/postgres-tasks-data
           
           cp ./scripts/sql/init/init_db.sql postgres-migrations/user/initdb.sql
           cp ./scripts/sql/init/init_db.sql postgres-migrations/measurements/initdb.sql
