@@ -9,7 +9,6 @@ ENV: str = ""
 
 
 class Configs(BaseSettings):
-    # base
     ENV: str = os.getenv("ENV", "dev")
     API: str = "/api"
     API_V1_STR: str = "/api/v1"
@@ -19,26 +18,23 @@ class Configs(BaseSettings):
         os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     )
 
-    # date
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
     DATE_FORMAT: str = "%Y-%m-%d"
 
     TLE_PATH: str = os.path.join(PROJECT_ROOT, "app", "services", "tle", "gps.tle")
-    S3_bucket:str = 'ephemeris'
+
+    S3_TLE_BUCKET:str = 'ephemeris'
+    S3_ENDPOINT_URL: str = "http://localhost:9000"
+    MINIO_ROOT_USER: str = "admin"
+    MINIO_ROOT_PASSWORD: str = "strongpassword"
+    REGION_NAME: str = "us-east-1"
 
     class Config:
         case_sensitive = True
-
-
-class TestConfigs(Configs):
-    ENV: str = "test"
-
 
 configs = Configs()
 
 if ENV == "prod":
     pass
-elif ENV == "stage":
-    pass
-elif ENV == "test":
-    setting = TestConfigs()
+elif ENV == "docker":
+    configs.S3_ENDPOINT_URL = "http://minio-s3:9002"

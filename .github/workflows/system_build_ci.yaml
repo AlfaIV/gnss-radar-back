@@ -7,6 +7,7 @@ on:
     branches: [ main, develop ]
 
 env:
+  ENV: docker
   COMPOSE_DOCKER_CLI_BUILD: 1
   DOCKER_BUILDKIT: 1
   POSTGRES_USER_DB: test_db

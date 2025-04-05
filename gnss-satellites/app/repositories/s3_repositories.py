@@ -29,7 +29,7 @@ class S3Repository:
         try:
             with self._get_session() as s3:
                 response = s3.get_object(
-                    Bucket = configs.S3_bucket,
+                    Bucket = configs.S3_TLE_BUCKET,
                     Key = tle_name
                 )
                 file_content = response['Body'].read()  
@@ -52,7 +52,7 @@ class S3Repository:
                 if (self.check_s3_connection):
                     s3.upload_file(
                         Filename = configs.TLE_PATH,
-                        Bucket = configs.S3_bucket,
+                        Bucket = configs.S3_TLE_BUCKET,
                         Key='gps_tle'
                     )
             except ClientError as e:

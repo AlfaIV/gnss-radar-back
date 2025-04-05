@@ -5,6 +5,10 @@ on:
     paths:
       - 'gnss-satellites/app/**'
 
+env:
+  MINIO_ROOT_USER: minioadmin
+  MINIO_ROOT_PASSWORD: minioadmin
+
 jobs:
   lint:
     runs-on: ubuntu-latest
