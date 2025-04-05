@@ -1,12 +1,9 @@
-from datetime import datetime,timedelta
-
-import numpy as np
 from datetime import datetime, timedelta, timezone
-from skyfield.api import load, Topos, EarthSatellite,utc
+from fastapi import HTTPException, status
+from skyfield.api import load, EarthSatellite
 from skyfield.toposlib import wgs84
 from skyfield.positionlib import Geocentric
 
-from app.core.config import configs
 from app.entities.sattellites import TLE
 from app.schemas.sattelites_position import (
     SatellitesTimeRequest,
@@ -26,8 +23,6 @@ class SatellitesPositions:
 
         self.s3_repository =  s3_repository
 
-        print(f"Проверка S3: {self.s3_repository.check_s3_connection()}" )
-
         self.TLE_array = self.load_sattelites_tle()
 
         self.ts = load.timescale()
@@ -39,21 +34,26 @@ class SatellitesPositions:
 
 
     def load_sattelites_tle(self) -> list:
-
-        #Тут надо поменять логику на работу с S3
-        tle_file = configs.TLE_PATH
-        TLE_array = []
-        with open(tle_file, "r") as file:
-            for line in file:
+        file = self.s3_repository.get_tle().tle_file
+        
+        try: 
+            TLE_array = []
+            for line in file.split('\n'):
                 words = line.split()
                 if words[0] == "1":
                     TLE_array[-1].line1 = line
                 elif words[0] == "2":
                     TLE_array[-1].line2 = line
                 else:
-                    grouping = words[0]
-                    satellite_name = " ".join(words[1:])
+                    grouping = words[0] if len(words) > 1 else None
+                    satellite_name = " ".join(words[1:]) if len(words) > 1 else words[0]
                     TLE_array.append(TLE(satellite_name,grouping))
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Error deceptions: {e}",
+                headers={"X-Error": "Custom header", "Error-type": "Parse TLE"},
+            )
         return TLE_array
 
 

@@ -24,9 +24,14 @@ setup:
 	else
 		python3 -m venv $(VENV)
 	endif
-		$(PIP) install --upgrade pip
-		$(PIP) install -r requirements.txt
+		install
 
+# Установка зависимостей
+install:
+	$(PIP) install --upgrade pip
+	$(PIP) install -r requirements.txt
+
+# Активация виртуального окружения
 activate:
 	ifeq ($(SYSTEM),Windows)
 		./venv/Scripts/activate.ps1

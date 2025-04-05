@@ -24,7 +24,7 @@ class S3Repository:
         return False
     
     def get_tle(self) -> S3_tle_model:
-        tle_name = 'gps_tle1'
+        tle_name = 'gps_tle'
         encoding = 'utf-8'
         try:
             with self._get_session() as s3:
@@ -34,7 +34,6 @@ class S3Repository:
                 )
                 file_content = response['Body'].read()  
                 text_content = file_content.decode(encoding)
-                print(text_content)
 
                 return S3_tle_model(
                     tle_file = text_content,
@@ -44,7 +43,7 @@ class S3Repository:
             raise HTTPException(
                 status_code=status.HTTP_204_NO_CONTENT,
                 detail=f"Error deceptions: {e}",
-                headers={"X-Error": "Custom header"},
+                headers={"X-Error": "Custom header", "Error-type": "Get TLE from S3"},
             )
             
     def upload_file(self) -> bool:
@@ -59,8 +58,8 @@ class S3Repository:
             except ClientError as e:
                 raise HTTPException(
                     status_code=status.HTTP_204_NO_CONTENT,
-                    detail=e,
-                    headers={"X-Error": "Custom header"},
+                    detail=f"Error deceptions: {e}",
+                    headers={"X-Error": "Custom header", "Error-type": "Upload TLE to S3"},
                 )
             return True
             

@@ -1,6 +1,3 @@
-from pydantic import BaseModel
-
-
 class TLE:
     def __init__(self, name,group):
         self._group = group
@@ -40,8 +37,3 @@ class TLE:
     def line2(self, value):
         self._line2 = value
 
-
-class RadarPosition(BaseModel):
-    x_position: float
-    y_position: float
-    z_position: float
