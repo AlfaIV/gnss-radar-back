@@ -29,6 +29,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Prepare files
+        run: |
+          mkdir -p ./postgres-migrations/user
+          echo "CREATE DATABASE IF NOT EXISTS gnss_user;" > ./postgres-migrations/user/initdb.sql
+          mkdir -p ./postgres-data
+          mkdir -p ./postgres-measurements-data
+
       - name: Build Docker images
         run: make build-images
 
