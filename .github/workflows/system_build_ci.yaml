@@ -31,11 +31,11 @@ jobs:
 
       - name: Prepare files
         run: |
-          echo "CREATE DATABASE IF NOT EXISTS gnss_user;" > ./postgres-migrations/user/initdb.sql
-          echo "CREATE DATABASE IF NOT EXISTS gnss_user;" > /home/runner/postgres-migrations/user/initdb.sql
           mkdir -p ./postgres-migrations/user
           mkdir -p ./postgres-data
           mkdir -p ./postgres-measurements-data
+          echo "CREATE DATABASE IF NOT EXISTS gnss_user;" > ./postgres-migrations/user/initdb.sql
+          echo "CREATE DATABASE IF NOT EXISTS gnss_user;" > /home/runner/postgres-migrations/user/initdb.sql
 
       - name: Build Docker images
         run: make build-images
