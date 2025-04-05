@@ -40,8 +40,8 @@ jobs:
       - name: Build Docker images
         run: make build-images
 
-      # - name: Generate gRPC code
-      #   run: make generate
+      - name: Generate gRPC code
+        run: make generate
 
       - name: Start network
         run: make start-networks
@@ -54,9 +54,3 @@ jobs:
           echo "Waiting for services to become healthy..."
           timeout 180s bash -c 'while [[ $(docker compose ps --services --filter "status=running" | wc -l) -lt 7 ]]; do sleep 5; done'
           docker compose ps
-
-      - name: Clean up
-        if: always()
-        run: |
-          docker compose -f docker-compose.yaml down
-          docker system prune -f
