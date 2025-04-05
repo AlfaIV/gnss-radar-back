@@ -35,15 +35,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.8'
-        
-      - name: Setup
-        working-directory: ./gnss-satellites
-        run: make setup
+      - name: Build Docker image
+        run: |
+          docker build -t gnss-radar:latest .
 
-      - name: Run
-        working-directory: ./gnss-satellites
-        run: make run
+      - name: Verify container start
+        run: |
+          docker run --rm -d \
+            --name test-container \
+            -p 8000:8000 \
+            gnss-radar
+          
+          # Проверяем, что контейнер работает
+          docker ps --filter "name=test-container" --format "{{.Status}}" | grep -q "Up"
+          
+      - name: Cleanup
+        if: always()
+        run: docker rm -f test-container || true
