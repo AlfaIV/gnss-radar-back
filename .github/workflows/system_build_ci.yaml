@@ -32,8 +32,8 @@ jobs:
       - name: Build Docker images
         run: make build-images
 
-      - name: Generate gRPC code
-        run: make generate
+      # - name: Generate gRPC code
+      #   run: make generate
 
       - name: Start network
         run: make start-networks
