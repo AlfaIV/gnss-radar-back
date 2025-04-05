@@ -36,6 +36,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker image
+        working-directory: ./gnss-satellites
         run: |
           docker build -t gnss-radar:latest .
 
