@@ -37,11 +37,13 @@ jobs:
           mkdir -p postgres-data
           mkdir -p postgres-measurements-data
           mkdir -p /home/runner/postgres-migrations/tasks
+          mkdir -p /home/runner/postgres-migrations/measurements/initdb.sql
           
           cp ./scripts/sql/init/init_db.sql postgres-migrations/user/initdb.sql
           cp ./scripts/sql/init/init_db.sql postgres-migrations/measurements/initdb.sql
           cp ./scripts/sql/init/init_db.sql postgres-migrations/user/initdb.sql
           cp ./scripts/sql/init/init_db.sql /home/runner/postgres-migrations/tasks/initdb.sql
+          cp ./scripts/sql/init/init_db.sql /home/runner/postgres-migrations/measurements/initdb.sql
 
       - name: Build Docker images
         run: make build-images
