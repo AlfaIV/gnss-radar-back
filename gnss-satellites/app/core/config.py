@@ -23,7 +23,7 @@ class Configs(BaseSettings):
 
     TLE_PATH: str = os.path.join(PROJECT_ROOT, "app", "services", "tle", "gps.tle")
 
-    S3_TLE_BUCKET:str = 'ephemeris'
+    TLE_BUCKET:str = 'ephemeris'
     S3_ENDPOINT_URL: str = "http://localhost:9000"
     MINIO_ROOT_USER: str = "admin"
     MINIO_ROOT_PASSWORD: str = "strongpassword"
@@ -36,5 +36,3 @@ configs = Configs()
 
 if ENV == "prod":
     pass
-elif ENV == "docker":
-    configs.S3_ENDPOINT_URL = "http://minio-s3:9002"

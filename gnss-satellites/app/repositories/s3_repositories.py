@@ -29,7 +29,7 @@ class S3Repository:
         try:
             with self._get_session() as s3:
                 response = s3.get_object(
-                    Bucket = configs.S3_TLE_BUCKET,
+                    Bucket = configs.TLE_BUCKET,
                     Key = tle_name
                 )
                 file_content = response['Body'].read()  
@@ -45,22 +45,4 @@ class S3Repository:
                 detail=f"Error deceptions: {e}",
                 headers={"X-Error": "Custom header", "Error-type": "Get TLE from S3"},
             )
-            
-    def upload_file(self) -> bool:
-        with self._get_session() as s3:
-            try:
-                if (self.check_s3_connection):
-                    s3.upload_file(
-                        Filename = configs.TLE_PATH,
-                        Bucket = configs.S3_TLE_BUCKET,
-                        Key='gps_tle'
-                    )
-            except ClientError as e:
-                raise HTTPException(
-                    status_code=status.HTTP_204_NO_CONTENT,
-                    detail=f"Error deceptions: {e}",
-                    headers={"X-Error": "Custom header", "Error-type": "Upload TLE to S3"},
-                )
-            return True
-            
         

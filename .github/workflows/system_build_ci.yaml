@@ -18,6 +18,9 @@ env:
   POSTGRES_MEASUREMENTS_PASSWORD: measurements_pass
   MINIO_ROOT_USER: minioadmin
   MINIO_ROOT_PASSWORD: minioadmin
+  TLE_BUCKET: ephemeris
+  S3_ENDPOINT_URL: http://minio-s3:9002
+
 
 jobs:
   build-and-test:
