@@ -8,6 +8,7 @@ import (
 	measurements_domain "gnss-radar/gnss-measurements/internal"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -57,7 +58,7 @@ func (mr *MeasurementsRepo) GetEphemeris(ctx context.Context, req measurements_d
 			filename,
 			created_at
 		FROM file_meta 
-		ORDER BY created_at
+		ORDER BY created_at DESC
 		LIMIT $1
 		OFFSET $2;
 	`
@@ -130,6 +131,30 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 		RadarY: 37.423056,
 		RadarZ: 0.5,
 	}
+
+	loc, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to load Moscow location")
+	}
+
+	now := time.Now().In(loc)
+
+	formattedInt, err := strconv.Atoi(now.Format("20060102150405"))
+	if err != nil {
+		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to format time")
+	}
+
+	requestBody.InspectionTime = uint64(formattedInt)
+
+	var tleName string
+
+	countQuery := `SELECT minio_name FROM file_meta;`
+	err = mr.pool.QueryRow(ctx, countQuery).Scan(&tleName)
+	if err != nil {
+		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to get minio name")
+	}
+
+	requestBody.TLEFile = tleName
 
 	jsonBody, err := json.Marshal(requestBody)
 	if err != nil {

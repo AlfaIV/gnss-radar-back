@@ -68,6 +68,7 @@ func (tr *TaskRepo) CreateTask(ctx context.Context, r tasks_domain.Task) error {
 	}
 
 	now := time.Now().In(loc)
+
 	if startTime.After(endTime) {
 		return errors.New("start time cannot be after end time")
 	}
