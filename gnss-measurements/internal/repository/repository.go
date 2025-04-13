@@ -18,9 +18,11 @@ import (
 )
 
 type RadarRequest struct {
-	RadarX float64 `json:"radar_x"`
-	RadarY float64 `json:"radar_y"`
-	RadarZ float64 `json:"radar_z"`
+	RadarX         float64 `json:"radar_x"`
+	RadarY         float64 `json:"radar_y"`
+	RadarZ         float64 `json:"radar_z"`
+	InspectionTime uint64  `json:"inspection_time"`
+	TLEFile        string  `json:"tle_file"`
 }
 
 type PgxIFace interface {
@@ -126,7 +128,7 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 	requestBody := RadarRequest{
 		RadarX: 56.4475,
 		RadarY: 37.423056,
-		RadarZ: 500,
+		RadarZ: 0.5,
 	}
 
 	jsonBody, err := json.Marshal(requestBody)

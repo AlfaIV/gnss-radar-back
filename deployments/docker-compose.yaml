@@ -86,12 +86,13 @@ services:
   minio-s3:
     container_name: s3
     image: minio/minio
+    restart: always
     ports:
       - 9001:9001
       - 9000:9002
     volumes:
       - type: bind
-        source: .
+        source: ~/minio-data
         target: /data
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
@@ -124,6 +125,9 @@ services:
   gnss-api-gateway:
     image: gateway-image:latest
     container_name: gateway
+    restart: always
+    ports:
+      - 8000:8000
     # healthcheck:
     #   test: ["CMD", "curl", "--fail", "--silent", "--show-error", "--output", "/dev/null", "http://localhost:8000/health"]
     #   interval: 10s
@@ -135,6 +139,7 @@ services:
   gnss-auth:
     image: auth-image:latest
     container_name: auth
+    restart: always
     depends_on:
       - service-redis-auth
     # healthcheck:
@@ -151,6 +156,7 @@ services:
   gnss-user:
     image: user-image:latest
     container_name: user
+    restart: always
     environment:
       PG_ADDR: ${DATABASE_USER_URL}
     depends_on:
@@ -169,13 +175,16 @@ services:
   gnss-measurements:
     image: measurements-image:latest
     container_name: measurements
+    restart: always
     environment:
       PG_ADDR: ${DATABASE_MEASUREMENTS_URL}
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       EPHEMERIS_BUCKET_NAME: ${TLE_BUCKET}
+      SATELLITES_ADDR: "http://satellites:8010"
     depends_on:
       - service-postgres-measurements
+      - minio-s3
     # healthcheck:
     #   test: ["CMD", "grpc_health_probe", "-addr=:8003"]
     #   interval: 30s
@@ -190,6 +199,7 @@ services:
   gnss-tasks:
     image: tasks-image:latest
     container_name: tasks
+    restart: always
     environment:
       PG_ADDR: ${DATABASE_TASKS_URL}
     depends_on:
@@ -208,8 +218,14 @@ services:
   gnss-satellites:
     image: satellites-image:latest
     container_name: satellites
+    restart: always
     networks:
       - gnss-measurements-subnet
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      TLE_BUCKET: ${TLE_BUCKET}
+      S3_ENDPOINT_URL: "http://s3:9002"
 
 networks:
   gnss-radar-net:
