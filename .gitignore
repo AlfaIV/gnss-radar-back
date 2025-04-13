@@ -1,3 +1,11 @@
 .idea
 *.pb.go
 .env
+__pycache__
+venv
+.venv
+.ruff_cache
+.mypy_cache
+.minio.sys
+ruff_cache
+ephemeris

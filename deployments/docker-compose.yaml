@@ -88,9 +88,10 @@ services:
     image: minio/minio
     ports:
       - 9001:9001
+      - 9000:9002
     volumes:
       - type: bind
-        source: ~/minio-data
+        source: .
         target: /data
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
@@ -114,7 +115,7 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc alias set gnss http://s3:9002 \$${MINIO_ROOT_USER} \$${MINIO_ROOT_PASSWORD};
-      /usr/bin/mc mb --ignore-existing gnss/ephemeris;
+      /usr/bin/mc mb --ignore-existing gnss/${TLE_BUCKET};
       exit 0;
       "
     networks:
@@ -172,7 +173,7 @@ services:
       PG_ADDR: ${DATABASE_MEASUREMENTS_URL}
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      EPHEMERIS_BUCKET_NAME: "ephemeris"
+      EPHEMERIS_BUCKET_NAME: ${TLE_BUCKET}
     depends_on:
       - service-postgres-measurements
     # healthcheck:

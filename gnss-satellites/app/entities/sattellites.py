@@ -1,8 +1,6 @@
-from pydantic import BaseModel
-
-
 class TLE:
-    def __init__(self, name):
+    def __init__(self, name,group):
+        self._group = group
         self._name = name
         self._line1 = None
         self._line2 = None
@@ -14,6 +12,14 @@ class TLE:
     @name.setter
     def name(self, value):
         self._name = value
+
+    @property
+    def group(self):
+        return self._group
+
+    @group.setter
+    def group(self, value):
+        self._group = value
 
     @property
     def line1(self):
@@ -31,8 +37,3 @@ class TLE:
     def line2(self, value):
         self._line2 = value
 
-
-class RadarPosition(BaseModel):
-    x_position: float
-    y_position: float
-    z_position: float

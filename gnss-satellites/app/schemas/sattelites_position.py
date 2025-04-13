@@ -2,16 +2,22 @@ from typing import List
 
 from pydantic import BaseModel
 
-
-class RadarPositionRequest(BaseModel):
-    radar_x: float
-    radar_y: float
-    radar_z: float
-
 class RadarPositionGeograthRequest(BaseModel):
+    satellites_name: list[str]
     radar_latitude: float
     radar_longitude: float
-    radar_height: float
+    radar_height: float # В километрах
+    inspection_time: int # Время в UTC
+    tle_file: str
+
+class SatellitesTimeRequest(BaseModel):
+    satellites_name: list[str]
+    radar_latitude: float
+    radar_longitude: float
+    radar_height: float # В километрах
+    begin_time: int # Время в UTC
+    end_time: int # Время в UTC
+    tle_file: str
 
 class SatellitePosition(BaseModel):
     Group: str

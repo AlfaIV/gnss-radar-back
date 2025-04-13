@@ -1,24 +1,12 @@
-import os
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta, timezone
+from fastapi import HTTPException, status
+from skyfield.api import load, EarthSatellite
+from skyfield.toposlib import wgs84
+from skyfield.positionlib import Geocentric
 
-import numpy as np
-from astropy import units as u
-from astropy.coordinates import (
-    ITRS,
-    TEME,
-    AltAz,
-    CartesianDifferential,
-    CartesianRepresentation,
-    Distance,
-    EarthLocation,
-)
-from astropy.time import Time
-from sgp4.api import Satrec, SGP4_ERRORS
-
-from app.core.config import configs
 from app.entities.sattellites import TLE
 from app.schemas.sattelites_position import (
-    RadarPositionRequest,
+    SatellitesTimeRequest,
     SatellitesPositionResponce,
     SatellitesTimeResponce,
     RadarPositionGeograthRequest,
@@ -27,222 +15,238 @@ from app.schemas.sattelites_position import (
     SatellitePosition,
 )
 
+from app.repositories import S3Repository
+
 
 class SatellitesPositions:
-    def __init__(self):
-        tle_file = os.path.join(
-            configs.PROJECT_ROOT, "app", "services", "tle", "gps.tle"
-        )
+    def __init__(self, s3_repository: S3Repository):
+
+        self.s3_repository =  s3_repository
+
+        self.tle_file = ""
         self.TLE_array = []
-        with open(tle_file, "r") as file:
-            for line in file:
+
+        self.ts = load.timescale()
+        self.time_step = timedelta(minutes=5)
+
+        self.mask_visible = 0
+
+
+
+
+    def load_sattelites_tle(self) -> list:
+        file = self.s3_repository.get_tle(self.tle_file).tle_file
+        
+        try: 
+            TLE_array = []
+            for line in file.split('\n'):
                 words = line.split()
                 if words[0] == "1":
-                    self.TLE_array[-1].line1 = line
+                    TLE_array[-1].line1 = line
                 elif words[0] == "2":
-                    self.TLE_array[-1].line2 = line
+                    TLE_array[-1].line2 = line
                 else:
-                    self.TLE_array.append(TLE(line))
-
-        self.satellites = []
-        for tle in self.TLE_array:
-            self.satellites.append(
-                {"satrec": Satrec.twoline2rv(tle.line1, tle.line2), "tle": tle}
+                    grouping = words[0] if len(words) > 1 else None
+                    satellite_name = " ".join(words[1:]) if len(words) > 1 else words[0]
+                    TLE_array.append(TLE(satellite_name,grouping))
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Error deceptions: {e}",
+                headers={"X-Error": "Custom header", "Error-type": "Parse TLE"},
             )
+        return TLE_array
+
 
     def get_sattelites_positions(
-        self, radar: RadarPositionRequest
+        self, radar: RadarPositionGeograthRequest,
     ) -> SatellitesPositionResponce:
-        current_time = Time.now()
-        radar_position = {
-            "radar_x": radar.radar_x,
-            "radar_y": radar.radar_y,
-            "radar_z": radar.radar_z,
-        }
 
         satellite_positions = []
-        # ephemerises = []
 
-        for satellite in self.satellites:
-            sattelite_props = self.get_sattelite_positions(
-                current_time, satellite["satrec"], radar_position
-            )
-            name = satellite["tle"].name.strip()
-            parts = name.split()
-            grouping = parts[0]
-            satellite_name = " ".join(parts[1:])
+        if radar.tle_file != self.tle_file:
+            self.tle_file = radar.tle_file
+            self.TLE_array = self.load_sattelites_tle()
 
-            if sattelite_props["Elevation"] > 0:
+        for satellite in self.TLE_array:
+            if radar.satellites_name:
+                if satellite.name in radar.satellites_name:
+                    sattelite_props = self.get_sattelite_positions(
+                        radar.inspection_time, satellite, radar
+                    )
+
+                    satellite_positions.append(
+                        SatellitePosition(
+                            Group = satellite.group,
+                            Name = satellite.name,
+                            Azimuth = sattelite_props["Azimuth"],
+                            Elevation = sattelite_props["Elevation"],
+                            Range = sattelite_props["Range"],
+                        )
+                    )
+            else:
+                sattelite_props = self.get_sattelite_positions(
+                    radar.inspection_time, satellite, radar
+                )
+
                 satellite_positions.append(
                     SatellitePosition(
-                        Group = grouping,
-                        Name = satellite_name,
+                        Group = satellite.group,
+                        Name = satellite.name,
                         Azimuth = sattelite_props["Azimuth"],
                         Elevation = sattelite_props["Elevation"],
                         Range = sattelite_props["Range"],
                     )
                 )
 
-                # ephemerises.append(
-                #     Ephemeris(
-                #         Group = grouping,
-                #         Name = satellite_name,
-                #         Longitude = sattelite_props["Longitude"],
-                #         Latitude = sattelite_props["Latitude"],
-                #         Height = sattelite_props["Height"],
-                #     )
-                # )
-
         return SatellitesPositionResponce(
             Satellites = satellite_positions,
-            # "Ephemerises": ephemerises,
         )
 
     def get_sattelite_positions(
-        self, current_time: datetime, satellite: object, observer: RadarPositionRequest
+        self, current_time: datetime,  satellite: object, observer: RadarPositionGeograthRequest
     ) -> SatellitePosition:
-        error_code, teme_p, teme_v = satellite.sgp4(current_time.jd1, current_time.jd2)
-        if error_code != 0:
-            raise RuntimeError(SGP4_ERRORS[error_code])
+        
+    
+        current_time = datetime.fromtimestamp(current_time, tz=timezone.utc)
+        skyfield_time = self.ts.from_datetime(current_time)
 
-        teme_p = CartesianRepresentation(teme_p * u.km)
-        teme_v = CartesianDifferential(teme_v * u.km / u.s)
-        teme = TEME(teme_p.with_differentials(teme_v), obstime=current_time)
+        observer = wgs84.latlon(observer.radar_latitude, observer.radar_longitude, observer.radar_height)
+    
+        # Получаем положение спутника
+        satellite = EarthSatellite(satellite.line1.strip(), satellite.line2.strip(), satellite.name.strip())
+        position = satellite.at(skyfield_time)
+        subpoint = wgs84.subpoint(position)
 
-        itrs_geo = teme.transform_to(ITRS(obstime=current_time))
-        location = itrs_geo.earth_location
-        geo = location.geodetic
-
-        observer_x = observer["radar_x"]
-        observer_y = observer["radar_y"]
-        observer_z = observer["radar_z"]
-
-        observer_location = EarthLocation.from_geocentric(
-            observer_x, observer_y, observer_z, unit="m"
-        )
-        observer_itrs = observer_location.get_itrs(obstime=current_time)
-
-        # separation_angle = observer_itrs.separation(itrs_geo)
-
-        # print(f"Угол между наблюдателем и спутником: {separation_angle.to(u.deg):.2f} градусов")
-
-        altaz_frame = AltAz(obstime=current_time, location=observer_location)
-        satellite_altaz = itrs_geo.transform_to(altaz_frame)
-
-        azimuth = satellite_altaz.az
-        elevation = satellite_altaz.alt
-        distance_value = np.sqrt(
-            (itrs_geo.x - observer_itrs.x) ** 2
-            + (itrs_geo.y - observer_itrs.y) ** 2
-            + (itrs_geo.z - observer_itrs.z) ** 2
-        )
-        distance = Distance(value=distance_value, unit=u.m)
-
-        # print(f"Азимут: {azimuth.to(u.deg):.2f} градусов")
-        # print(f"Угол места: {elevation.to(u.deg):.2f} градусов")
-        # print(f"Дальность до спутника: {distance.to(u.km):.2f} километров")
+        difference = satellite - observer
+        topocentric = difference.at(skyfield_time)
+        
+        # Получаем азимут и угол места
+        elevation, azimuth, distance = topocentric.altaz()
 
         return {
-            "Azimuth": round(azimuth.degree, 2),
+            "Azimuth": round(azimuth.degrees, 2),
             "Range": round(distance.km, 2),
-            "Elevation": round(elevation.degree, 2),
-            "Longitude": round(geo.lon.degree, 2),
-            "Latitude": round(geo.lat.degree, 2),
-            "Height": round(geo.height.to(u.km).value, 2),
+            "Elevation": round(elevation.degrees, 2),
+            "Longitude": round(subpoint.longitude.degrees, 2),
+            "Latitude": round(subpoint.latitude.degrees, 2),
+            "Height": round(subpoint.elevation.km, 2),
         }
     
 
     def get_sattelites_times_vison(
-        self, radar: RadarPositionGeograthRequest
+        self, radar: SatellitesTimeRequest
     ) -> SatellitesTimeResponce:
-        current_time = datetime.now()
-        radar_position = {
-            "radar_latitude": radar.radar_latitude,
-            "radar_longitude": radar.radar_longitude,
-            "radar_height": radar.radar_height,
-        }
+        
+        if radar.tle_file != self.tle_file:
+            self.tle_file = radar.tle_file
+            self.TLE_array = self.load_sattelites_tle()
+        
+        begin_time = datetime.fromtimestamp(radar.begin_time, tz=timezone.utc)
+
+        end_time = datetime.fromtimestamp(radar.end_time, tz=timezone.utc)
+        
+        observer = wgs84.latlon(
+            radar.radar_latitude,
+            radar.radar_longitude,
+            radar.radar_height
+        )
 
         satellite_time = []
+           
 
-        for satellite in self.satellites:
-            visibility_times = self.visibility_times(
-                current_time, satellite["satrec"], radar_position
-            )
-            name = satellite["tle"].name.strip()
-            parts = name.split()
-            grouping = parts[0]
-            satellite_name = " ".join(parts[1:])
-            satellite_time.append(
-                SatelliteTime(
-                    Group=grouping,
-                    Name=satellite_name,
-                    Time=visibility_times,
+        for satellite in self.TLE_array:
+            
+            if radar.satellites_name:
+
+                if radar.satellites_name.__contains__(satellite.name):
+
+                    satellite_data = EarthSatellite(
+                        satellite.line1.strip(),
+                        satellite.line2.strip(),
+                        satellite.name
+                    )
+
+                    visibility_times = self.visibility_times(
+                        begin_time,end_time, satellite_data, observer
+                    )
+                    
+                    satellite_time.append(
+                        SatelliteTime(
+                            Group = satellite.group,
+                            Name = satellite.name,
+                            Time=visibility_times,
+                        )
+                    )
+
+            else:
+                satellite_data = EarthSatellite(
+                    satellite.line1.strip(),
+                    satellite.line2.strip(),
+                    satellite.name.strip()
                 )
-            )
+
+                visibility_times = self.visibility_times(
+                    begin_time,end_time, satellite_data, observer
+                )
+                
+                satellite_time.append(
+                    SatelliteTime(
+                        Group = satellite.group,
+                        Name = satellite.name,
+                        Time=visibility_times,
+                    )
+                )
 
         return SatellitesTimeResponce(Satellites=satellite_time)
 
 
     def visibility_times(
         self,
-        day: datetime,
-        satellite: object,
-        observer: RadarPositionRequest,
-        min_elevation: float = 0.0,  
-        max_elevation: float = 360.0, 
-        min_azimuth: float = 0.0,   
-        max_azimuth: float = 360.0,
-        time_step: timedelta = timedelta(minutes=10),  # Шаг по времени
-    ) -> list:      
-
-        latitude = observer["radar_latitude"] 
-        longitude = observer["radar_longitude"] 
-        height = observer["radar_height"]
-
-        observer_location = EarthLocation(lat=latitude * u.deg, lon=longitude * u.deg, height=height * u.m)
-
-        visibility_times = []
-        current_time = day.replace(hour=0, minute=0, second=0, microsecond=0)
-        end_time = day.replace(hour=23, minute=59, second=59, microsecond=999999)
-
-        is_visible = False
-        visibility_start = None
-
+        start_time: datetime,
+        end_time: datetime,
+        satellite: EarthSatellite,
+        observer: Geocentric,
+        min_elevation = 0,
+    ) -> list[VisionTime]:
+        
+        current_time = start_time
+        visibility_periods = []
+        in_visibility = False
+        period_start = None
+        
         while current_time <= end_time:
-            astro_time = Time(current_time)
+            skyfield_time = self.ts.from_datetime(current_time)
             
-            error_code, teme_p, teme_v = satellite.sgp4(astro_time.jd1, astro_time.jd2)
-            if error_code != 0:
-                raise RuntimeError(SGP4_ERRORS[error_code])
-
-            teme_p = CartesianRepresentation(teme_p * u.km)
-            teme_v = CartesianDifferential(teme_v * u.km / u.s)
-            teme = TEME(teme_p.with_differentials(teme_v), obstime=astro_time)
-
-            itrs_geo = teme.transform_to(ITRS(obstime=astro_time))
-            altaz_frame = AltAz(obstime=astro_time, location=observer_location)
-            satellite_altaz = itrs_geo.transform_to(altaz_frame)
-
-            azimuth = satellite_altaz.az.degree
-            elevation = satellite_altaz.alt.degree
-
-            if (
-                min_elevation <= elevation <= max_elevation
-                and min_azimuth <= azimuth <= max_azimuth
-            ):
-                if not is_visible:
+            difference = satellite - observer
+            topocentric = difference.at(skyfield_time)
+            elevation = topocentric.altaz()[0].degrees
+            
+            
+            if elevation >= min_elevation:
+                if not in_visibility:
                     
-                    visibility_start = current_time
-                    is_visible = True
+                    period_start = current_time
+                    in_visibility = True
             else:
-                if is_visible:
+                if in_visibility:
                     
-                    visibility_times.append(VisionTime(Begin=visibility_start.timestamp(), End=current_time.timestamp()))
-                    is_visible = False
-
-            current_time += time_step
-
-        if is_visible:
-            visibility_times.append(VisionTime(Begin=visibility_start.timestamp(), End=end_time.timestamp()))
-
-        return visibility_times
+                    visibility_periods.append(
+                        VisionTime(
+                            Begin=period_start.timestamp(),
+                            End=current_time.timestamp()
+                        )
+                    )
+                    in_visibility = False
+            
+            current_time += self.time_step
+        
+        if in_visibility:
+            visibility_periods.append(
+                VisionTime(
+                    Begin=period_start.timestamp(),
+                    End=end_time.timestamp()
+                )
+            )
+            
+        return visibility_periods
