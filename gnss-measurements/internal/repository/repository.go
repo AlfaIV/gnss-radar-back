@@ -148,8 +148,8 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 
 	var tleName string
 
-	countQuery := `SELECT minio_name FROM file_meta;`
-	err = mr.pool.QueryRow(ctx, countQuery).Scan(&tleName)
+	query := `SELECT minio_name FROM file_meta ORDER BY created_at DESC;`
+	err = mr.pool.QueryRow(ctx, query).Scan(&tleName)
 	if err != nil {
 		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to get minio name")
 	}
@@ -163,7 +163,7 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 
 	satellites_addr := os.Getenv("SATELLITES_ADDR")
 
-	url := fmt.Sprintf("http://%s/api/v1/satellites/now", satellites_addr)
+	url := fmt.Sprintf("%s/api/v1/satellites/now", satellites_addr)
 
 	req, err := http.NewRequestWithContext(
 		ctx,
@@ -177,7 +177,10 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+	}
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return measurements_domain.Satellites{}, err
