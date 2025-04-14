@@ -1,0 +1,8 @@
+{
+    "satellites_name": ["F"],
+    "radar_latitude": 56.44,
+    "radar_longitude": 37.42,
+    "radar_height": 0.5,
+    "inspection_time": 1744656431,
+    "tle_file": "gps_tle"
+}
