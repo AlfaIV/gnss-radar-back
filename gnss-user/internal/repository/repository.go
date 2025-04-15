@@ -1,8 +1,7 @@
-package statistics_repository
+package user_repository
 
 import (
 	"context"
-	"fmt"
 	user_domain "gnss-radar/gnss-user/internal"
 
 	"github.com/jackc/pgx/v5"
@@ -168,7 +167,6 @@ func (ur *UserRepo) ValidatePermissions(ctx context.Context, userId string, api 
 func (ur *UserRepo) ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error {
 
 	//validate status
-	fmt.Println(userLogin, resolution)
 	resolutionQuery := `
 	UPDATE profile SET status = $1 WHERE login = $2;
     `

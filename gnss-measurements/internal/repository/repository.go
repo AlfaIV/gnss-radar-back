@@ -8,6 +8,7 @@ import (
 	measurements_domain "gnss-radar/gnss-measurements/internal"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -18,9 +19,11 @@ import (
 )
 
 type RadarRequest struct {
-    RadarX float64 `json:"radar_x"`
-    RadarY float64 `json:"radar_y"`
-    RadarZ float64 `json:"radar_z"`
+	RadarX         float64 `json:"radar_x"`
+	RadarY         float64 `json:"radar_y"`
+	RadarZ         float64 `json:"radar_z"`
+	InspectionTime uint64  `json:"inspection_time"`
+	TLEFile        string  `json:"tle_file"`
 }
 
 type PgxIFace interface {
@@ -55,7 +58,7 @@ func (mr *MeasurementsRepo) GetEphemeris(ctx context.Context, req measurements_d
 			filename,
 			created_at
 		FROM file_meta 
-		ORDER BY created_at
+		ORDER BY created_at DESC
 		LIMIT $1
 		OFFSET $2;
 	`
@@ -123,48 +126,75 @@ func (mr *MeasurementsRepo) UploadEphemeris(ctx context.Context, req measurement
 }
 
 func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measurements_domain.Satellites, error) {
-    requestBody := RadarRequest{
-        RadarX: 56.4475,
-        RadarY: 37.423056,
-        RadarZ: 500,
-    }
+	requestBody := RadarRequest{
+		RadarX: 56.4475,
+		RadarY: 37.423056,
+		RadarZ: 0.5,
+	}
 
-    jsonBody, err := json.Marshal(requestBody)
-    if err != nil {
-        return measurements_domain.Satellites{}, err
-    }
+	loc, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to load Moscow location")
+	}
+
+	now := time.Now().In(loc)
+
+	formattedInt, err := strconv.Atoi(now.Format("20060102150405"))
+	if err != nil {
+		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to format time")
+	}
+
+	requestBody.InspectionTime = uint64(formattedInt)
+
+	var tleName string
+
+	query := `SELECT minio_name FROM file_meta ORDER BY created_at DESC;`
+	err = mr.pool.QueryRow(ctx, query).Scan(&tleName)
+	if err != nil {
+		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to get minio name")
+	}
+
+	requestBody.TLEFile = tleName
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return measurements_domain.Satellites{}, err
+	}
 
 	satellites_addr := os.Getenv("SATELLITES_ADDR")
 
-	url := fmt.Sprintf("http://%s/api/v1/satellites/now", satellites_addr)
+	url := fmt.Sprintf("%s/api/v1/satellites/now", satellites_addr)
 
-    req, err := http.NewRequestWithContext(
-        ctx,
-        "POST",
-        url,
-        bytes.NewBuffer(jsonBody),
-    )
-    if err != nil {
-        return measurements_domain.Satellites{}, err
-    }
-    
-    req.Header.Set("Content-Type", "application/json")
+	req, err := http.NewRequestWithContext(
+		ctx,
+		"POST",
+		url,
+		bytes.NewBuffer(jsonBody),
+	)
+	if err != nil {
+		return measurements_domain.Satellites{}, err
+	}
 
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        return measurements_domain.Satellites{}, err
-    }
-    defer resp.Body.Close()
+	req.Header.Set("Content-Type", "application/json")
 
-    if resp.StatusCode != http.StatusOK {
-        return measurements_domain.Satellites{}, fmt.Errorf("API returned status: %d", resp.StatusCode)
-    }
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+	}
 
-    var result measurements_domain.Satellites
-    if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-        return measurements_domain.Satellites{}, err
-    }
+	resp, err := client.Do(req)
+	if err != nil {
+		return measurements_domain.Satellites{}, err
+	}
+	defer resp.Body.Close()
 
-    return result, nil
+	if resp.StatusCode != http.StatusOK {
+		return measurements_domain.Satellites{}, fmt.Errorf("API returned status: %d", resp.StatusCode)
+	}
+
+	var result measurements_domain.Satellites
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return measurements_domain.Satellites{}, err
+	}
+
+	return result, nil
 }

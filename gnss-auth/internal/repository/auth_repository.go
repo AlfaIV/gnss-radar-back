@@ -2,7 +2,6 @@ package auth_repository
 
 import (
 	"context"
-	"fmt"
 	auth_domain "gnss-radar/gnss-auth/internal/auth"
 
 	"github.com/google/uuid"
@@ -21,7 +20,6 @@ func NewAuth(db *redis.Client, logger *logrus.Logger) *Auth {
 
 func (redis *Auth) Set(ctx context.Context, userId string) (string, error) {
 	sessionId := uuid.New().String()
-	fmt.Println(userId)
 
 	if err := redis.db.Set(ctx, sessionId, userId, auth_domain.CookieTTL).Err(); err != nil {
 		redis.logger.Error("[AUTH]:", err.Error())

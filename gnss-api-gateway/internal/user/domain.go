@@ -52,6 +52,13 @@ type PermissionChangeRequest struct {
 	NewRole   string `json:"newRole"`
 }
 
+type UserData struct {
+	UserName         string `json:"userName"`
+	Surname          string `json:"surname"`
+	Email            string `json:"email"`
+	OrganizationName string `json:"organizationName"`
+}
+
 type Usecase interface {
 	Login(ctx context.Context, login string, password string) (User, error)
 	SignUp(ctx context.Context, req SignUpRequest) error

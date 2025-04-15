@@ -17,15 +17,15 @@ type GetEphemerisResponse struct {
 }
 
 type SatelliteData struct {
-	Group string
-	Name string
-	Azumuth float64
-	Range float64
-	Elevation float64
+	Group     string  `json:"group"`
+	Name      string  `json:"name"`
+	Azimuth   float64 `json:"azimuth"`
+	Range     float64 `json:"range"`
+	Elevation float64 `json:"elevation"`
 }
 
 type Satellites struct {
-	Satellites []SatelliteData
+	Satellites []SatelliteData `json:"satellites"`
 }
 
 type Usecase interface {

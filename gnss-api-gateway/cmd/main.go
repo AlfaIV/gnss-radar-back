@@ -22,6 +22,10 @@ import (
 	measurements_handler "gnss-radar/gnss-api-gateway/internal/measurements/delivery"
 	measurements_client "gnss-radar/gnss-api-gateway/internal/measurements/service/client"
 
+	tasks_proto "gnss-radar/api/proto/tasks"
+	tasks_handler "gnss-radar/gnss-api-gateway/internal/tasks/delivery"
+	tasks_client "gnss-radar/gnss-api-gateway/internal/tasks/service/client"
+
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -65,11 +69,23 @@ func main() {
 	measurementsClient := measurements_proto.NewMeasurementsClient(measurementsGRPCClientConn)
 	measurementsUsecase := measurements_client.NewMeasurementsClient(measurementsClient, logger)
 
+	// Инициализируем сервис измерений
+
+	tasksGRPCClientConn, err := grpc.NewClient(os.Getenv("TASKS_ADDR"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		logger.Error("[GATEWAY]: ", err)
+	}
+	defer tasksGRPCClientConn.Close()
+
+	tasksClient := tasks_proto.NewTasksClient(tasksGRPCClientConn)
+	tasksUsecase := tasks_client.NewTasksClient(tasksClient, logger)
+
 	// Обработчики на гейтвее
 
 	authHandler := auth_handler.NewHandler(&userUsecase, &authUsecase, logger)
 	userHandler := user_handler.NewHandler(&userUsecase, logger)
 	measurementsHandler := measurements_handler.NewHandler(&measurementsUsecase, logger)
+	tasksHandler := tasks_handler.NewHandler(&userUsecase, &tasksUsecase, logger)
 
 	config, err := config.NewConfig()
 	if err != nil {
@@ -84,9 +100,10 @@ func main() {
 		Auth: &authUsecase,
 		User: &userUsecase,
 	}, mux.Handlers{
-		Auth: authHandler,
-		User: userHandler,
+		Auth:         authHandler,
+		User:         userHandler,
 		Measurements: measurementsHandler,
+		Tasks:        tasksHandler,
 	}, logger)
 
 	server := &http.Server{

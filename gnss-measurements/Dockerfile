@@ -1,4 +1,4 @@
-FROM golang:1.23.0-alpine AS build
+FROM --platform=linux/amd64 golang:1.23.0-alpine AS build
 
 ENV CGO_ENABLED=0 \
     GOOS=linux \
@@ -23,11 +23,15 @@ RUN go mod download && \
     go mod tidy && \
     go build -ldflags="-s -w" -o /app/measurements ./gnss-measurements/cmd/main.go
 
-FROM alpine:3.18
+FROM debian:bookworm-slim
 
-RUN apk --no-cache add ca-certificates tzdata
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    tzdata \
+    wget && \
+    rm -rf /var/lib/apt/lists/*
 
-# Установка grpc_health_probe
 RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.37/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 
@@ -38,7 +42,7 @@ ENV MEASUREMENTS_ADDR=:8003 \
     
 COPY --from=build /app/measurements /measurements
 
-RUN adduser -D -g '' appuser && \
+RUN useradd -u 1001 -m appuser && \
     chown -R appuser:appuser /measurements
 
 USER appuser

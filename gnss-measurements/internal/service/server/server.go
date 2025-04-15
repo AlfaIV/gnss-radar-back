@@ -80,11 +80,11 @@ func (s *MeasurementsServiceServer) GetSatellitesPosition(ctx context.Context, i
 	var satArray []*proto.Satellite
 	for _, sat := range satellites.Satellites {
 		satArray = append(satArray, &proto.Satellite{
-			Name:     sat.Name,
-			Group: sat.Group,
-			Azimuth: sat.Azumuth,
+			Name:      sat.Name,
+			Group:     sat.Group,
+			Azimuth:   sat.Azimuth,
 			Elevation: sat.Elevation,
-			Range: sat.Range,
+			Range:     sat.Range,
 		})
 	}
 

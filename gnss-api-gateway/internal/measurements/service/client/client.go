@@ -67,11 +67,11 @@ func (mc *MeasurementsClient) GetSatellitesPosition(ctx context.Context) (measur
 
 	for _, sat := range s.GetSatellites() {
 		satellites = append(satellites, measurements_domain_gateway.SatelliteData{
-			Group: sat.GetGroup(),
-			Name: sat.GetName(),
-			Azumuth: sat.GetAzimuth(),
+			Group:     sat.GetGroup(),
+			Name:      sat.GetName(),
+			Azimuth:   sat.GetAzimuth(),
 			Elevation: sat.GetElevation(),
-			Range: sat.GetRange(),
+			Range:     sat.GetRange(),
 		})
 	}
 

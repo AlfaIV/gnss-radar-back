@@ -250,3 +250,4 @@ class SatellitesPositions:
             )
             
         return visibility_periods
+    

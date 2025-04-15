@@ -122,6 +122,7 @@ func (h *MeasurementsHandler) GetSatellitesPosition(c echo.Context) error {
 
 	satellites, err := h.measurementsUsecase.GetSatellitesPosition(ctx)
 	if err != nil {
+		h.logger.Error("[GW]: ", err)
 		return c.String(http.StatusInternalServerError, "Internal server error")
 	}
 

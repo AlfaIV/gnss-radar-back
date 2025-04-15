@@ -21,25 +21,29 @@ RUN make generate
 
 RUN go mod download && \
     go mod tidy && \
-    go build -ldflags="-s -w" -o /app/gnss-api-gateway ./gnss-api-gateway/cmd/main.go
+    go build -ldflags="-s -w" -o /app/tasks ./gnss-tasks/cmd/main.go
 
 FROM debian:bookworm-slim
 
-ENV GATEWAY_ADDR=:8000 \
-    TZ=UTC \
-    AUTH_ADDR=auth:8001 \
-    USER_ADDR=user:8002 \
-    MEASUREMENTS_ADDR=measurements:8003 \
-    TASKS_ADDR=tasks:8004
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    tzdata \
+    wget && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /app/gnss-api-gateway /gateway
-COPY --from=build /source/gnss-api-gateway/config /config/
+RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.37/grpc_health_probe-linux-amd64 && \
+    chmod +x /bin/grpc_health_probe
+
+ENV TASKS_ADDR=:8004 \
+    TZ=UTC 
+COPY --from=build /app/tasks /tasks
 
 RUN useradd -u 1001 -m appuser && \
-    chown -R appuser:appuser /gateway /config
+    chown -R appuser:appuser /tasks
 
 USER appuser
 
-EXPOSE 8000
+EXPOSE 8004
 
-CMD ["/gateway"]
+CMD ["/tasks"]

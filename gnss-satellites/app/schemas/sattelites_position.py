@@ -1,7 +1,5 @@
 from typing import List
-
 from pydantic import BaseModel, field_validator
-
 import math
 
 class RadarPositionGeograthRequest(BaseModel):
@@ -13,7 +11,7 @@ class RadarPositionGeograthRequest(BaseModel):
     tle_file: str
 
 class SatellitesTimeRequest(BaseModel):
-    satellites_name: List[str]
+    satellites_name: List[str] | None = None
     radar_latitude: float
     radar_longitude: float
     radar_height: float # В километрах
