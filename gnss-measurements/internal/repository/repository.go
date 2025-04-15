@@ -24,6 +24,7 @@ type RadarRequest struct {
 	RadarZ         float64 `json:"radar_z"`
 	InspectionTime uint64  `json:"inspection_time"`
 	TLEFile        string  `json:"tle_file"`
+	SatellitesName []string `json:"satellites_name"`
 }
 
 type PgxIFace interface {
@@ -58,7 +59,7 @@ func (mr *MeasurementsRepo) GetEphemeris(ctx context.Context, req measurements_d
 			filename,
 			created_at
 		FROM file_meta 
-		ORDER BY created_at DESC
+		ORDER BY created_at ASC
 		LIMIT $1
 		OFFSET $2;
 	`
@@ -130,6 +131,7 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 		RadarX: 56.4475,
 		RadarY: 37.423056,
 		RadarZ: 0.5,
+		SatellitesName: []string{},
 	}
 
 	loc, err := time.LoadLocation("Europe/Moscow")
@@ -148,7 +150,7 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 
 	var tleName string
 
-	query := `SELECT minio_name FROM file_meta ORDER BY created_at DESC;`
+	query := `SELECT minio_name FROM file_meta ORDER BY created_at ASC;`
 	err = mr.pool.QueryRow(ctx, query).Scan(&tleName)
 	if err != nil {
 		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to get minio name")
@@ -160,6 +162,8 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 	if err != nil {
 		return measurements_domain.Satellites{}, err
 	}
+
+	fmt.Println(jsonBody)
 
 	satellites_addr := os.Getenv("SATELLITES_ADDR")
 
