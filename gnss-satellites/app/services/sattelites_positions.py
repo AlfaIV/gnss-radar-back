@@ -69,7 +69,7 @@ class SatellitesPositions:
             self.TLE_array = self.load_sattelites_tle()
 
         for satellite in self.TLE_array:
-            if radar.satellites_name:
+            if len(radar.satellites_name) > 0:
                 if satellite.name in radar.satellites_name:
                     sattelite_props = self.get_sattelite_positions(
                         radar.inspection_time, satellite, radar
@@ -91,7 +91,7 @@ class SatellitesPositions:
 
                 satellite_positions.append(
                     SatellitePosition(
-                        Group = satellite.group,
+                        Group = satellite.group or 'Unidentified',
                         Name = satellite.name,
                         Azimuth = sattelite_props["Azimuth"],
                         Elevation = sattelite_props["Elevation"],
@@ -250,3 +250,4 @@ class SatellitesPositions:
             )
             
         return visibility_periods
+    

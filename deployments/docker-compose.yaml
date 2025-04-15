@@ -92,7 +92,7 @@ services:
       - 9000:9002
     volumes:
       - type: bind
-        source: ~/minio-data
+        source: .
         target: /data
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}

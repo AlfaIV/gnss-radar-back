@@ -1,17 +1,17 @@
 from typing import List
-
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+import math
 
 class RadarPositionGeograthRequest(BaseModel):
-    satellites_name: list[str]
+    satellites_name: List[str] | None = None
     radar_latitude: float
     radar_longitude: float
-    radar_height: float 
-    inspection_time: int 
+    radar_height: float # В километрах
+    inspection_time: int # Время в UTC
     tle_file: str
 
 class SatellitesTimeRequest(BaseModel):
-    satellites_name: list[str]
+    satellites_name: List[str] | None = None
     radar_latitude: float
     radar_longitude: float
     radar_height: float # В километрах
@@ -25,6 +25,21 @@ class SatellitePosition(BaseModel):
     Azimuth: float
     Elevation: float
     Range: float
+    
+    @field_validator('Group')
+    def check_group(cls, v):
+        if v is None:
+            print(f"Value {v} is None")
+            return "Unidentified"
+        return v
+    
+    @field_validator('Azimuth', 'Elevation', 'Range')
+    def check_float_values(cls, v):
+        if math.isnan(v) or math.isinf(v):
+            # raise ValueError(f"Value {v} is not JSON compliant")
+            print(f"Value {v} is not JSON compliant")
+            return 0
+        return v
 
 
 class Ephemeris(BaseModel):

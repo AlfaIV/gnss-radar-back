@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 from pathlib import Path
+import os
 
 class Configs(BaseSettings):
     ENV: str = Field(default="dev", env="ENV")
@@ -13,6 +14,8 @@ class Configs(BaseSettings):
 
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
     DATE_FORMAT: str = "%Y-%m-%d"
+
+    TLE_PATH: str = os.path.join(PROJECT_ROOT, "app", "services", "tle", "gps.tle")
 
     TLE_BUCKET: str = Field(default="ephemeris", env="TLE_BUCKET")
     S3_ENDPOINT_URL: str = Field(..., env="S3_ENDPOINT_URL")
