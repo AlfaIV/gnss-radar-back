@@ -25,6 +25,7 @@ class S3Repository:
     
     def get_tle(self, tle_name: str) -> S3_tle_model:
         # tle_name = 'gps_tle'
+        print(configs.S3_ENDPOINT_URL)
         encoding = 'utf-8'
         try:
             with self._get_session() as s3:
@@ -40,6 +41,7 @@ class S3Repository:
                     tle_name = tle_name,
                 )
         except ClientError as e:
+            print(f"Error deceptions: {e}")
             raise HTTPException(
                 status_code=status.HTTP_204_NO_CONTENT,
                 detail=f"Error deceptions: {e}",
