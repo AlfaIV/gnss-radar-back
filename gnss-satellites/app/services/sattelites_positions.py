@@ -68,11 +68,15 @@ class SatellitesPositions:
             self.tle_file = radar.tle_file
             self.TLE_array = self.load_sattelites_tle()
 
+        
+        dt = datetime.strptime(radar.inspection_time, "%Y-%m-%dT%H:%M:%S")
+        unix_time = int(dt.timestamp())
+
         for satellite in self.TLE_array:
             if len(radar.satellites_name) > 0:
                 if satellite.name in radar.satellites_name:
                     sattelite_props = self.get_sattelite_positions(
-                        radar.inspection_time, satellite, radar
+                        unix_time, satellite, radar
                     )
 
                     satellite_positions.append(
@@ -86,7 +90,7 @@ class SatellitesPositions:
                     )
             else:
                 sattelite_props = self.get_sattelite_positions(
-                    radar.inspection_time, satellite, radar
+                    unix_time, satellite, radar
                 )
 
                 satellite_positions.append(
@@ -142,9 +146,13 @@ class SatellitesPositions:
             self.tle_file = radar.tle_file
             self.TLE_array = self.load_sattelites_tle()
         
-        begin_time = datetime.fromtimestamp(radar.begin_time, tz=timezone.utc)
+        dt_start = datetime.strptime(radar.begin_time, "%Y-%m-%dT%H:%M:%S")
+        unix_time_start = int(dt_start.timestamp())
+        begin_time = datetime.fromtimestamp(unix_time_start, tz=timezone.utc)
 
-        end_time = datetime.fromtimestamp(radar.end_time, tz=timezone.utc)
+        dt_end = datetime.strptime(radar.begin_time, "%Y-%m-%dT%H:%M:%S")
+        unix_time_end = int(dt_end.timestamp())
+        end_time = datetime.fromtimestamp(unix_time_end, tz=timezone.utc)
         
         observer = wgs84.latlon(
             radar.radar_latitude,

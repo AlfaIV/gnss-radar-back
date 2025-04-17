@@ -7,7 +7,7 @@ class RadarPositionGeograthRequest(BaseModel):
     radar_latitude: float
     radar_longitude: float
     radar_height: float # В километрах
-    inspection_time: int # Время в UTC
+    inspection_time: str # 2025-04-17T15:00:00
     tle_file: str
 
 class SatellitesTimeRequest(BaseModel):
