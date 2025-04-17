@@ -96,49 +96,66 @@ func (mr *MeasurementsRepo) GetEphemeris(ctx context.Context, req measurements_d
 
 func (mr *MeasurementsRepo) UploadEphemeris(ctx context.Context, req measurements_domain.EphemerisToLoad) error {
 	bucketName := os.Getenv("EPHEMERIS_BUCKET_NAME")
-	if _, err := mr.minio.PutObject(
+
+	loc, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		return errors.Wrap(err, "failed to load Moscow time location")
+	}
+	createdAt := time.Now().In(loc)
+
+	_, err = mr.minio.PutObject(
 		ctx,
 		bucketName,
 		req.MinioName,
 		req.Payload,
 		req.PayloadSize,
 		minio.PutObjectOptions{ContentType: req.ContentType},
-	); err != nil {
-		return err
+	)
+	if err != nil {
+		return errors.Wrap(err, "failed to upload to MinIO")
 	}
 
 	writeFileMeta := `
-	INSERT INTO file_meta(filename, minio_name) values 
-	($1, $2);
-	`
+        INSERT INTO file_meta(filename, minio_name, created_at) 
+        VALUES ($1, $2, $3)
+    `
 
-	_, err := mr.pool.Exec(ctx, writeFileMeta, &req.Name, &req.MinioName)
+	_, err = mr.pool.Exec(ctx, writeFileMeta, req.Name, req.MinioName, createdAt)
 	if err != nil {
-		err := mr.minio.RemoveObject(ctx, bucketName, req.MinioName, minio.RemoveObjectOptions{ForceDelete: true})
-		if err != nil {
-			return errors.Wrap(err, "ALARM! File added, but it is not in database")
+		delErr := mr.minio.RemoveObject(
+			ctx,
+			bucketName,
+			req.MinioName,
+			minio.RemoveObjectOptions{ForceDelete: true},
+		)
+		if delErr != nil {
+			return errors.Wrap(delErr, "ALARM! MinIO cleanup failed after DB error")
 		}
-
-		return err
+		return errors.Wrap(err, "rolled back MinIO object due to DB failure")
 	}
 
 	return nil
 }
 
 func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measurements_domain.Satellites, error) {
+	loc, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to load Moscow time location")
+	}
+	currentTime := time.Now().In(loc).Format("2006-01-02T15:04:05")
+
 	requestBody := RadarRequest{
 		RadarX:         56.4475,
 		RadarY:         37.423056,
 		RadarZ:         0.5,
 		SatellitesName: []string{},
+		InspectionTime: currentTime,
 	}
-
-	requestBody.InspectionTime = "2025-04-17T22:20:00"
 
 	var tleName string
 
 	query := `SELECT minio_name FROM file_meta ORDER BY created_at DESC;`
-	err := mr.pool.QueryRow(ctx, query).Scan(&tleName)
+	err = mr.pool.QueryRow(ctx, query).Scan(&tleName)
 	if err != nil {
 		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to get minio name")
 	}
@@ -180,9 +197,12 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 		return measurements_domain.Satellites{}, fmt.Errorf("API returned status: %d", resp.StatusCode)
 	}
 
+	fmt.Println(resp)
+	fmt.Println(resp.Body)
+
 	var result measurements_domain.Satellites
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return measurements_domain.Satellites{}, err
+		return measurements_domain.Satellites{}, fmt.Errorf("failed to decode response: %v", err)
 	}
 
 	return result, nil

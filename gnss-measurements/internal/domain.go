@@ -23,16 +23,16 @@ type EphemerisToLoad struct {
 	ContentType string
 }
 
-type SatelliteData struct {
-	Group     string
-	Name      string
-	Azimuth   float64
-	Range     float64
-	Elevation float64
+type Satellites struct {
+	Satellites []Satellite `json:"Satellites"`
 }
 
-type Satellites struct {
-	Satellites []SatelliteData
+type Satellite struct {
+	Group     string  `json:"Group"`
+	Name      string  `json:"Name"`
+	Azimuth   float64 `json:"Azimuth"`
+	Elevation float64 `json:"Elevation"`
+	Range     float64 `json:"Range"`
 }
 
 type Repository interface {
