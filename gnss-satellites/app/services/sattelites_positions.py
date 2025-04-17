@@ -73,7 +73,6 @@ class SatellitesPositions:
         unix_time = int(dt.timestamp())
 
         for satellite in self.TLE_array:
-            print(satellite)
             if len(radar.satellites_name) > 0:
                 if satellite.name in radar.satellites_name:
                     sattelite_props = self.get_sattelite_positions(
@@ -93,7 +92,6 @@ class SatellitesPositions:
                 sattelite_props = self.get_sattelite_positions(
                     unix_time, satellite, radar
                 )
-                print(sattelite_props)
 
                 satellite_positions.append(
                     SatellitePosition(
