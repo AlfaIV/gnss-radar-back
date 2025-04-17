@@ -8,6 +8,8 @@ import (
 	measurements_domain "gnss-radar/gnss-measurements/internal"
 	"net/http"
 	"path"
+	"path/filepath"
+	"strings"
 
 	google_proto "github.com/golang/protobuf/ptypes/empty"
 
@@ -54,9 +56,16 @@ func (s *MeasurementsServiceServer) LoadEphemeris(ctx context.Context, in *proto
 	payload := in.GetPayload()
 	contentType := http.DetectContentType(payload)
 
+	baseName := path.Base(in.Name)
+	fileExt := strings.TrimPrefix(filepath.Ext(baseName), ".")
+	minioName := uuid.New().String()
+	if fileExt != "" {
+		minioName += "." + fileExt
+	}
+
 	file := measurements_domain.EphemerisToLoad{
 		Name:        in.Name,
-		MinioName:   uuid.New().String() + "." + path.Base(contentType),
+		MinioName:   minioName,
 		Payload:     bytes.NewReader(payload),
 		PayloadSize: int64(len(payload)),
 		ContentType: contentType,
@@ -64,7 +73,7 @@ func (s *MeasurementsServiceServer) LoadEphemeris(ctx context.Context, in *proto
 
 	err := s.repo.UploadEphemeris(ctx, file)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to upload avatar")
+		return nil, errors.Wrap(err, "failed to upload ephemeris")
 	}
 
 	return &google_proto.Empty{}, nil

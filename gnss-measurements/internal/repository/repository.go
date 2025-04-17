@@ -19,11 +19,11 @@ import (
 )
 
 type RadarRequest struct {
-	RadarX         float64 `json:"radar_x"`
-	RadarY         float64 `json:"radar_y"`
-	RadarZ         float64 `json:"radar_z"`
-	InspectionTime uint64  `json:"inspection_time"`
-	TLEFile        string  `json:"tle_file"`
+	RadarX         float64  `json:"radar_x"`
+	RadarY         float64  `json:"radar_y"`
+	RadarZ         float64  `json:"radar_z"`
+	InspectionTime uint64   `json:"inspection_time"`
+	TLEFile        string   `json:"tle_file"`
 	SatellitesName []string `json:"satellites_name"`
 }
 
@@ -59,7 +59,7 @@ func (mr *MeasurementsRepo) GetEphemeris(ctx context.Context, req measurements_d
 			filename,
 			created_at
 		FROM file_meta 
-		ORDER BY created_at ASC
+		ORDER BY created_at DESC
 		LIMIT $1
 		OFFSET $2;
 	`
@@ -100,7 +100,7 @@ func (mr *MeasurementsRepo) UploadEphemeris(ctx context.Context, req measurement
 	if _, err := mr.minio.PutObject(
 		ctx,
 		bucketName,
-		req.Name,
+		req.MinioName,
 		req.Payload,
 		req.PayloadSize,
 		minio.PutObjectOptions{ContentType: req.ContentType},
@@ -113,9 +113,9 @@ func (mr *MeasurementsRepo) UploadEphemeris(ctx context.Context, req measurement
 	($1, $2);
 	`
 
-	err := mr.pool.QueryRow(ctx, writeFileMeta, &req.Name, &req.MinioName)
+	_, err := mr.pool.Exec(ctx, writeFileMeta, &req.Name, &req.MinioName)
 	if err != nil {
-		err := mr.minio.RemoveObject(ctx, bucketName, req.Name, minio.RemoveObjectOptions{ForceDelete: true})
+		err := mr.minio.RemoveObject(ctx, bucketName, req.MinioName, minio.RemoveObjectOptions{ForceDelete: true})
 		if err != nil {
 			return errors.Wrap(err, "ALARM! File added, but it is not in database")
 		}
@@ -128,9 +128,9 @@ func (mr *MeasurementsRepo) UploadEphemeris(ctx context.Context, req measurement
 
 func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measurements_domain.Satellites, error) {
 	requestBody := RadarRequest{
-		RadarX: 56.4475,
-		RadarY: 37.423056,
-		RadarZ: 0.5,
+		RadarX:         56.4475,
+		RadarY:         37.423056,
+		RadarZ:         0.5,
 		SatellitesName: []string{},
 	}
 
@@ -150,7 +150,7 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 
 	var tleName string
 
-	query := `SELECT minio_name FROM file_meta ORDER BY created_at ASC;`
+	query := `SELECT minio_name FROM file_meta ORDER BY created_at DESC;`
 	err = mr.pool.QueryRow(ctx, query).Scan(&tleName)
 	if err != nil {
 		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to get minio name")
@@ -163,7 +163,7 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 		return measurements_domain.Satellites{}, err
 	}
 
-	fmt.Println(jsonBody)
+	//fmt.Println(requestBody)
 
 	satellites_addr := os.Getenv("SATELLITES_ADDR")
 
