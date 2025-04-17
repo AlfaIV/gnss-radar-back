@@ -8,7 +8,6 @@ import (
 	measurements_domain "gnss-radar/gnss-measurements/internal"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -19,10 +18,10 @@ import (
 )
 
 type RadarRequest struct {
-	RadarX         float64  `json:"radar_x"`
-	RadarY         float64  `json:"radar_y"`
-	RadarZ         float64  `json:"radar_z"`
-	InspectionTime uint64   `json:"inspection_time"`
+	RadarX         float64  `json:"radar_latitude"`
+	RadarY         float64  `json:"radar_longitude"`
+	RadarZ         float64  `json:"radar_height"`
+	InspectionTime string   `json:"inspection_time"`
 	TLEFile        string   `json:"tle_file"`
 	SatellitesName []string `json:"satellites_name"`
 }
@@ -134,24 +133,12 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 		SatellitesName: []string{},
 	}
 
-	loc, err := time.LoadLocation("Europe/Moscow")
-	if err != nil {
-		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to load Moscow location")
-	}
-
-	now := time.Now().In(loc)
-
-	formattedInt, err := strconv.Atoi(now.Format("20060102150405"))
-	if err != nil {
-		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to format time")
-	}
-
-	requestBody.InspectionTime = uint64(formattedInt)
+	requestBody.InspectionTime = "2025-04-17T22:20:00"
 
 	var tleName string
 
 	query := `SELECT minio_name FROM file_meta ORDER BY created_at DESC;`
-	err = mr.pool.QueryRow(ctx, query).Scan(&tleName)
+	err := mr.pool.QueryRow(ctx, query).Scan(&tleName)
 	if err != nil {
 		return measurements_domain.Satellites{}, errors.Wrap(err, "failed to get minio name")
 	}
@@ -162,8 +149,6 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 	if err != nil {
 		return measurements_domain.Satellites{}, err
 	}
-
-	//fmt.Println(requestBody)
 
 	satellites_addr := os.Getenv("SATELLITES_ADDR")
 
