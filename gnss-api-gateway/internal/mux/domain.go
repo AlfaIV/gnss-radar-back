@@ -32,7 +32,7 @@ func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, log
 	mux := echo.New()
 
 	userIDMiddleware := middlewarecustom.NewUserIDMW(service.Auth, logger)
-	userPermissionsMiddleware := middlewarecustom.NewUserPermissionsMiddleware(service.User, logger)
+	//userPermissionsMiddleware := middlewarecustom.NewUserPermissionsMiddleware(service.User, logger)
 
 	mux.Use(middleware.Recover())
 	mux.Use(middleware.CORSWithConfig(config.CORS))
@@ -64,7 +64,7 @@ func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, log
 	measurements := base.Group("/measurements")
 	measurements.Use(
 		userIDMiddleware.Process,
-		userPermissionsMiddleware.Process,
+		//userPermissionsMiddleware.Process,
 	)
 	measurements.GET("/getEphemeris", handlers.Measurements.GetEphemeris)
 	measurements.POST("/uploadEphemeris", handlers.Measurements.UploadEphemeris)
@@ -72,14 +72,14 @@ func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, log
 	satellites := base.Group("/satellites")
 	satellites.Use(
 		userIDMiddleware.Process,
-		userPermissionsMiddleware.Process,
+		//userPermissionsMiddleware.Process,
 	)
 	satellites.GET("/getSatellitesPosition", handlers.Measurements.GetSatellitesPosition)
 
 	tasks := base.Group("/tasks")
 	tasks.Use(
 		userIDMiddleware.Process,
-		userPermissionsMiddleware.Process,
+		//userPermissionsMiddleware.Process,
 	)
 	tasks.GET("/getTasks", handlers.Tasks.GetTasks)
 	tasks.POST("/createTask", handlers.Tasks.CreateTask)
