@@ -7,16 +7,17 @@ create type user_status as enum ('APPROVED', 'DECLINED', 'PENDING');
 DROP TABLE IF EXISTS profile CASCADE;
 CREATE TABLE IF NOT EXISTS profile (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    login TEXT NOT NULL UNIQUE DEFAULT '',
+    login TEXT NOT NULL DEFAULT '',
     password bytea NOT NULL DEFAULT '',
     role user_role NOT NULL DEFAULT 'USER',
     updated_at timestamptz NOT NULL DEFAULT now(),
     created_at timestamptz NOT NULL DEFAULT now(),
-    email TEXT NOT NULL UNIQUE DEFAULT '',
+    email TEXT NOT NULL DEFAULT '',
     organization_name TEXT NOT NULL DEFAULT '',
     first_name TEXT NOT NULL DEFAULT '',
     second_name TEXT NOT NULL DEFAULT '',
-    status user_status NOT NULL DEFAULT 'PENDING'
+    status user_status NOT NULL DEFAULT 'PENDING',
+    is_deleted BOOLEAN DEFAULT false
 );
 
 DROP TABLE IF EXISTS role_api CASCADE;

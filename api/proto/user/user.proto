@@ -12,10 +12,13 @@ service UserService {
     rpc SignUp(SignUpRequest) returns (google.protobuf.Empty) {}
     rpc GetUserInfoById(UserId) returns (User) {}
     rpc GetListUsers(PaginatedRequest) returns (UserList) {}
+    rpc GetListDeletedUsers(PaginatedRequest) returns (UserList) {}
     rpc GetSignUpRequestions(PaginatedRequest) returns (UserList) {}
     rpc ValidatePermissions(PermissionValidaton) returns (google.protobuf.Empty) {}
     rpc ResolveUserSignUp(SignUpResolution) returns (google.protobuf.Empty) {}
     rpc ChangeUserPermissions(PermissionChange) returns (google.protobuf.Empty) {}
+    rpc DeleteUser(UserId) returns (google.protobuf.Empty) {}
+    rpc RestoreUser(UserId) returns (google.protobuf.Empty) {}
 }
 
 message LoginRequest {

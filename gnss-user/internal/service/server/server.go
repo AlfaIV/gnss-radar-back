@@ -94,7 +94,7 @@ func (s *UserServiceServer) GetListUsers(ctx context.Context, req *common_proto.
 	users, err := s.repo.GetUserForAdmin(ctx, user_domain.PaginatedRequest{
 		Page: req.Page,
 		Size: req.Size,
-	})
+	}, false)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "[USER]: %v", err)
 	}
@@ -102,6 +102,33 @@ func (s *UserServiceServer) GetListUsers(ctx context.Context, req *common_proto.
 	var userList []*proto.User
 	for _, user := range users {
 		userList = append(userList, &proto.User{
+			Id:				  user.Id,
+			Login:            user.Login,
+			Role:             user.Role,
+			OrganizationName: user.OrganizationName,
+			Name:             user.Name,
+			Surname:          user.Surname,
+			Email:            user.Email,
+		})
+	}
+
+	return &proto.UserList{Users: userList}, nil
+}
+
+func (s *UserServiceServer) GetListDeletedUsers(ctx context.Context, req *common_proto.PaginatedRequest) (*proto.UserList, error) {
+
+	users, err := s.repo.GetUserForAdmin(ctx, user_domain.PaginatedRequest{
+		Page: req.Page,
+		Size: req.Size,
+	}, true)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "[USER]: %v", err)
+	}
+
+	var userList []*proto.User
+	for _, user := range users {
+		userList = append(userList, &proto.User{
+			Id:				  user.Id,
 			Login:            user.Login,
 			Role:             user.Role,
 			OrganizationName: user.OrganizationName,
@@ -162,6 +189,26 @@ func (s *UserServiceServer) ChangeUserPermissions(ctx context.Context, req *prot
 	err := s.repo.ChangeUserPermissions(ctx, req.UserLogin, req.UserRole)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "[USER]: %v", err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+func (s *UserServiceServer) DeleteUser(ctx context.Context, req *common_proto.UserId) (*emptypb.Empty, error) {
+
+	err := s.repo.DeleteUser(ctx, req.UserId)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "[USER]: %v", err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+func (s *UserServiceServer) RestoreUser(ctx context.Context, req *common_proto.UserId) (*emptypb.Empty, error) {
+
+	err := s.repo.RestoreUser(ctx, req.UserId)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "[USER]: %v", err)
 	}
 
 	return &emptypb.Empty{}, nil

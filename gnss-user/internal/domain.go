@@ -44,6 +44,7 @@ type UserSignUpRequestion struct {
 }
 
 type UserForAdmin struct {
+	Id 				 string `json:"id"`
 	Name             string `json:"name"`
 	Surname          string `json:"surname"`
 	Email            string `json:"email"`
@@ -60,5 +61,7 @@ type Repository interface {
 	ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error
 	ChangeUserPermissions(ctx context.Context, userLogin string, userRole string) error
 	GetSignUpRequestions(ctx context.Context, params PaginatedRequest) ([]UserSignUpRequestion, error)
-	GetUserForAdmin(ctx context.Context, params PaginatedRequest) ([]UserForAdmin, error)
+	GetUserForAdmin(ctx context.Context, params PaginatedRequest, getDeleted bool) ([]UserForAdmin, error)
+	DeleteUser(ctx context.Context, userId string) error
+	RestoreUser(ctx context.Context, userId string) error
 }

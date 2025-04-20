@@ -30,6 +30,7 @@ type SignUpRequest struct {
 }
 
 type UserForAdmin struct {
+	Id				 string `json:"id"`
 	Name             string `json:"name"`
 	Surname          string `json:"surname"`
 	Email            string `json:"email"`
@@ -59,13 +60,20 @@ type UserData struct {
 	OrganizationName string `json:"organizationName"`
 }
 
+type UserIdRequest struct {
+	Id string `json:"id"`
+}
+
 type Usecase interface {
 	Login(ctx context.Context, login string, password string) (User, error)
 	SignUp(ctx context.Context, req SignUpRequest) error
 	GetUserInfoById(ctx context.Context, userId string) (User, error)
 	GetListUsers(ctx context.Context, page uint64, size uint64) (UserListResponse, error)
+	GetListDeletedUsers(ctx context.Context, page uint64, size uint64) (UserListResponse, error)
 	GetSignUpRequestions(ctx context.Context, page uint64, size uint64) (UserListResponse, error)
 	ValidatePermissions(ctx context.Context, userId string, api string) error
 	ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error
 	ChangeUserPermissions(ctx context.Context, userLogin string, role string) error
+	DeleteUser(ctx context.Context, userId string) error
+	RestoreUser(ctx context.Context, userId string) error
 }
