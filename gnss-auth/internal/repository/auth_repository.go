@@ -25,7 +25,6 @@ func (redis *Auth) Set(ctx context.Context, userId string) (string, error) {
 		redis.logger.Error("[AUTH]:", err.Error())
 		return "", err
 	}
-	redis.logger.WithField("sessionId", sessionId).Info("[AUTH]: session created")
 
 	return sessionId, nil
 }
@@ -36,7 +35,6 @@ func (redis *Auth) Delete(ctx context.Context, sessionId string) error {
 		return err
 	}
 
-	redis.logger.WithField("sessionId", sessionId).Info("[AUTH]: session deleted")
 
 	return nil
 }
@@ -48,7 +46,6 @@ func (redis *Auth) GetId(ctx context.Context, sessionId string) (string, error) 
 		return "", err
 	}
 
-	redis.logger.WithField("userId", userId).Info("[AUTH]: got user id")
 
 	return userId, nil
 }

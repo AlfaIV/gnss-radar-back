@@ -194,15 +194,12 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return measurements_domain.Satellites{}, fmt.Errorf("API returned status: %d", resp.StatusCode)
+		return measurements_domain.Satellites{}, err
 	}
-
-	fmt.Println(resp)
-	fmt.Println(resp.Body)
 
 	var result measurements_domain.Satellites
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return measurements_domain.Satellites{}, fmt.Errorf("failed to decode response: %v", err)
+		return measurements_domain.Satellites{}, err
 	}
 
 	return result, nil

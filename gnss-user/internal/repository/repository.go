@@ -166,7 +166,6 @@ func (ur *UserRepo) ValidatePermissions(ctx context.Context, userId string, api 
 
 func (ur *UserRepo) ResolveUserSignUp(ctx context.Context, userLogin string, resolution string) error {
 
-	//validate status
 	resolutionQuery := `
 	UPDATE profile SET status = $1 WHERE login = $2;
     `
