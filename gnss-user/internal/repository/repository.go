@@ -40,7 +40,7 @@ func (ur *UserRepo) GetUserInfo(ctx context.Context, request user_domain.UserInf
             organization_name ,
 			status
         FROM profile 
-        WHERE login = $1;
+        WHERE login = $1 AND NOT is_deleted;
     `
 	var hashedPassword []byte
 	var UserInfo user_domain.UserInfoResponse
@@ -91,7 +91,7 @@ func (ur *UserRepo) GetUserInfoById(ctx context.Context, userId string) (user_do
             organization_name,
 			status
         FROM profile 
-        WHERE id = $1;
+        WHERE id = $1 AND NOT is_deleted;
     `
 	var UserInfo user_domain.UserInfoResponse
 
@@ -142,13 +142,11 @@ func (ur *UserRepo) CreateUser(ctx context.Context, request user_domain.CreateUs
 func (ur *UserRepo) ValidatePermissions(ctx context.Context, userId string, api string) error {
 
 	validatePermissionsQuery := `
-        SELECT EXISTS(
-            SELECT 1
+            SELECT *
             FROM profile p
             INNER JOIN role_api ra ON p.role = ra.role
             WHERE p.id = $1 
             AND ra.api = $2
-        );
     `
 
 	_, err := ur.pool.Query(
@@ -198,7 +196,7 @@ func (ur *UserRepo) GetSignUpRequestions(ctx context.Context, params user_domain
 			organization_name,
 			role
         FROM profile
-        WHERE status = 'PENDING'
+        WHERE status = 'PENDING' AND NOT is_deleted
         ORDER BY created_at DESC
         LIMIT $1 OFFSET $2;
     `
@@ -241,9 +239,12 @@ func (ur *UserRepo) GetSignUpRequestions(ctx context.Context, params user_domain
 	return users, nil
 }
 
-func (ur *UserRepo) GetUserForAdmin(ctx context.Context, params user_domain.PaginatedRequest) ([]user_domain.UserForAdmin, error) {
-	query := `
-        SELECT 
+func (ur *UserRepo) GetUserForAdmin(ctx context.Context, params user_domain.PaginatedRequest, getDeleted bool) ([]user_domain.UserForAdmin, error) {
+	var query string
+	if getDeleted {
+		query = `
+        SELECT
+			id,
             login, 
             email, 
             first_name, 
@@ -251,10 +252,27 @@ func (ur *UserRepo) GetUserForAdmin(ctx context.Context, params user_domain.Pagi
 			organization_name,
 			role
         FROM profile
-        WHERE status = 'APPROVED'
+        WHERE status = 'APPROVED' AND is_deleted
         ORDER BY created_at DESC
         LIMIT $1 OFFSET $2;
     `
+	} else {
+		query = `
+        SELECT
+			id,
+            login, 
+            email, 
+            first_name, 
+            second_name,
+			organization_name,
+			role
+        FROM profile
+        WHERE status = 'APPROVED' AND NOT is_deleted
+        ORDER BY created_at DESC
+        LIMIT $1 OFFSET $2;
+    `
+	}
+
 
 	offset := (params.Page - 1) * params.Size
 
@@ -274,6 +292,7 @@ func (ur *UserRepo) GetUserForAdmin(ctx context.Context, params user_domain.Pagi
 	for rows.Next() {
 		var user user_domain.UserForAdmin
 		err := rows.Scan(
+			&user.Id,
 			&user.Login,
 			&user.Email,
 			&user.Name,
@@ -292,4 +311,32 @@ func (ur *UserRepo) GetUserForAdmin(ctx context.Context, params user_domain.Pagi
 	}
 
 	return users, nil
+}
+
+func (ur *UserRepo) DeleteUser(ctx context.Context, userId string) error {
+
+	deleteQuery := `
+	UPDATE profile SET is_deleted = true WHERE userId = $1;
+	`
+
+	_, err := ur.pool.Exec(ctx, deleteQuery, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ur *UserRepo) RestoreUser(ctx context.Context, userId string) error {
+
+	restoreQuery := `
+	UPDATE profile SET is_deleted = false WHERE userId = $1;
+	`
+
+	_, err := ur.pool.Exec(ctx, restoreQuery, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

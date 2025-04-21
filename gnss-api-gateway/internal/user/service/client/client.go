@@ -84,6 +84,30 @@ func (uc *UserClient) GetListUsers(ctx context.Context, page uint64, size uint64
 
 	for _, u := range users.Users {
 		userArray = append(userArray, user_domain_gateway.UserForAdmin{
+			Id:				  u.Id,
+			Name:             u.Name,
+			Surname:          u.Surname,
+			Email:            u.Email,
+			Login:            u.Login,
+			OrganizationName: u.OrganizationName,
+			Role:             u.Role,
+		})
+	}
+
+	return user_domain_gateway.UserListResponse{Users: userArray}, nil
+}
+
+func (uc *UserClient) GetListDeletedUsers(ctx context.Context, page uint64, size uint64) (user_domain_gateway.UserListResponse, error) {
+	users, err := uc.client.GetListDeletedUsers(ctx, &common_proto.PaginatedRequest{Page: page, Size: size})
+	if err != nil {
+		return user_domain_gateway.UserListResponse{}, errors.Wrapf(err, "[GW USER] %v", err)
+	}
+
+	var userArray []user_domain_gateway.UserForAdmin
+
+	for _, u := range users.Users {
+		userArray = append(userArray, user_domain_gateway.UserForAdmin{
+			Id:				  u.Id,
 			Name:             u.Name,
 			Surname:          u.Surname,
 			Email:            u.Email,
@@ -144,4 +168,22 @@ func (uc *UserClient) ChangeUserPermissions(ctx context.Context, userLogin strin
 	}
 
 	return nil
+}
+
+func (uc *UserClient) DeleteUser(ctx context.Context, userId string) error {
+	_, err := uc.client.DeleteUser(ctx, &common_proto.UserId{UserId: userId})
+	if err != nil {
+		return errors.Wrapf(err, "[GW USER] %v", err)
+	}
+
+	return  nil
+}
+
+func (uc *UserClient) RestoreUser(ctx context.Context, userId string) error {
+	_, err := uc.client.RestoreUser(ctx, &common_proto.UserId{UserId: userId})
+	if err != nil {
+		return errors.Wrapf(err, "[GW USER] %v", err)
+	}
+
+	return  nil
 }

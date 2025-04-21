@@ -54,12 +54,15 @@ func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, log
 	user := base.Group("/user")
 	user.Use(
 		userIDMiddleware.Process,
-		userPermissionsMiddleware.Process,
+		//userPermissionsMiddleware.Process,
 	)
 	user.GET("/getListUsers", handlers.User.GetListUsers)
+	user.GET("/getListDeletedUsers", handlers.User.GetListDeletedUsers)
 	user.GET("/getSignUpRequestions", handlers.User.GetSignUpRequestions)
 	user.PATCH("/resolveSignUp", handlers.User.ResolveUserSignUp)
 	user.PATCH("/givePermissions", handlers.User.GivePermissions)
+	user.PATCH("/deleteUser", handlers.User.DeleteUser)
+	user.PATCH("/restoreUser", handlers.User.RestoreUser)
 
 	measurements := base.Group("/measurements")
 	measurements.Use(

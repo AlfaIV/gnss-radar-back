@@ -74,6 +74,54 @@ func (h *UserHandler) GetListUsers(c echo.Context) error {
 	return c.JSON(http.StatusOK, users)
 }
 
+func (h *UserHandler) GetListDeletedUsers(c echo.Context) error {
+	// Проверка куки
+
+	ctx := c.Request().Context()
+
+	_, err := mwutils.GetUserID(ctx)
+	if err != nil {
+		h.logger.Error("[GW]: ", err)
+
+		return c.String(http.StatusUnauthorized, "No session id provided")
+	}
+
+	//Проверка параметров
+	pageParam := c.QueryParam("page")
+	if pageParam == "" {
+
+		return c.String(http.StatusBadRequest, "Incorrect page param")
+	}
+
+	page, err := strconv.Atoi(pageParam)
+	if err != nil {
+		h.logger.Error("[GW]: ", err)
+
+		return c.String(http.StatusBadRequest, "Incorrect page param")
+	}
+
+	sizeParam := c.QueryParam("size")
+	if pageParam == "" {
+
+		return c.String(http.StatusBadRequest, "Incorrect size param")
+	}
+
+	size, err := strconv.Atoi(sizeParam)
+	if err != nil {
+		h.logger.Error("[GW]: ", err)
+
+		return c.String(http.StatusBadRequest, "Incorrect size param")
+	}
+
+	users, err := h.userUsecase.GetListDeletedUsers(c.Request().Context(), uint64(page), uint64(size))
+	if err != nil {
+		h.logger.Error("[GW]:", err)
+		return c.String(http.StatusUnauthorized, "invalid data")
+	}
+
+	return c.JSON(http.StatusOK, users)
+}
+
 func (h *UserHandler) GetSignUpRequestions(c echo.Context) error {
 
 	//Проверка куки
@@ -160,6 +208,48 @@ func (h *UserHandler) GivePermissions(c echo.Context) error {
 	if err := h.userUsecase.ChangeUserPermissions(c.Request().Context(), permissionChangeRequest.UserLogin, permissionChangeRequest.NewRole); err != nil {
 		h.logger.Error("[GW]: ", err)
 		return c.String(http.StatusInternalServerError, "failed to change role")
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func (h *UserHandler) DeleteUser(c echo.Context) error {
+	_, err := c.Cookie(auth_domain_gateway.CookieName)
+	if err != nil {
+		h.logger.Error("[GW]: ", err)
+		return c.String(http.StatusUnauthorized, "failed to get session id")
+	}
+
+	userIdRequest := user_domain_gateway.UserIdRequest{}
+	if err := c.Bind(&userIdRequest); err != nil {
+		h.logger.Error("[GW]:", err)
+		return c.String(http.StatusBadRequest, "failed to parse request data")
+	}
+
+	if err := h.userUsecase.DeleteUser(c.Request().Context(), userIdRequest.Id); err != nil {
+		h.logger.Error("[GW]: ", err)
+		return c.String(http.StatusInternalServerError, "failed to delete user")
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func (h *UserHandler) RestoreUser(c echo.Context) error {
+	_, err := c.Cookie(auth_domain_gateway.CookieName)
+	if err != nil {
+		h.logger.Error("[GW]: ", err)
+		return c.String(http.StatusUnauthorized, "failed to get session id")
+	}
+
+	userIdRequest := user_domain_gateway.UserIdRequest{}
+	if err := c.Bind(&userIdRequest); err != nil {
+		h.logger.Error("[GW]:", err)
+		return c.String(http.StatusBadRequest, "failed to parse request data")
+	}
+
+	if err := h.userUsecase.RestoreUser(c.Request().Context(), userIdRequest.Id); err != nil {
+		h.logger.Error("[GW]: ", err)
+		return c.String(http.StatusInternalServerError, "failed to restore user")
 	}
 
 	return c.NoContent(http.StatusOK)
