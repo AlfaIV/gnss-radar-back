@@ -30,7 +30,7 @@ func NewUserRepo(pool PgxIFace, logger *logrus.Logger) *UserRepo {
 func (ur *UserRepo) GetUserInfo(ctx context.Context, request user_domain.UserInfoRequest) (user_domain.UserInfoResponse, error) {
 	userQuery := `
         SELECT
-			id,
+	    id,
             password, 
             login, 
             email, 
@@ -38,7 +38,7 @@ func (ur *UserRepo) GetUserInfo(ctx context.Context, request user_domain.UserInf
             second_name, 
             role, 
             organization_name ,
-			status
+	    status
         FROM profile 
         WHERE login = $1 AND NOT is_deleted;
     `
