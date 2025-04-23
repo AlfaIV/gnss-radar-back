@@ -316,7 +316,7 @@ func (ur *UserRepo) GetUserForAdmin(ctx context.Context, params user_domain.Pagi
 func (ur *UserRepo) DeleteUser(ctx context.Context, userId string) error {
 
 	deleteQuery := `
-	UPDATE profile SET is_deleted = true WHERE userId = $1;
+	UPDATE profile SET is_deleted = true WHERE id = $1;
 	`
 
 	_, err := ur.pool.Exec(ctx, deleteQuery, userId)
@@ -330,7 +330,7 @@ func (ur *UserRepo) DeleteUser(ctx context.Context, userId string) error {
 func (ur *UserRepo) RestoreUser(ctx context.Context, userId string) error {
 
 	restoreQuery := `
-	UPDATE profile SET is_deleted = false WHERE userId = $1;
+	UPDATE profile SET is_deleted = false WHERE id = $1;
 	`
 
 	_, err := ur.pool.Exec(ctx, restoreQuery, userId)
