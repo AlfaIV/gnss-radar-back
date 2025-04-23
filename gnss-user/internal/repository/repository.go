@@ -30,7 +30,7 @@ func NewUserRepo(pool PgxIFace, logger *logrus.Logger) *UserRepo {
 func (ur *UserRepo) GetUserInfo(ctx context.Context, request user_domain.UserInfoRequest) (user_domain.UserInfoResponse, error) {
 	userQuery := `
         SELECT
-			id,
+	    id,
             password, 
             login, 
             email, 
@@ -38,7 +38,7 @@ func (ur *UserRepo) GetUserInfo(ctx context.Context, request user_domain.UserInf
             second_name, 
             role, 
             organization_name ,
-			status
+	    status
         FROM profile 
         WHERE login = $1 AND NOT is_deleted;
     `
@@ -125,18 +125,52 @@ func (ur *UserRepo) GetUserInfoById(ctx context.Context, userId string) (user_do
 }
 
 func (ur *UserRepo) CreateUser(ctx context.Context, request user_domain.CreateUserRequest) error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), 8)
-	if err != nil {
-		return errors.Wrapf(err, "failed to generate hashed password for %s", request.Login)
-	}
+    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), 8)
+    if err != nil {
+        return errors.Wrapf(err, "failed to generate hashed password for %s", request.Login)
+    }
 
-	createUserQuery := "insert into profile (login, email, password, first_name, second_name, organization_name, role) values ($1, $2, $3, $4, $5, $6, $7);"
+    createUserQuery := `
+        INSERT INTO profile (
+            login, email, password, 
+            first_name, second_name, 
+            organization_name, role
+        )
+        SELECT $1, $2, $3, $4, $5, $6, $7
+        WHERE NOT EXISTS (
+            SELECT 1 
+            FROM profile 
+            WHERE (login = $1 OR email = $2) 
+            AND is_deleted = false
+        )
+        RETURNING id;`
+	
+    rows, err := ur.pool.Query(
+        ctx, 
+        createUserQuery,
+        request.Login,
+        request.Email,
+        hashedPassword,
+        request.Name,
+        request.Surname,
+        request.OrganizationName,
+        request.Role,
+    )
+    
+    if err != nil {
+        return errors.Wrapf(err, "failed to create account for %s", request.Login)
+    }
+    defer rows.Close()
 
-	if _, err := ur.pool.Query(ctx, createUserQuery, request.Login, request.Email, hashedPassword, request.Name, request.Surname, request.OrganizationName, request.Role); err != nil {
-		return errors.Wrapf(err, "failed to create account for %s", request.Login)
-	}
+    if !rows.Next() {
+        return errors.Errorf(
+            "user with login '%s' or email '%s' already exists", 
+            request.Login, 
+            request.Email,
+        )
+    }
 
-	return nil
+    return nil
 }
 
 func (ur *UserRepo) ValidatePermissions(ctx context.Context, userId string, api string) error {
