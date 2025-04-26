@@ -20,16 +20,15 @@ class SatellitesTimeRequest(BaseModel):
     tle_file: str
 
 class SatellitePosition(BaseModel):
-    Group: str
+    Group: Optional[str] = "Unidentified"
     Name: str
     Azimuth: float
     Elevation: float
     Range: float
     
-    @field_validator('Group')
+    @field_validator('Group', mode='before')
     def check_group(cls, v):
         if v is None:
-            print(f"Value {v} is None")
             return "Unidentified"
         return v
     

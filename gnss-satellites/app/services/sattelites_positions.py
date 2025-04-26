@@ -70,29 +70,14 @@ class SatellitesPositions:
         unix_time = int(dt.timestamp())
 
         for satellite in self.TLE_array:
-            if len(radar.satellites_name) > 0:
-                if satellite.name in radar.satellites_name:
-                    sattelite_props = self.get_sattelite_positions(
-                        unix_time, satellite, radar
-                    )
-
-                    satellite_positions.append(
-                        SatellitePosition(
-                            Group = satellite.group,
-                            Name = satellite.name,
-                            Azimuth = sattelite_props["Azimuth"],
-                            Elevation = sattelite_props["Elevation"],
-                            Range = sattelite_props["Range"],
-                        )
-                    )
-            else:
+            if (len(radar.satellites_name) == 0) or (satellite.name in radar.satellites_name):
                 sattelite_props = self.get_sattelite_positions(
                     unix_time, satellite, radar
                 )
 
                 satellite_positions.append(
                     SatellitePosition(
-                        Group = satellite.group or 'Unidentified',
+                        Group = satellite.group,
                         Name = satellite.name,
                         Azimuth = sattelite_props["Azimuth"],
                         Elevation = sattelite_props["Elevation"],
