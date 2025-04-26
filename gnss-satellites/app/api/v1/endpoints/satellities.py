@@ -10,6 +10,7 @@ from app.schemas.sattelites_position import (
     
 )
 from app.services import SatellitesPositions
+from app.core.logger import logger
 
 router = APIRouter(
     prefix="/satellites",
@@ -23,6 +24,7 @@ def post_sattelites(
     radar: RadarPositionGeograthRequest,
     service: SatellitesPositions = Depends(Provide[Container.satellite_services]),
 ):
+    logger.info("Запрос к ручке /now")
     return service.get_sattelites_positions(radar)
 
 @router.post("/time", response_model=SatellitesTimeResponce)
@@ -31,4 +33,5 @@ def post_time_sattelites(
     radar: SatellitesTimeRequest,
     service: SatellitesPositions = Depends(Provide[Container.satellite_services]),
 ):
+    logger.info("Запрос к ручке /time")
     return service.get_sattelites_times_vison(radar)

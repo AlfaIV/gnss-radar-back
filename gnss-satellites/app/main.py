@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from app.api.v1.routes import routers as v1_routers
 from app.core.config import configs
 from app.core.container import Container
-
+# from app.core.logger import setup_logging
 
 class AppCreator:
     def __init__(self):
@@ -14,6 +14,8 @@ class AppCreator:
         )
 
         self.container = Container()
+
+        # setup_logging()
 
         @self.app.get("/")
         async def root():
