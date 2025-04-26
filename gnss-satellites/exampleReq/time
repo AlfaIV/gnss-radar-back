@@ -1,8 +1,9 @@
-{
+{    
     "satellites_name": [],
     "radar_latitude": 56.4475,
     "radar_longitude": 37.423056,
     "radar_height": 0.5,
-    "inspection_time": "2025-04-17T22:20:00",
+    "begin_time": "2025-04-17T20:20:00",
+    "end_time": "2025-04-17T22:20:00",
     "tle_file": "6925be82-f509-4941-bfc0-de3fbcc52bb9.tle"
 }

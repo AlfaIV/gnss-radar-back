@@ -31,9 +31,6 @@ class SatellitesPositions:
 
         self.mask_visible = 0
 
-
-
-
     def load_sattelites_tle(self) -> list:
         file = self.s3_repository.get_tle(self.tle_file).tle_file
         
@@ -56,7 +53,6 @@ class SatellitesPositions:
                 headers={"X-Error": "Custom header", "Error-type": "Parse TLE"},
             )
         return TLE_array
-
 
     def get_sattelites_positions(
         self, radar: RadarPositionGeograthRequest,
@@ -150,7 +146,7 @@ class SatellitesPositions:
         unix_time_start = int(dt_start.timestamp())
         begin_time = datetime.fromtimestamp(unix_time_start, tz=timezone.utc)
 
-        dt_end = datetime.strptime(radar.begin_time, "%Y-%m-%dT%H:%M:%S")
+        dt_end = datetime.strptime(radar.end_time, "%Y-%m-%dT%H:%M:%S")
         unix_time_end = int(dt_end.timestamp())
         end_time = datetime.fromtimestamp(unix_time_end, tz=timezone.utc)
         
@@ -176,15 +172,16 @@ class SatellitesPositions:
                     )
 
                     visibility_times = self.visibility_times(
-                        begin_time,end_time, satellite_data, observer
+                        begin_time, end_time, satellite_data, observer
                     )
                     
-                    satellite_time.append(
-                        SatelliteTime(
-                            Group = satellite.group,
-                            Name = satellite.name,
-                            Time=visibility_times,
-                        )
+                    if (len(visibility_times) > 0):
+                        satellite_time.append(
+                            SatelliteTime(
+                                group = satellite.group,
+                                name = satellite.name,
+                                intervals=visibility_times,
+                            )
                     )
 
             else:
@@ -195,16 +192,17 @@ class SatellitesPositions:
                 )
 
                 visibility_times = self.visibility_times(
-                    begin_time,end_time, satellite_data, observer
+                    begin_time, end_time, satellite_data, observer
                 )
                 
-                satellite_time.append(
-                    SatelliteTime(
-                        Group = satellite.group,
-                        Name = satellite.name,
-                        Time=visibility_times,
+                if (len(visibility_times) > 0):
+                    satellite_time.append(
+                        SatelliteTime(
+                            group = satellite.group,
+                            name = satellite.name,
+                            intervals=visibility_times,
+                        )
                     )
-                )
 
         return SatellitesTimeResponce(Satellites=satellite_time)
 
@@ -241,8 +239,8 @@ class SatellitesPositions:
                     
                     visibility_periods.append(
                         VisionTime(
-                            Begin=period_start.timestamp(),
-                            End=current_time.timestamp()
+                            startDatetime=period_start.strftime("%Y-%m-%dT%H:%M:%S"),
+                            endDatetime=current_time.strftime("%Y-%m-%dT%H:%M:%S"),
                         )
                     )
                     in_visibility = False
@@ -252,8 +250,8 @@ class SatellitesPositions:
         if in_visibility:
             visibility_periods.append(
                 VisionTime(
-                    Begin=period_start.timestamp(),
-                    End=end_time.timestamp()
+                    startDatetime=period_start.strftime("%Y-%m-%dT%H:%M:%S"),
+                    endDatetime=end_time.strftime("%Y-%m-%dT%H:%M:%S"),
                 )
             )
             
