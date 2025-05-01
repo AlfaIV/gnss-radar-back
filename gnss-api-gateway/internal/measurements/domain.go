@@ -28,6 +28,17 @@ type Satellites struct {
 	Satellites []SatelliteData `json:"satellites"`
 }
 
+type SatelliteInterval struct {
+	StartDatime string `json:"startDatetime"`
+	EndDatetime string `json:"endDatetime"`
+}
+
+type SatelliteWithIntervals struct {
+	Group     string              `json:"group"`
+	Name      string              `json:"name"`
+	Intervals []SatelliteInterval `json:"intervals"`
+}
+
 type Usecase interface {
 	GetEphemeris(ctx context.Context, page uint64, size uint64) ([]EphemerisFileMeta, uint64, error)
 	LoadEphemeris(ctx context.Context, file io.Reader, name string) error
