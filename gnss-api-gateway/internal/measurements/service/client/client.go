@@ -77,3 +77,37 @@ func (mc *MeasurementsClient) GetSatellitesPosition(ctx context.Context) (measur
 
 	return measurements_domain_gateway.Satellites{Satellites: satellites}, nil
 }
+
+func (mc *MeasurementsClient) GetSatellitesIntervals(ctx context.Context, startDatime string, endDatetime string, satellites []string) (measurements_domain_gateway.SatellitesIntervalsResponse, error) {
+	s, err := mc.client.GetSatellitesIntervals(ctx, &proto.GetSatellitesIntervalsRequest{
+		StartTime: startDatime,
+		EndTime: endDatetime,
+		Satellites: satellites,
+	})
+	if err != nil {
+		return measurements_domain_gateway.SatellitesIntervalsResponse{}, errors.Wrapf(err, "[GW MEASUREMENTS] %v", err)
+	}
+
+	var satellitesIntervals []measurements_domain_gateway.SatelliteWithIntervals
+
+	for _, sat := range s.GetSatellites() {
+
+		var intervalsArray []measurements_domain_gateway.SatelliteInterval
+
+
+		for _, interval := range sat.Intervals {
+			intervalsArray = append(intervalsArray, measurements_domain_gateway.SatelliteInterval{
+				StartDatime: interval.BeginTime,
+				EndDatetime: interval.EndTime,
+			})
+		}
+
+		satellitesIntervals = append(satellitesIntervals, measurements_domain_gateway.SatelliteWithIntervals{
+			Group:     sat.GetGroup(),
+			Name:      sat.GetName(),
+			Intervals: intervalsArray,
+		})
+	}
+
+	return measurements_domain_gateway.SatellitesIntervalsResponse{Satellites: satellitesIntervals}, nil
+}

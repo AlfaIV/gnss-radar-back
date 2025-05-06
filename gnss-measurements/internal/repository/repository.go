@@ -17,11 +17,21 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type RadarRequest struct {
+type RadarRequestNow struct {
 	RadarX         float64  `json:"radar_latitude"`
 	RadarY         float64  `json:"radar_longitude"`
 	RadarZ         float64  `json:"radar_height"`
 	InspectionTime string   `json:"inspection_time"`
+	TLEFile        string   `json:"tle_file"`
+	SatellitesName []string `json:"satellites_name"`
+}
+
+type RadarRequestTime struct {
+	RadarX         float64  `json:"radar_latitude"`
+	RadarY         float64  `json:"radar_longitude"`
+	RadarZ         float64  `json:"radar_height"`
+	EndTime string   `json:"end_time"`
+	BeginTime string   `json:"begin_time"`
 	TLEFile        string   `json:"tle_file"`
 	SatellitesName []string `json:"satellites_name"`
 }
@@ -144,7 +154,7 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 	}
 	currentTime := time.Now().In(loc).Format("2006-01-02T15:04:05")
 
-	requestBody := RadarRequest{
+	requestBody := RadarRequestNow{
 		RadarX:         56.4475,
 		RadarY:         37.423056,
 		RadarZ:         0.5,
@@ -200,6 +210,69 @@ func (mr *MeasurementsRepo) GetSatellitesCoordinates(ctx context.Context) (measu
 	var result measurements_domain.Satellites
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return measurements_domain.Satellites{}, err
+	}
+
+	return result, nil
+}
+
+func (mr *MeasurementsRepo) GetSatellitesIntervals(ctx context.Context, startDatetime string, endDatetime string, satellites []string) ([]measurements_domain.SatelliteWithIntervals, error) {
+	requestBody := RadarRequestTime{
+		RadarX:         56.4475,
+		RadarY:         37.423056,
+		RadarZ:         0.5,
+		SatellitesName: satellites,
+		BeginTime:      startDatetime,
+		EndTime:        endDatetime,
+	}
+
+	var tleName string
+
+	query := `SELECT minio_name FROM file_meta ORDER BY created_at DESC;`
+	err := mr.pool.QueryRow(ctx, query).Scan(&tleName)
+	if err != nil {
+		return []measurements_domain.SatelliteWithIntervals{}, errors.Wrap(err, "failed to get minio name")
+	}
+
+	requestBody.TLEFile = tleName
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return[]measurements_domain.SatelliteWithIntervals{}, err
+	}
+
+	satellites_addr := os.Getenv("SATELLITES_ADDR")
+
+	url := fmt.Sprintf("%s/api/v1/satellites/time", satellites_addr)
+
+	req, err := http.NewRequestWithContext(
+		ctx,
+		"POST",
+		url,
+		bytes.NewBuffer(jsonBody),
+	)
+	if err != nil {
+		return []measurements_domain.SatelliteWithIntervals{}, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return []measurements_domain.SatelliteWithIntervals{}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return []measurements_domain.SatelliteWithIntervals{}, err
+	}
+
+	var result []measurements_domain.SatelliteWithIntervals
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return []measurements_domain.SatelliteWithIntervals{}, err
 	}
 
 	return result, nil

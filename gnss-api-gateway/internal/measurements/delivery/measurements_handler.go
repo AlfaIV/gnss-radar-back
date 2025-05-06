@@ -128,3 +128,29 @@ func (h *MeasurementsHandler) GetSatellitesPosition(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, satellites)
 }
+
+func (h *MeasurementsHandler) GetSatellitesIntervals(c echo.Context) error {
+
+	ctx := c.Request().Context()
+
+	_, err := mwutils.GetUserID(ctx)
+	if err != nil {
+		h.logger.Error("[GW]: ", err)
+
+		return c.String(http.StatusUnauthorized, "No session id provided")
+	}
+
+	getIntervals := measurements_domain_gateway.GetSatellitesIntervalsRequest{}
+	if err := c.Bind(&getIntervals); err != nil {
+		h.logger.Error("[GW]:", err)
+		return c.String(http.StatusBadRequest, "failed to parse request data")
+	}
+
+	satellites, err := h.measurementsUsecase.GetSatellitesIntervals(ctx, getIntervals.StartDatime, getIntervals.EndDatetime, getIntervals.Satellites)
+	if err != nil {
+		h.logger.Error("[GW]: ", err)
+		return c.String(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return c.JSON(http.StatusOK, satellites)
+}

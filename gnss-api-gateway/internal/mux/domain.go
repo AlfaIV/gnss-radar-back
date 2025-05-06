@@ -78,6 +78,7 @@ func Setup(config *config.Config, service ServiceUsecase, handlers Handlers, log
 		//userPermissionsMiddleware.Process,
 	)
 	satellites.GET("/getSatellitesPosition", handlers.Measurements.GetSatellitesPosition)
+	satellites.POST("/getSatellitesIntervals", handlers.Measurements.GetSatellitesIntervals)
 
 	tasks := base.Group("/tasks")
 	tasks.Use(

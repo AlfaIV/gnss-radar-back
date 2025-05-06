@@ -101,3 +101,33 @@ func (s *MeasurementsServiceServer) GetSatellitesPosition(ctx context.Context, i
 		Satellites: satArray,
 	}, nil
 }
+
+func (s *MeasurementsServiceServer) GetSatellitesIntervals(ctx context.Context, in *proto.GetSatellitesIntervalsRequest) (*proto.Satellites, error) {
+
+	satellites, err := s.repo.GetSatellitesIntervals(ctx, in.GetStartTime(), in.GetEndTime(), in.GetSatellites())
+	if err != nil {
+		return nil, err
+	}
+
+	var satArray []*proto.Satellite
+	for _, sat := range satellites {
+
+		var intervalsArray []*proto.Interval
+		for _, interval := range sat.Intervals {
+			intervalsArray = append(intervalsArray, &proto.Interval{
+				BeginTime: interval.StartDatime,
+				EndTime:   interval.EndDatetime,
+			})
+		}
+
+		satArray = append(satArray, &proto.Satellite{
+			Name:      sat.Name,
+			Group:     sat.Group,
+			Intervals: intervalsArray,
+		})
+	}
+
+	return &proto.Satellites{
+		Satellites: satArray,
+	}, nil
+}

@@ -9,6 +9,7 @@ service Measurements {
     rpc GetEphemeris(PaginatedRequest) returns (Ephemeris) {}
     rpc LoadEphemeris(EphemerisToLoad) returns (google.protobuf.Empty) {}
     rpc GetSatellitesPosition(google.protobuf.Empty) returns (Satellites) {}
+    rpc GetSatellitesIntervals(GetSatellitesIntervalsRequest) returns (Satellites) {}
 }
 
 message EphemerisFileMeta {
@@ -26,12 +27,25 @@ message EphemerisToLoad {
     bytes Payload = 2;
 }
 
+message Interval {
+    string BeginTime = 1;
+    string EndTime = 2;
+}
+
 message Satellite {
     string Name = 1;
     string Group = 2;
     double Range = 3;
     double Elevation = 4;
     double Azimuth = 5;
+    repeated Interval Intervals = 6;
+}
+
+message GetSatellitesIntervalsRequest {
+    string StartTime = 1;
+    string EndTime = 2;
+    repeated string Satellites = 3;
+
 }
 
 message Satellites {

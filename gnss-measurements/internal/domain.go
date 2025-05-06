@@ -35,8 +35,20 @@ type Satellite struct {
 	Range     float64 `json:"Range"`
 }
 
+type SatelliteInterval struct {
+	StartDatime string `json:"startDatetime"`
+	EndDatetime string `json:"endDatetime"`
+}
+
+type SatelliteWithIntervals struct {
+	Group     string              `json:"group"`
+	Name      string              `json:"name"`
+	Intervals []SatelliteInterval `json:"intervals"`
+}
+
 type Repository interface {
 	UploadEphemeris(ctx context.Context, req EphemerisToLoad) error
 	GetEphemeris(ctx context.Context, req PaginatedRequest) ([]EphemerisFileMeta, uint64, error)
 	GetSatellitesCoordinates(ctx context.Context) (Satellites, error)
+	GetSatellitesIntervals(ctx context.Context, startDatetime string, endDatetime string, satellites []string) ([]SatelliteWithIntervals, error)
 }

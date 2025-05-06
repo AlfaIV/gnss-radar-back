@@ -39,8 +39,19 @@ type SatelliteWithIntervals struct {
 	Intervals []SatelliteInterval `json:"intervals"`
 }
 
+type SatellitesIntervalsResponse struct {
+	Satellites []SatelliteWithIntervals `json:"satellites"`
+}
+
+type GetSatellitesIntervalsRequest struct {
+	StartDatime string `json:"startDatetime"`
+	EndDatetime string `json:"endDatetime"`
+	Satellites  []string `json:"satellites"`
+}
+
 type Usecase interface {
 	GetEphemeris(ctx context.Context, page uint64, size uint64) ([]EphemerisFileMeta, uint64, error)
 	LoadEphemeris(ctx context.Context, file io.Reader, name string) error
 	GetSatellitesPosition(ctx context.Context) (Satellites, error)
+	GetSatellitesIntervals(ctx context.Context, startDatime string, endDatetime string, satellites []string) (SatellitesIntervalsResponse, error)
 }
