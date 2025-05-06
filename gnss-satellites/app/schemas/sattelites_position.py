@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, field_validator
 import math
 
@@ -15,21 +15,20 @@ class SatellitesTimeRequest(BaseModel):
     radar_latitude: float
     radar_longitude: float
     radar_height: float # В километрах
-    begin_time: int # Время в UTC
-    end_time: int # Время в UTC
+    begin_time: str # Время в UTC
+    end_time: str # Время в UTC
     tle_file: str
 
 class SatellitePosition(BaseModel):
-    Group: str
+    Group: Optional[str] = "Unidentified"
     Name: str
     Azimuth: float
     Elevation: float
     Range: float
     
-    @field_validator('Group')
+    @field_validator('Group', mode='before')
     def check_group(cls, v):
         if v is None:
-            print(f"Value {v} is None")
             return "Unidentified"
         return v
     
@@ -51,13 +50,19 @@ class Ephemeris(BaseModel):
 
 
 class VisionTime(BaseModel):
-    Begin: float
-    End: float
+    startDatetime: str
+    endDatetime: str
 
 class SatelliteTime(BaseModel):
-    Group: str
-    Name: str
-    Time: List[VisionTime]
+    name: Optional[str] = "Unidentified"
+    group: str
+    intervals: List[VisionTime]
+
+    @field_validator('group', 'name', mode='before')
+    def validate_fields(cls, v):
+        if v is None:
+            return "Unidentified"
+        return v
 
 
 class SatellitesPositionResponce(BaseModel):

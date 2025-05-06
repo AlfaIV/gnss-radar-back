@@ -13,7 +13,6 @@ class Configs(BaseSettings):
     TLE_PATH: Path = PROJECT_ROOT / "app" / "services" / "tle" / "gps.tle"
 
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
-    DATE_FORMAT: str = "%Y-%m-%d"
 
     TLE_PATH: str = os.path.join(PROJECT_ROOT, "app", "services", "tle", "gps.tle")
 
