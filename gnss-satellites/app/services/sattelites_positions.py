@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from skyfield.api import load, EarthSatellite
 from skyfield.toposlib import wgs84
 from skyfield.positionlib import Geocentric
+import re
 
 from app.entities.sattellites import TLE
 from app.schemas.sattelites_position import (
@@ -34,19 +35,38 @@ class SatellitesPositions:
 
     def load_sattelites_tle(self) -> list:
         file = self.s3_repository.get_tle(self.tle_file).tle_file
-        
+        lines = [line.strip() for line in file.split('\n') if line.strip()]
+        TLE_array = []
         try: 
-            TLE_array = []
-            for line in file.split('\n'):
-                words = line.split()
-                if words[0] == "1":
-                    TLE_array[-1].line1 = line
-                elif words[0] == "2":
-                    TLE_array[-1].line2 = line
+
+            i = 0
+            while i < len(lines):
+
+                if i + 2 >= len(lines):
+                    break
+
+                name_line = lines[i]
+                line1 = lines[i + 1]
+                line2 = lines[i + 2]
+
+                if line1.startswith("1 ") and line2.startswith("2 "):
+                    satellite_name, grouping = self.get_name(name_line)
+                    
+                    if(satellite_name == "" or grouping== ""):
+                        i += 3
+                        continue
+
+                    print(f"{satellite_name} ({grouping})")
+                    TLE_array.append({
+                        "name": satellite_name,
+                        "group": grouping,
+                        "line1": line1,
+                        "line2": line2
+                    })
+                    i += 3
                 else:
-                    grouping = words[0] if len(words) > 1 else None
-                    satellite_name = " ".join(words[1:]) if len(words) > 1 else words[0]
-                    TLE_array.append(TLE(satellite_name,grouping))
+                    i += 3
+
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
@@ -54,6 +74,45 @@ class SatellitesPositions:
                 headers={"X-Error": "Custom header", "Error-type": "Parse TLE"},
             )
         return TLE_array
+
+    def get_name(self,name_sat_group_string : str):
+
+        name_sat_group = name_sat_group_string.strip().split(" ")
+
+        if name_sat_group is None or len(name_sat_group) < 2:
+            return ("", "")
+        
+        group = name_sat_group[0]
+        name = ""
+
+        full_name_satellite = " ".join(name_sat_group[1:])
+        number = re.search(r'\((.*?)\)', full_name_satellite)
+        
+        if number:
+            full_name_satellite = number.group(1)
+            if "GALILEO" in full_name_satellite:
+                group = "GALILEO"
+                correct_name = full_name_satellite.split()
+                if len(correct_name) == 2:
+                    name = " ".join(full_name_satellite.split()[1:])
+            else:
+                name = re.sub(r'[^\d]', "", number.group(1))
+                if group == "GALILEO":
+                    name = ""
+
+        if "COSMOS" in group:
+            group = "GLONASS"
+        elif "BEIDOU" in group:
+            group = "BEIDOU"
+        elif "GALILEO" in group:
+            group = "GALILEO"
+        elif "GPS" in group:
+            group = "GALILEO"
+        else:
+            group = ""
+
+        return (name, group)  
+     
 
     def get_sattelites_positions(
         self, radar: RadarPositionGeograthRequest,
