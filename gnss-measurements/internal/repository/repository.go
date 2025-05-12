@@ -270,10 +270,10 @@ func (mr *MeasurementsRepo) GetSatellitesIntervals(ctx context.Context, startDat
 		return []measurements_domain.SatelliteWithIntervals{}, err
 	}
 
-	var result []measurements_domain.SatelliteWithIntervals
+	var result measurements_domain.IntervalSatellitesResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return []measurements_domain.SatelliteWithIntervals{}, err
 	}
 
-	return result, nil
+	return result.Satellites, nil
 }

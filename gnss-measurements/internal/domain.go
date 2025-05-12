@@ -46,6 +46,10 @@ type SatelliteWithIntervals struct {
 	Intervals []SatelliteInterval `json:"intervals"`
 }
 
+type IntervalSatellitesResponse struct {
+	Satellites []SatelliteWithIntervals
+}
+
 type Repository interface {
 	UploadEphemeris(ctx context.Context, req EphemerisToLoad) error
 	GetEphemeris(ctx context.Context, req PaginatedRequest) ([]EphemerisFileMeta, uint64, error)
