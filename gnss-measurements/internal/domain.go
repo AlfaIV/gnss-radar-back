@@ -56,3 +56,4 @@ type Repository interface {
 	GetSatellitesCoordinates(ctx context.Context) (Satellites, error)
 	GetSatellitesIntervals(ctx context.Context, startDatetime string, endDatetime string, satellites []string) ([]SatelliteWithIntervals, error)
 }
+//comment
