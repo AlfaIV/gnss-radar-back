@@ -97,7 +97,7 @@ func (mc *MeasurementsClient) GetSatellitesIntervals(ctx context.Context, startD
 
 		for _, interval := range sat.Intervals {
 			intervalsArray = append(intervalsArray, measurements_domain_gateway.SatelliteInterval{
-				StartDatime: interval.BeginTime,
+				StartDatetime: interval.BeginTime,
 				EndDatetime: interval.EndTime,
 			})
 		}

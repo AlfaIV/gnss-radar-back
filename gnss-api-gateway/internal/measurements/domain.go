@@ -29,7 +29,7 @@ type Satellites struct {
 }
 
 type SatelliteInterval struct {
-	StartDatime string `json:"startDatetime"`
+	StartDatetime string `json:"startDatetime"`
 	EndDatetime string `json:"endDatetime"`
 }
 
