@@ -17,41 +17,32 @@ type GetEphemerisResponse struct {
 }
 
 type SatelliteData struct {
-	Group     string  `json:"group"`
-	Name      string  `json:"name"`
-	Azimuth   float64 `json:"azimuth"`
-	Range     float64 `json:"range"`
-	Elevation float64 `json:"elevation"`
+	Group     string
+	Name      string
+	Azumuth   float64
+	Range     float64
+	Elevation float64
 }
 
 type Satellites struct {
-	Satellites []SatelliteData `json:"satellites"`
-}
-
-type SatelliteInterval struct {
-	StartDatime string `json:"startDatetime"`
-	EndDatetime string `json:"endDatetime"`
-}
-
-type SatelliteWithIntervals struct {
-	Group     string              `json:"group"`
-	Name      string              `json:"name"`
-	Intervals []SatelliteInterval `json:"intervals"`
-}
-
-type SatellitesIntervalsResponse struct {
-	Satellites []SatelliteWithIntervals `json:"satellites"`
-}
-
-type GetSatellitesIntervalsRequest struct {
-	StartDatime string `json:"startDatetime"`
-	EndDatetime string `json:"endDatetime"`
-	Satellites  []string `json:"satellites"`
+	Satellites []SatelliteData
 }
 
 type Usecase interface {
 	GetEphemeris(ctx context.Context, page uint64, size uint64) ([]EphemerisFileMeta, uint64, error)
 	LoadEphemeris(ctx context.Context, file io.Reader, name string) error
 	GetSatellitesPosition(ctx context.Context) (Satellites, error)
-	GetSatellitesIntervals(ctx context.Context, startDatime string, endDatetime string, satellites []string) (SatellitesIntervalsResponse, error)
+}
+
+//TAH4UK
+
+type SatelliteInterval struct {
+	StartDatetime string
+	EndDatetime   string
+}
+
+type SatelliteWithIntervals struct {
+	Group     string
+	Name      string
+	Intervals []SatelliteInterval
 }
