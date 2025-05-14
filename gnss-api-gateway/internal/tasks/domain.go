@@ -47,24 +47,25 @@ type Usecase interface {
 
 // TAH4UK
 func ValidateSatellitesIntersection(
-	satellitesData measurements_domain_gateway.SatelliteWithIntervals,
+	satellitesData []measurements_domain_gateway.SatelliteWithIntervals,
 	endDatetime string,
 	startDatetime string,
 	isAll bool) bool {
 
 	const intervalConst = 0 // Отсечка
 
-	if (isAll == true) && (satellitesData.Intervals == nil) {
+	if isAll {
 		return true
 	}
 	// Реализация без обработок ошибок
+	//Распарсили заданный интервал
 	endDateParsed, _ := time.Parse(time.RFC3339, endDatetime+"Z")
 	startDateParsed, _ := time.Parse(time.RFC3339, startDatetime+"Z")
 
 	if startDateParsed.Before(endDateParsed) {
-		for _, value := range satellitesData.Intervals {
-			endSat, _ := time.Parse(time.RFC3339, value.EndDatetime+"Z")
-			startSat, _ := time.Parse(time.RFC3339, value.StartDatetime+"Z")
+		for _, value := range satellitesData {
+			endSat, _ := time.Parse(time.RFC3339, value.Intervals[0].EndDatetime+"Z")
+			startSat, _ := time.Parse(time.RFC3339, value.Intervals[0].StartDatetime+"Z")
 			if startSat.Before(startDateParsed) || endSat.After(endDateParsed) ||
 				endSat.Sub(startSat).Minutes() < intervalConst {
 				return false
