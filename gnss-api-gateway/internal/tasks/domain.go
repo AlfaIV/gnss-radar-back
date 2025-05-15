@@ -62,16 +62,17 @@ func ValidateSatellitesIntersection(
 	endDateParsed, _ := time.Parse(time.RFC3339, endDatetime+"Z")
 	startDateParsed, _ := time.Parse(time.RFC3339, startDatetime+"Z")
 
-	if startDateParsed.Before(endDateParsed) {
-		for _, value := range satellitesData {
-			endSat, _ := time.Parse(time.RFC3339, value.Intervals[0].EndDatetime+"Z")
-			startSat, _ := time.Parse(time.RFC3339, value.Intervals[0].StartDatetime+"Z")
-			if startSat.Before(startDateParsed) || endSat.After(endDateParsed) ||
-				endSat.Sub(startSat).Minutes() < intervalConst {
-				return false
-			}
-		}
-		return true
+	if !startDateParsed.Before(endDateParsed) {
+		return false
 	}
-	return false
+	for _, value := range satellitesData {
+		endSat, _ := time.Parse(time.RFC3339, value.Intervals[0].EndDatetime+"Z")
+		startSat, _ := time.Parse(time.RFC3339, value.Intervals[0].StartDatetime+"Z")
+		if startSat.After(endDateParsed) || endSat.Before(startDateParsed) ||
+			endDateParsed.Sub(endSat).Minutes() < intervalConst || startSat.Sub(startDateParsed).Minutes() < intervalConst {
+			return false
+		}
+	}
+	return true
+
 }
